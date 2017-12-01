@@ -4,6 +4,7 @@ import "../css/options.css";
 import 'react-table/react-table.css';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Main from './options/Main';
+import Index from './options/Index';
+// import 'font-awesome/css/font-awesome.min.css'; // TODO resolve font-awesome including in webpack
 
-ReactDOM.render(<Main />, document.getElementById('root'));
+ReactDOM.render(<Index />, document.getElementById('root'));

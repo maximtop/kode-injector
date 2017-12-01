@@ -6,7 +6,7 @@ export default class extends Component {
     return (
       <div className='container'>
         <div className="row justify-content-center">
-          <h1>Kameleoon JS and CSS Injector</h1>
+          <h1>JS and CSS Injector</h1>
         </div>
       </div>
     )
