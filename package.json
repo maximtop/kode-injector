@@ -20,6 +20,7 @@
   "devDependencies": {
     "babel-core": "*",
     "babel-loader": "*",
+    "babel-plugin-transform-runtime": "6.23.0",
     "babel-preset-react": "*",
     "babel-preset-react-hmre": "*",
     "babel-preset-stage-0": "6.24.1",

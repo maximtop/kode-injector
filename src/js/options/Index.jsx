@@ -86,7 +86,7 @@ export default class Index extends Component {
             {this.renderButton()}
           </a>
         </div>
-        {showInput ? <Input addData={this.addData} handleChange={this.handleChange}/> : ''}
+        {showInput ? <Input addData={this.addData} handleChange={this.handleChange} handleSubmit/> : ''}
       </div>
     )
   }
