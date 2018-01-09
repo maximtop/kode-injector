@@ -9,7 +9,7 @@ const bindings = {
   },
 };
 
-const readFile = filePath => new Promise(((resolve, reject) => {
+const readFile = filePath => new Promise((resolve, reject) => {
   const xhr = new XMLHttpRequest();
   xhr.onerror = (error) => {
     reject(error);
@@ -19,28 +19,43 @@ const readFile = filePath => new Promise(((resolve, reject) => {
       resolve(xhr.response);
     }
   };
-  xhr.open('GET', filePath);
-  xhr.send();
-}));
+  xhr.open('GET', filePath, false);
+  try {
+    xhr.send();
+  } catch (e) {
+    reject(e);
+  }
+});
 
 chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
   if (changeInfo.status === 'loading') {
     const tabUrl = url.parse(tab.url);
-    const { jsFilePath, cssFilePath } = bindings[tabUrl.hostname];
-    let jsCode;
-    let cssCode;
-    if (jsFilePath) {
-      jsCode = await readFile(jsFilePath);
+    // eslint-disable-next-line no-prototype-builtins
+    if (bindings.hasOwnProperty(tabUrl.hostname)) {
+      const { jsFilePath, cssFilePath } = bindings[tabUrl.hostname];
+      let jsCode;
+      let cssCode;
+      if (jsFilePath) {
+        try {
+          jsCode = await readFile(jsFilePath);
+        } catch (error) {
+          jsCode = { error: error.message };
+        }
+      }
+      if (cssFilePath) {
+        try {
+          cssCode = await readFile(cssFilePath);
+        } catch (error) {
+          cssCode = { error: error.message };
+        }
+      }
+      // save code to chrome.storage.local
+      chrome.storage.local.set(
+        { config: { [tabUrl.hostname]: { jsCode, cssCode } } },
+        (e) => {
+          console.log('successfully saved', e);
+        },
+      );
     }
-    if (cssFilePath) {
-      cssCode = await readFile(cssFilePath);
-    }
-    // save code to chrome.storage.local
-    chrome.storage.local.set(
-      { kInjector: { [tabUrl.hostname]: { jsCode, cssCode } } },
-      (e) => {
-        console.log('successfully saved', e);
-      },
-    );
   }
 });
