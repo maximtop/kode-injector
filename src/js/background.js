@@ -1,15 +1,15 @@
 import '../img/icon-128.png'
 import '../img/icon-34.png'
+import url from 'url'
 
-const filePath = 'file:///home/maxim/Documents/test.jsa'
-const head = document.getElementsByTagName('head')[0]
-const script = document.createElement('script')
-script.setAttribute('data-source', 'Kameleoon injector')
-script.type = 'text/javascript'
-let code = ''
+const bindings = { 'stackoverflow.com': { js: 'file:///home/maxim/Documents/test.js' } }
+
 const readFile = (filePath) => {
   return new Promise(function (resolve, reject) {
     const xhr = new XMLHttpRequest()
+    xhr.onerror = (error) => {
+      reject(error)
+    }
     xhr.onreadystatechange = function () {
       if (xhr.readyState === 4) {
         resolve(xhr.response)
@@ -23,14 +23,21 @@ const readFile = (filePath) => {
   })
 }
 
-chrome.tabs.onUpdated.addListener(async function (tabId, change) {
-  console.log(tabId)
-  try {
-    code = await readFile(filePath)
-  } catch (e) {
-    console.log('Error:' + e)
-  }
-  if (change.status === 'complete') {
-    chrome.tabs.executeScript(tabId, { code: code })
+chrome.tabs.onUpdated.addListener(async function (tabId, changeInfo, tab) {
+  if (changeInfo.status === 'loading') {
+    const tabUrl = url.parse(tab.url)
+    const jsFilePath = bindings[tabUrl.hostname].js
+    let code
+    try {
+      code = await readFile(jsFilePath)
+    } catch (e) {
+      console.log('Error: ', e)
+    }
+    if (code) {
+      // save code to chrome.storage.local
+      chrome.storage.local.set({ 'code': code }, function (e) {
+        console.log('successfully saved', e)
+      })
+    }
   }
 })
