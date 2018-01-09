@@ -5,3 +5,6 @@ start:
 
 build:
 	yarn run build
+
+lint:
+	yarn run eslint src/

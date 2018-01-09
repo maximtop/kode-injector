@@ -1,19 +1,16 @@
-import url from 'url'
+import url from 'url';
 
-let code
-const head = document.getElementsByTagName('head')[0]
-const script = document.createElement('script')
-script.setAttribute('data-source', 'Kameleoon injector')
-script.type = 'text/javascript'
-const tabUrl = url.parse(window.location.href)
-const tabHostname = tabUrl.hostname
-console.log(tabHostname)
+const head = document.getElementsByTagName('head')[0];
+const script = document.createElement('script');
+script.setAttribute('data-source', 'Kameleoon injector');
+script.type = 'text/javascript';
+const tabUrl = url.parse(window.location.href);
+const tabHostname = tabUrl.hostname;
 chrome.storage.local.get('kInjector', ({ kInjector }) => {
-  const { code } = kInjector[tabHostname]
-  console.log(code)
+  const { code } = kInjector[tabHostname];
   if (code) {
-    script.text = code
-    head.appendChild(script)
+    script.text = code;
+    head.appendChild(script);
   }
-})
+});
 

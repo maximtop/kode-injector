@@ -6,7 +6,8 @@
   "author": "Maxim Topciu",
   "scripts": {
     "build": "NODE_ENV=production node utils/build.js",
-    "start": "node utils/webserver.js"
+    "start": "node utils/webserver.js",
+    "eslint": "eslint"
   },
   "dependencies": {
     "babel-preset-env": "1.6.1",
@@ -27,10 +28,8 @@
     "clean-webpack-plugin": "*",
     "copy-webpack-plugin": "*",
     "css-loader": "*",
-    "eslint": "4.12.0",
     "eslint-config-react-tools": "1.0.10",
     "eslint-plugin-class-property": "1.0.6",
-    "eslint-plugin-import": "2.8.0",
     "eslint-plugin-jsx-a11y": "^5.1.1",
     "eslint-plugin-react": "7.5.1",
     "file-loader": "*",
@@ -40,6 +39,11 @@
     "style-loader": "*",
     "webpack": "*",
     "webpack-dev-server": "*",
-    "write-file-webpack-plugin": "*"
+    "write-file-webpack-plugin": "*",
+    "babel-eslint": "*",
+    "eslint": "*",
+    "eslint-config-airbnb-base": "*",
+    "eslint-plugin-flowtype": "*",
+    "eslint-plugin-import": "*"
   }
 }
