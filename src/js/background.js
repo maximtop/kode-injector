@@ -2,7 +2,7 @@ import url from 'url';
 import '../img/icon-128.png';
 import '../img/icon-34.png';
 
-const bindings = {
+const config = {
   'stackoverflow.com': {
     jsFilePath: 'file:///home/maxim/Documents/test.js',
     cssFilePath: 'file:///home/maxim/Documents/test.css',
@@ -31,8 +31,8 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
   if (changeInfo.status === 'loading') {
     const tabUrl = url.parse(tab.url);
     // eslint-disable-next-line no-prototype-builtins
-    if (bindings.hasOwnProperty(tabUrl.hostname)) {
-      const { jsFilePath, cssFilePath } = bindings[tabUrl.hostname];
+    if (config.hasOwnProperty(tabUrl.hostname)) {
+      const { jsFilePath, cssFilePath } = config[tabUrl.hostname];
       let jsCode;
       let cssCode;
       if (jsFilePath) {

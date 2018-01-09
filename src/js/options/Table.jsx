@@ -1,9 +1,9 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
 import ReactTable from 'react-table';
 
 export default class Table extends Component {
-  render () {
-    const {data} = this.props
+  render() {
+    const { data } = this.props;
     const columns = [
       {
         Header: 'Site URL',
@@ -17,7 +17,7 @@ export default class Table extends Component {
       }, {
         Header: 'Action',
       }];
-    
+
     return (
       <ReactTable
         data={data}
@@ -25,6 +25,6 @@ export default class Table extends Component {
         showPagination={false}
         minRows={0}
       />
-    )
+    );
   }
 }

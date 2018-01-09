@@ -17,15 +17,15 @@ export default class Index extends Component {
         url: 'example2.com',
         jsPath: '/script2.js',
         cssPath: '/styles2.css',
-      }
+      },
     ],
     inputData: {
       url: null,
       jsPath: null,
       cssPath: null,
-    }
+    },
   };
-  
+
   handleChange = (e) => {
     e.preventDefault();
     const { inputData } = this.state;
@@ -38,43 +38,42 @@ export default class Index extends Component {
         inputData.jsPath = e.target.value;
         break;
       }
-      case 'cssInput' : {
+      case 'cssInput': {
         inputData.cssPath = e.target.value;
         break;
       }
       default:
         break;
     }
-    this.setState({inputData});
-  }
-  
+    this.setState({ inputData });
+  };
+
   handleAddInput = (e) => {
     e.preventDefault();
     const { showInput } = this.state;
     if (showInput) {
-      this.setState({showInput: false})
+      this.setState({ showInput: false });
     } else {
-      this.setState({showInput: true})
+      this.setState({ showInput: true });
     }
   };
-  
+
   renderButton = () => {
-    const {showInput} = this.state;
-    if(!showInput) {
-      return <FontAwesome name='plus' size='3x' />
-    } else {
-      return <FontAwesome name='minus' size='3x' />
+    const { showInput } = this.state;
+    if (!showInput) {
+      return <FontAwesome name='plus' size='3x'/>;
     }
-  }
-  
+    return <FontAwesome name='minus' size='3x'/>;
+  };
+
   addData = (e) => {
     e.preventDefault();
-    const {data, inputData} = this.state;
-    
-    const {url, jsPath, cssPath} = inputData;
-    this.setState({data: [...data, {url, jsPath, cssPath}]})
-  }
-  
+    const { data, inputData } = this.state;
+
+    const { url, jsPath, cssPath } = inputData;
+    this.setState({ data: [...data, { url, jsPath, cssPath }] });
+  };
+
   render() {
     const { showInput } = this.state;
     return (
@@ -86,8 +85,10 @@ export default class Index extends Component {
             {this.renderButton()}
           </a>
         </div>
-        {showInput ? <Input addData={this.addData} handleChange={this.handleChange} handleSubmit/> : ''}
+        {showInput ?
+          <Input addData={this.addData} handleChange={this.handleChange}
+                 handleSubmit/> : ''}
       </div>
-    )
+    );
   }
 }

@@ -20,6 +20,7 @@
   },
   "devDependencies": {
     "babel-core": "*",
+    "babel-eslint": "*",
     "babel-loader": "*",
     "babel-plugin-transform-runtime": "6.23.0",
     "babel-preset-react": "*",
@@ -28,9 +29,13 @@
     "clean-webpack-plugin": "*",
     "copy-webpack-plugin": "*",
     "css-loader": "*",
-    "eslint-config-react-tools": "1.0.10",
+    "eslint": "*",
+    "eslint-config-airbnb": "*",
+    "eslint-config-react-tools": "*",
     "eslint-plugin-class-property": "1.0.6",
-    "eslint-plugin-jsx-a11y": "^5.1.1",
+    "eslint-plugin-flowtype": "*",
+    "eslint-plugin-import": "*",
+    "eslint-plugin-jsx-a11y": "*",
     "eslint-plugin-react": "7.5.1",
     "file-loader": "*",
     "fs-extra": "*",
@@ -39,11 +44,6 @@
     "style-loader": "*",
     "webpack": "*",
     "webpack-dev-server": "*",
-    "write-file-webpack-plugin": "*",
-    "babel-eslint": "*",
-    "eslint": "*",
-    "eslint-config-airbnb-base": "*",
-    "eslint-plugin-flowtype": "*",
-    "eslint-plugin-import": "*"
+    "write-file-webpack-plugin": "*"
   }
 }
