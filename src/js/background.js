@@ -35,7 +35,7 @@ chrome.tabs.onUpdated.addListener(async function (tabId, changeInfo, tab) {
     }
     if (code) {
       // save code to chrome.storage.local
-      chrome.storage.local.set({ 'code': code }, function (e) {
+      chrome.storage.local.set({ kInjector: { [tabUrl.hostname]: { code: code }}}, function (e) {
         console.log('successfully saved', e)
       })
     }
