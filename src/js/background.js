@@ -5,27 +5,44 @@ import '../img/icon-34.png';
 const config = {
   'stackoverflow.com': {
     jsFilePath: 'file:///home/maxim/Documents/test.js',
-    cssFilePath: 'file:///home/maxim/Documents/test.css',
+    cssFilePath: 'file:///home/maxim/Documents/test.cssa',
   },
 };
 
-const readFile = filePath => new Promise((resolve, reject) => {
+// const readFile = filePath => new Promise((resolve, reject) => {
+//   const xhr = new XMLHttpRequest();
+//   xhr.onerror = (error) => {
+//     reject(error);
+//   };
+//   xhr.onreadystatechange = () => {
+//     if (xhr.readyState === 4) {
+//       resolve(xhr.response);
+//     }
+//   };
+//   xhr.open('GET', filePath, false);
+//   try {
+//     xhr.send();
+//   } catch (e) {
+//     reject(e);
+//   }
+// });
+
+const readFile = filePath => new Promise(((resolve, reject) => {
   const xhr = new XMLHttpRequest();
-  xhr.onerror = (error) => {
-    reject(error);
-  };
-  xhr.onreadystatechange = () => {
-    if (xhr.readyState === 4) {
+  xhr.onloadend = (event) => {
+    // console.log(
+    //   'xhr.onloadend', event, xhr.status, xhr.statusText,
+    //   xhr.readyState, xhr,
+    // );
+    if (event.loaded && xhr.response) {
       resolve(xhr.response);
+    } else {
+      reject(new Error(`Seems that there is error with the file: ${filePath}`));
     }
   };
-  xhr.open('GET', filePath, false);
-  try {
-    xhr.send();
-  } catch (e) {
-    reject(e);
-  }
-});
+  xhr.open('GET', filePath);
+  xhr.send();
+}));
 
 chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
   if (changeInfo.status === 'loading') {
