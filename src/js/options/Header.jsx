@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import icon from '../../img/icon-128.png';
 
 export default class Header extends Component {
   render() {

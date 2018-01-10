@@ -6,4 +6,8 @@ import '../css/options.css';
 import Index from './options/Index';
 // import 'font-awesome/css/font-awesome.min.css'; // TODO resolve font-awesome including in webpack
 
+function updateConfig = config => {
+
+};
+
 ReactDOM.render(<Index />, document.getElementById('root'));

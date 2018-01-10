@@ -9,14 +9,17 @@ parser: babel-eslint
 extends:
   - 'airbnb-base'
   - 'plugin:react/recommended'
+  - 'plugin:import/errors'
+  - 'plugin:import/warnings'
 
 globals:
   chrome: true
 
 rules:
   no-console: 0
+#  import/extensions: 0
 
 settings:
-  import/resolve:
-    - '.js'
-    - '.jsx'
+  import/extensions:
+    - js
+    - jsx

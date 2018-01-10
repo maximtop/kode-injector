@@ -2,42 +2,29 @@ import url from 'url';
 import '../img/icon-128.png';
 import '../img/icon-34.png';
 
+// TODO READ SITE NAMES WITH WWW AND WITHOUT THEM
 const config = {
   'stackoverflow.com': {
+    active: true,
     jsFilePath: 'file:///home/maxim/Documents/test.js',
-    cssFilePath: 'file:///home/maxim/Documents/test.cssa',
+    cssFilePath: 'file:///home/maxim/Documents/test.css',
+  },
+  'www.darty.com': {
+    active: true,
+    jsFilePath: 'file:///home/maxim/Documents/projects/Kameleoon/darty/DARTY-Guide-d%27achat-Notification-DAR_ACCOMP/index.js',
+    cssFilePath: 'file:///home/maxim/Documents/projects/Kameleoon/darty/DARTY-Guide-d\'achat-Notification-DAR_ACCOMP/style.css',
   },
 };
-
-// const readFile = filePath => new Promise((resolve, reject) => {
-//   const xhr = new XMLHttpRequest();
-//   xhr.onerror = (error) => {
-//     reject(error);
-//   };
-//   xhr.onreadystatechange = () => {
-//     if (xhr.readyState === 4) {
-//       resolve(xhr.response);
-//     }
-//   };
-//   xhr.open('GET', filePath, false);
-//   try {
-//     xhr.send();
-//   } catch (e) {
-//     reject(e);
-//   }
-// });
 
 const readFile = filePath => new Promise(((resolve, reject) => {
   const xhr = new XMLHttpRequest();
   xhr.onloadend = (event) => {
-    // console.log(
-    //   'xhr.onloadend', event, xhr.status, xhr.statusText,
-    //   xhr.readyState, xhr,
-    // );
-    if (event.loaded && xhr.response) {
+    if (event.loaded > 0 && xhr.responseURL) {
       resolve(xhr.response);
+    } else if (event.loaded === 0 && xhr.responseURL) {
+      reject(new Error(`Seems that this file is empty: ${filePath}.`));
     } else {
-      reject(new Error(`Seems that there is error with the file: ${filePath}`));
+      reject(new Error(`Seems that there is error with file path: ${filePath}.`));
     }
   };
   xhr.open('GET', filePath);
@@ -47,6 +34,7 @@ const readFile = filePath => new Promise(((resolve, reject) => {
 chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
   if (changeInfo.status === 'loading') {
     const tabUrl = url.parse(tab.url);
+    console.log(tabUrl);
     // eslint-disable-next-line no-prototype-builtins
     if (config.hasOwnProperty(tabUrl.hostname)) {
       const { jsFilePath, cssFilePath } = config[tabUrl.hostname];
