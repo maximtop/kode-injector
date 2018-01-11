@@ -14,6 +14,16 @@ const config = {
     jsFilePath: 'file:///home/maxim/Documents/projects/Kameleoon/darty/DARTY-Guide-d%27achat-Notification-DAR_ACCOMP/index.js',
     cssFilePath: 'file:///home/maxim/Documents/projects/Kameleoon/darty/DARTY-Guide-d\'achat-Notification-DAR_ACCOMP/style.css',
   },
+  'm.darty.com': {
+    active: true,
+    jsFilePath: 'file:///home/maxim/Documents/projects/Kameleoon/darty/DARTY-Guide-d%27achat-Notification-DAR_ACCOMP/index.js',
+    cssFilePath: 'file:///home/maxim/Documents/projects/Kameleoon/darty/DARTY-Guide-d\'achat-Notification-DAR_ACCOMP/style.css',
+  },
+  // 'www.shoppinglive.ru': {
+  //   active: true,
+  //   jsFilePath: 'file:///home/maxim/Documents/projects/Kameleoon/shopinglive/src/index.js',
+  //   cssFilePath: 'file:///home/maxim/Documents/projects/Kameleoon/shopinglive/src/style.css',
+  // },
 };
 
 const readFile = filePath => new Promise(((resolve, reject) => {

@@ -69,7 +69,6 @@ export default class Index extends Component {
   addData = (e) => {
     e.preventDefault();
     const { data, inputData } = this.state;
-
     const { url, jsPath, cssPath } = inputData;
     this.setState({ data: [...data, { url, jsPath, cssPath }] });
   };

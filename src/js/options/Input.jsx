@@ -1,11 +1,6 @@
 import React, { Component } from 'react';
 
 export default class Input extends Component {
-  // handleSubmit = (addData) => {
-  //   const {site, jsInput, cssInput} = this.state;
-  //   addData(site, jsInput, cssInput);
-  // }
-
   render() {
     return (
       <div>
