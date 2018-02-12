@@ -15,14 +15,6 @@ chrome.storage.local.get('config', ({ config }) => {
 // eslint-disable-next-line no-prototype-builtins
   if (config.hasOwnProperty(tabHostname)) {
     const { jsCode, cssCode } = config[tabHostname];
-    if (jsCode) {
-      if (jsCode.error) {
-        console.log(jsCode.error);
-      } else {
-        script.text = jsCode;
-        head.appendChild(script);
-      }
-    }
     if (cssCode) {
       if (cssCode.error) {
         console.log(cssCode.error);
@@ -33,6 +25,16 @@ chrome.storage.local.get('config', ({ config }) => {
           style.appendChild(document.createTextNode(cssCode));
         }
         head.appendChild(style);
+        console.log('content script css', Date.now());
+      }
+    }
+    if (jsCode) {
+      if (jsCode.error) {
+        console.log(jsCode.error);
+      } else {
+        script.text = jsCode;
+        head.appendChild(script);
+        console.log('content script js', Date.now());
       }
     }
   }

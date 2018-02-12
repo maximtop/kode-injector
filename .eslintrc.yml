@@ -17,9 +17,10 @@ globals:
 
 rules:
   no-console: 0
-#  import/extensions: 0
 
 settings:
-  import/extensions:
-    - js
-    - jsx
+  import/resolver:
+    node:
+      - '.js'
+      - '.jsx'
+

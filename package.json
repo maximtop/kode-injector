@@ -13,10 +13,17 @@
     "babel-preset-env": "1.6.1",
     "bootstrap": "4.0.0-beta.2",
     "font-awesome": "4.7.0",
+    "lodash": "^4.17.5",
+    "nanoid": "^1.0.1",
     "react": "16.2.0",
     "react-dom": "16.2.0",
     "react-fontawesome": "1.6.1",
-    "react-table": "6.7.4"
+    "react-redux": "^5.0.6",
+    "react-table": "6.7.4",
+    "redux": "^3.7.2",
+    "redux-actions": "^2.2.1",
+    "redux-form": "^7.2.3",
+    "reselect": "^3.0.1"
   },
   "devDependencies": {
     "babel-core": "*",

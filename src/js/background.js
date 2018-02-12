@@ -1,30 +1,9 @@
 import url from 'url';
 import '../img/icon-128.png';
 import '../img/icon-34.png';
+import { getState } from './helpers/chromeStorage';
 
 // TODO READ SITE NAMES WITH WWW AND WITHOUT THEM
-const config = {
-  'stackoverflow.com': {
-    active: true,
-    jsFilePath: 'file:///home/maxim/Documents/test.js',
-    cssFilePath: 'file:///home/maxim/Documents/test.css',
-  },
-  'www.darty.com': {
-    active: true,
-    jsFilePath: 'file:///home/maxim/Documents/projects/Kameleoon/darty/DARTY-Guide-d%27achat-Notification-DAR_ACCOMP/index.js',
-    cssFilePath: 'file:///home/maxim/Documents/projects/Kameleoon/darty/DARTY-Guide-d\'achat-Notification-DAR_ACCOMP/style.css',
-  },
-  'm.darty.com': {
-    active: true,
-    jsFilePath: 'file:///home/maxim/Documents/projects/Kameleoon/darty/DARTY-Guide-d%27achat-Notification-DAR_ACCOMP/index.js',
-    cssFilePath: 'file:///home/maxim/Documents/projects/Kameleoon/darty/DARTY-Guide-d\'achat-Notification-DAR_ACCOMP/style.css',
-  },
-  // 'www.shoppinglive.ru': {
-  //   active: true,
-  //   jsFilePath: 'file:///home/maxim/Documents/projects/Kameleoon/shopinglive/src/index.js',
-  //   cssFilePath: 'file:///home/maxim/Documents/projects/Kameleoon/shopinglive/src/style.css',
-  // },
-};
 
 const readFile = filePath => new Promise(((resolve, reject) => {
   const xhr = new XMLHttpRequest();
@@ -42,24 +21,30 @@ const readFile = filePath => new Promise(((resolve, reject) => {
 }));
 
 chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
+  const { injections } = await getState();
   if (changeInfo.status === 'loading') {
     const tabUrl = url.parse(tab.url);
-    console.log(tabUrl);
-    // eslint-disable-next-line no-prototype-builtins
-    if (config.hasOwnProperty(tabUrl.hostname)) {
-      const { jsFilePath, cssFilePath } = config[tabUrl.hostname];
+    const currentUrlInjections = Object.keys(injections).filter((key) => {
+      const injection = injections[key];
+      const { siteUrl } = injection;
+      return siteUrl === tabUrl.hostname;
+    });
+    // TODO change method to work with multiple injections
+    const currentInjectionId = currentUrlInjections[0];
+    if (currentInjectionId) {
+      const { jsPath, cssPath } = injections[currentInjectionId];
       let jsCode;
       let cssCode;
-      if (jsFilePath) {
+      if (jsPath) {
         try {
-          jsCode = await readFile(jsFilePath);
+          jsCode = await readFile(jsPath);
         } catch (error) {
           jsCode = { error: error.message };
         }
       }
-      if (cssFilePath) {
+      if (cssPath) {
         try {
-          cssCode = await readFile(cssFilePath);
+          cssCode = await readFile(cssPath);
         } catch (error) {
           cssCode = { error: error.message };
         }
