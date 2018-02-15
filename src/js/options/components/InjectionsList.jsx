@@ -24,7 +24,7 @@ export default class InjectionsList extends React.Component {
     {injections.map(({
                        siteUrl, jsPath, cssPath, id, state,
                      }) =>
-      <tr key={id}>
+      <tr key={id} className={state === 'active' ? 'table-success' : 'table-secondary'}>
         <th scope="row">{id}</th>
         <td>{siteUrl}</td>
         <td><a href={jsPath} target="_blank">{cutUrl(jsPath)}</a></td>
@@ -38,11 +38,11 @@ export default class InjectionsList extends React.Component {
       <table className="table">
         <thead>
         <tr>
-          <th scope="col">ID</th>
-          <th scope="col">siteUrl</th>
-          <th scope="col">jsPath</th>
-          <th scope="col">cssPath</th>
-          <th scope="col">actions</th>
+          <th scope="col" className='text-center'>ID</th>
+          <th scope="col" className='text-center'>siteUrl</th>
+          <th scope="col" className='text-center'>jsPath</th>
+          <th scope="col" className='text-center'>cssPath</th>
+          <th scope="col" className='text-center'>actions</th>
         </tr>
         </thead>
         {this.renderRows()}
