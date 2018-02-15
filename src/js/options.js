@@ -21,6 +21,7 @@ getState().then((persistedState) => {
   );
 
   store.subscribe(throttle(async () => {
+    console.log(store.getState());
     await saveState({ injections: store.getState().injections });
   }, 1000));
 

@@ -24,13 +24,14 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
   const { injections } = await getState();
   if (changeInfo.status === 'loading') {
     const tabUrl = url.parse(tab.url);
-    const currentUrlInjections = Object.keys(injections).filter((key) => {
+    const currentUrlActiveInjections = Object.keys(injections).filter((key) => {
       const injection = injections[key];
-      const { siteUrl } = injection;
-      return siteUrl === tabUrl.hostname;
+      const { siteUrl, state } = injection;
+      return siteUrl === tabUrl.hostname && state === 'active';
     });
     // TODO change method to work with multiple injections
-    const currentInjectionId = currentUrlInjections[0];
+    const currentInjectionId = currentUrlActiveInjections[0];
+    console.log(currentInjectionId);
     if (currentInjectionId) {
       const { jsPath, cssPath } = injections[currentInjectionId];
       let jsCode;
@@ -52,6 +53,13 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
       // save code to chrome.storage.local
       chrome.storage.local.set(
         { config: { [tabUrl.hostname]: { jsCode, cssCode } } },
+        (e) => {
+          console.log('successfully saved', e);
+        },
+      );
+    } else {
+      chrome.storage.local.set(
+        { config: { [tabUrl.hostname]: { jsCode: '', cssCode: '' } } },
         (e) => {
           console.log('successfully saved', e);
         },

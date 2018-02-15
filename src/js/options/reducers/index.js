@@ -6,10 +6,20 @@ import * as actions from '../actions';
 
 const injections = handleActions({
   [actions.addInjection](state, { payload: { injection } }) {
-    return { ...state, [injection.id]: injection };
+    const ids = Object.keys(state);
+    console.log(ids);
+    const nextId = ids.length > 0 ? Math.max(...ids) + 1 : 1;
+    console.log(nextId);
+    return { ...state, [nextId]: { ...injection, id: nextId } };
   },
   [actions.removeInjection](state, { payload: { id } }) {
     return _.omit(state, id);
+  },
+  [actions.toggleInjectionState](state, { payload: { id } }) {
+    const injection = state[id];
+    const newState = injection.state === 'active' ? 'stopped' : 'active';
+    const newInjection = { ...injection, state: newState };
+    return { ...state, [injection.id]: newInjection };
   },
 }, {});
 
