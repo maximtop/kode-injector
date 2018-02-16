@@ -17,7 +17,7 @@ export default class InjectionsList extends React.Component {
   }
 
   renderRows() {
-    const cutUrl = url => url || url.match('/') ? url.split('/').slice(-3).join('/') : url;
+    const cutUrl = url => url && url.match('/') ? url.split('/').slice(-3).join('/') : url;
     const { injections } = this.props;
     console.log(injections);
     return (<tbody>

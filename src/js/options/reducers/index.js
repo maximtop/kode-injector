@@ -7,9 +7,7 @@ import * as actions from '../actions';
 const injections = handleActions({
   [actions.addInjection](state, { payload: { injection } }) {
     const ids = Object.keys(state);
-    console.log(ids);
     const nextId = ids.length > 0 ? Math.max(...ids) + 1 : 1;
-    console.log(nextId);
     return { ...state, [nextId]: { ...injection, id: nextId } };
   },
   [actions.removeInjection](state, { payload: { id } }) {

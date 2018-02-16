@@ -1,9 +1,10 @@
+import 'bootstrap/dist/css/bootstrap.min.css';
 import React from 'react';
 import { render } from 'react-dom';
 import '../css/popup.css';
-import Greeting from './popup/greeting_component.jsx';
+import PopUp from './popup/PopUp';
 
 render(
-  <Greeting/>,
+  <PopUp/>,
   window.document.getElementById('app-container'),
 );

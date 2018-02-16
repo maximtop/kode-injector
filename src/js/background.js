@@ -3,8 +3,6 @@ import '../img/icon-128.png';
 import '../img/icon-34.png';
 import { getState } from './helpers/chromeStorage';
 
-// TODO READ SITE NAMES WITH WWW AND WITHOUT THEM
-
 const readFile = filePath => new Promise(((resolve, reject) => {
   const xhr = new XMLHttpRequest();
   xhr.onloadend = (event) => {

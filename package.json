@@ -12,6 +12,7 @@
   "dependencies": {
     "babel-preset-env": "1.6.1",
     "bootstrap": "4.0.0-beta.2",
+    "classnames": "^2.2.5",
     "font-awesome": "4.7.0",
     "lodash": "^4.17.5",
     "nanoid": "^1.0.1",
