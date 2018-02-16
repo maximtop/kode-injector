@@ -1,17 +1,24 @@
-import React from 'react';
+import React, { Component } from 'react';
 import ToggleButton from './ToggleButton.jsx';
 
-const PopUp = () => (
-  <div className="container">
-    <div className="row d-flex align-items-center">
-      <div className="col">
-        <div>Extension on/off</div>
+class PopUp extends Component {
+  render() {
+    return (
+      <div className="container">
+        <div className="row d-flex align-items-center">
+          <div className="col">
+            <div>Extension on/off</div>
+          </div>
+          <div className="col">
+            <ToggleButton
+              toogleExtensionState={this.props.toggleExtensionState}
+              isActivated={this.props.isActivated}
+            />
+          </div>
+        </div>
       </div>
-      <div className="col">
-        <ToggleButton/>
-      </div>
-    </div>
-  </div>
-);
+    );
+  }
+}
 
 export default PopUp;

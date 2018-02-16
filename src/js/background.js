@@ -1,7 +1,7 @@
 import url from 'url';
 import '../img/icon-128.png';
 import '../img/icon-34.png';
-import { getState } from './helpers/chromeStorage';
+import { getState, setState } from './helpers/chromeStorage';
 
 const readFile = filePath => new Promise(((resolve, reject) => {
   const xhr = new XMLHttpRequest();
@@ -18,8 +18,12 @@ const readFile = filePath => new Promise(((resolve, reject) => {
   xhr.send();
 }));
 
+chrome.runtime.onInstalled.addListener(async () => {
+  await setState('isActivated', { isActivated: true });
+});
+
 chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
-  const { injections } = await getState();
+  const { injections } = await getState('state');
   if (changeInfo.status === 'loading') {
     const tabUrl = url.parse(tab.url);
     const currentUrlActiveInjections = Object.keys(injections).filter((key) => {
@@ -29,7 +33,6 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
     });
     // TODO change method to work with multiple injections
     const currentInjectionId = currentUrlActiveInjections[0];
-    console.log(currentInjectionId);
     if (currentInjectionId) {
       const { jsPath, cssPath } = injections[currentInjectionId];
       let jsCode;

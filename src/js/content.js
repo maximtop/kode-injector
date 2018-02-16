@@ -1,4 +1,5 @@
 import url from 'url';
+import { getState } from './helpers/chromeStorage';
 
 const dataSource = 'Kameleoon Injector';
 const head = document.getElementsByTagName('head')[0];
@@ -11,9 +12,10 @@ style.setAttribute('data-source', dataSource);
 style.type = 'text/css';
 const tabUrl = url.parse(window.location.href);
 const tabHostname = tabUrl.hostname;
-chrome.storage.local.get('config', ({ config }) => {
+chrome.storage.local.get('config', async ({ config }) => {
 // eslint-disable-next-line no-prototype-builtins
-  if (config.hasOwnProperty(tabHostname)) {
+  const { isActivated } = await getState('isActivated');
+  if (config.hasOwnProperty(tabHostname) && isActivated) {
     const { jsCode, cssCode } = config[tabHostname];
     if (cssCode) {
       if (cssCode.error) {

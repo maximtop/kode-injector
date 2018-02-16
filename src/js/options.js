@@ -7,13 +7,13 @@ import { createStore } from 'redux';
 import throttle from 'lodash/throttle';
 import reducers from './options/reducers';
 import App from './options/index';
-import { saveState, getState } from './helpers/chromeStorage';
+import { setState, getState } from './helpers/chromeStorage';
 import '../css/options.css';
 
 // eslint-disable-next-line no-underscore-dangle
 const reduxDevTools = window.__REDUX_DEVTOOLS_EXTENSION__;
 
-getState().then((persistedState) => {
+getState('state').then((persistedState) => {
   const store = createStore(
     reducers,
     persistedState,
@@ -21,8 +21,7 @@ getState().then((persistedState) => {
   );
 
   store.subscribe(throttle(async () => {
-    console.log(store.getState());
-    await saveState({ injections: store.getState().injections });
+    await setState('state', { injections: store.getState().injections });
   }, 1000));
 
   render(

@@ -1,21 +1,21 @@
 const storage = chrome.storage.local;
 
-export const getState = () => new Promise((resolve, reject) => {
+export const getState = key => new Promise((resolve, reject) => {
   try {
-    storage.get('state', (serializedState) => {
-      if (!serializedState.state) {
+    storage.get(key, (serializedState) => {
+      if (!serializedState[key]) {
         resolve(undefined);
       }
-      resolve(serializedState.state);
+      resolve(serializedState[key]);
     });
   } catch (e) {
     reject(e);
   }
 });
 
-export const saveState = state => new Promise((resolve, reject) => {
+export const setState = (key, state) => new Promise((resolve, reject) => {
   try {
-    storage.set({ state }, () => resolve('state was saved'));
+    storage.set({ [key]: state }, () => resolve(`${state} was saved under ${key}`));
   } catch (e) {
     reject(e);
   }
