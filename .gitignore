@@ -1,5 +1,3 @@
-punode_modules
+node_modules
 build
 secrets.*.js
-/psd/
-/node_modules/

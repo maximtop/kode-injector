@@ -3,9 +3,11 @@ import { Field, reduxForm } from 'redux-form';
 
 class NewInjectionForm extends React.Component {
   addInjection = (values) => {
+    console.log(values);
     this.props.addInjection(values);
     this.props.reset();
   };
+
 
   // TODO change file paths to choose file input
   render() {
