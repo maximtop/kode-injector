@@ -1,6 +1,6 @@
 {
   "name": "kameleoon-injector",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "Chrome extension to inject JS and CSS files to the specified sites",
   "license": "MIT",
   "author": "Maxim Topciu",
