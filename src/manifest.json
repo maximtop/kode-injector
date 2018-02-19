@@ -28,7 +28,8 @@
       ],
       "js": [
         "content.bundle.js"
-      ]
+      ],
+      "run_at": "document_start"
     }
   ]
 }
