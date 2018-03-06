@@ -1,6 +1,18 @@
 import url from 'url';
 import { getState } from './helpers/chromeStorage';
 
+const insertCss = (insertNode, cssCode) => {
+  const style = document.createElement('style');
+  style.setAttribute('data-source', cssCode);
+  style.type = 'text/css';
+  if (style.styleSheet) { // IE Explorer
+    style.styleSheet.cssText = cssCode;
+  } else {
+    style.appendChild(document.createTextNode(cssCode));
+  }
+  insertNode.appendChild(style);
+  console.log('content script css', Date.now());
+};
 
 const start = () => {
   const dataSource = 'Kameleoon Injector';
@@ -9,13 +21,11 @@ const start = () => {
   script.setAttribute('data-source', dataSource);
   script.type = 'text/javascript';
 
-  const style = document.createElement('style');
-  style.setAttribute('data-source', dataSource);
-  style.type = 'text/css';
   const tabUrl = url.parse(window.location.href);
   const tabHostname = tabUrl.hostname;
   chrome.storage.local.get('config', async ({ config }) => {
     // eslint-disable-next-line no-prototype-builtins
+    console.log(config);
     const { isActivated } = await getState('isActivated');
     if (config.hasOwnProperty(tabHostname) && isActivated) {
       const { jsCode, cssCode } = config[tabHostname];
@@ -23,13 +33,7 @@ const start = () => {
         if (cssCode.error) {
           console.log(cssCode.error);
         } else {
-          if (style.styleSheet) { // IE Explorer
-            style.styleSheet.cssText = cssCode;
-          } else {
-            style.appendChild(document.createTextNode(cssCode));
-          }
-          head.appendChild(style);
-          console.log('content script css', Date.now());
+          insertCss(head, cssCode);
         }
       }
       if (jsCode) {

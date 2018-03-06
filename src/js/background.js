@@ -28,34 +28,36 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
   const { injections } = await getState('state');
   if (changeInfo.status === 'loading') {
     const tabUrl = url.parse(tab.url);
-    const currentUrlActiveInjections = Object.keys(injections).filter((key) => {
+    const currentUrlActiveInjectionsIds = Object.keys(injections).filter((key) => {
       const injection = injections[key];
       const { siteUrl, state } = injection;
       return siteUrl === tabUrl.hostname && state === 'active';
     });
     // TODO change method to work with multiple injections
-    const currentInjectionId = currentUrlActiveInjections[0];
-    if (currentInjectionId) {
-      const { jsPath, cssPath } = injections[currentInjectionId];
-      let jsCode;
-      let cssCode;
-      if (jsPath) {
-        try {
-          jsCode = await readFile(jsPath);
-        } catch (error) {
-          jsCode = { error: error.message };
+    if (currentUrlActiveInjectionsIds.length > 0) {
+      const generateConfig = (injections, idList) => Promise.all(idList.map(async (id) => {
+        const { jsPath, cssPath } = injections[id];
+        let jsCode;
+        let cssCode;
+        if (jsPath) {
+          try {
+            jsCode = await readFile(jsPath);
+          } catch (error) {
+            jsCode = { error: error.message };
+          }
         }
-      }
-      if (cssPath) {
-        try {
-          cssCode = await readFile(cssPath);
-        } catch (error) {
-          cssCode = { error: error.message };
+        if (cssPath) {
+          try {
+            cssCode = await readFile(cssPath);
+          } catch (error) {
+            cssCode = { error: error.message };
+          }
         }
-      }
-      // save code to chrome.storage.local
+        return { id, code: { jsCode, cssCode } };
+      }));
+      const config = await generateConfig(injections, currentUrlActiveInjectionsIds);
       chrome.storage.local.set(
-        { config: { [tabUrl.hostname]: { jsCode, cssCode } } },
+        { config: { [tabUrl.hostname]: config } },
         (e) => {
           console.log('successfully saved', e);
         },
