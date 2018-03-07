@@ -24,6 +24,8 @@ chrome.runtime.onInstalled.addListener(async () => {
   await setState('isActivated', { isActivated: true });
 });
 
+const getFileName = filePath => filePath.split('/').slice(-2).join('/');
+
 chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
   const { injections } = await getState('state');
   if (changeInfo.status === 'loading') {
@@ -36,6 +38,7 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
     // TODO change method to work with multiple injections
     if (currentUrlActiveInjectionsIds.length > 0) {
       const generateConfig = (injections, idList) => Promise.all(idList.map(async (id) => {
+        console.log(injections[id]);
         const { jsPath, cssPath } = injections[id];
         let jsCode;
         let cssCode;
@@ -53,20 +56,24 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
             cssCode = { error: error.message };
           }
         }
-        return { id, code: { jsCode, cssCode } };
+        return {
+          id,
+          js: { fileName: getFileName(jsPath), code: jsCode },
+          css: { fileName: getFileName(cssPath), code: cssCode },
+        };
       }));
       const config = await generateConfig(injections, currentUrlActiveInjectionsIds);
       chrome.storage.local.set(
         { config: { [tabUrl.hostname]: config } },
-        (e) => {
-          console.log('successfully saved', e);
+        (event) => {
+          console.log('successfully saved', event);
         },
       );
     } else {
       chrome.storage.local.set(
-        { config: { [tabUrl.hostname]: { jsCode: '', cssCode: '' } } },
-        (e) => {
-          console.log('successfully saved', e);
+        { config: { [tabUrl.hostname]: [] } },
+        (event) => {
+          console.log('successfully removed injections', event);
         },
       );
     }
