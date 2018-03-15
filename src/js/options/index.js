@@ -7,8 +7,8 @@ const App = () => (
   <div className="row justify-content-center">
     <div className="col-10">
       <Header/>
-      <InjectionsListContainer/>
       <NewInjectionFormContainer/>
+      <InjectionsListContainer/>
     </div>
   </div>
 );

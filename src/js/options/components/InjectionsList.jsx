@@ -17,11 +17,11 @@ export default class InjectionsList extends React.Component {
   }
 
   renderRows() {
-    const cutUrl = url => url && url.match('/') ? url.split('/').slice(-3).join('/') : url;
+    const cutUrl = url => (url && url.match('/') ? url.split('/').slice(-3).join('/') : url);
     const { injections } = this.props;
     console.log(injections);
     return (<tbody>
-    {injections.map(({
+    {injections.sort((a, b) => (a.id > b.id ? -1 : 1)).map(({
                        siteUrl, jsPath, cssPath, id, state,
                      }) =>
       <tr key={id} className={state === 'active' ? 'table-success' : 'table-secondary'}>
