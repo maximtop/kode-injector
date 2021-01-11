@@ -14,21 +14,21 @@ import '../css/options.css';
 const reduxDevTools = window.__REDUX_DEVTOOLS_EXTENSION__;
 
 getState('state').then((persistedState) => {
-  const store = createStore(
-    reducers,
-    persistedState,
-    reduxDevTools && reduxDevTools(),
-  );
+    const store = createStore(
+        reducers,
+        persistedState,
+        reduxDevTools && reduxDevTools(),
+    );
 
-  store.subscribe(throttle(async () => {
-    await setState('state', { injections: store.getState().injections });
-  }, 1000));
+    store.subscribe(throttle(async () => {
+        await setState('state', { injections: store.getState().injections });
+    }, 1000));
 
-  render(
-    <Provider store={store}>
-      <App/>
-    </Provider>,
-    document.getElementById('container'),
-  );
+    render(
+        <Provider store={store}>
+            <App/>
+        </Provider>,
+        document.getElementById('container'),
+    );
 });
 

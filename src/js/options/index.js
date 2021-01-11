@@ -4,13 +4,13 @@ import InjectionsListContainer from './containers/InjectionsList';
 import Header from './components/Header.jsx';
 
 const App = () => (
-  <div className="row justify-content-center">
-    <div className="col-10">
-      <Header/>
-      <NewInjectionFormContainer/>
-      <InjectionsListContainer/>
+    <div className="row justify-content-center">
+        <div className="col-10">
+            <Header/>
+            <NewInjectionFormContainer/>
+            <InjectionsListContainer/>
+        </div>
     </div>
-  </div>
 );
 
 export default App;

@@ -1,13 +1,13 @@
 {
-  "name": "kameleoon-injector",
-  "version": "0.5.3",
+  "name": "kode-injector",
+  "version": "0.6.0",
   "description": "Chrome extension to inject JS and CSS files to the specified sites",
   "license": "MIT",
   "author": "Maxim Topciu",
   "scripts": {
     "build": "NODE_ENV=production node utils/build.js",
     "start": "node utils/webserver.js",
-    "eslint": "eslint"
+    "lint": "eslint ./src ./utils"
   },
   "dependencies": {
     "babel-preset-env": "1.6.1",

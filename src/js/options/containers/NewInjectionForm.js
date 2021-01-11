@@ -2,13 +2,11 @@ import { connect } from 'react-redux'; // eslint-disable-line
 import Component from '../components/NewInjectionForm.jsx';
 import * as actionCreators from '../actions';
 
-const mapStateToProps = (state) => {
-  return {};
-};
+const mapStateToProps = () => ({});
 
 const Container = connect(
-  mapStateToProps,
-  actionCreators,
+    mapStateToProps,
+    actionCreators,
 )(Component);
 
 export default Container;
