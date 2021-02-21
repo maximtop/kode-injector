@@ -14,8 +14,9 @@
         "email" : "maximtop@gmail.com"
     },
     "scripts": {
-        "start": "CHANNEL_ENV=dev yarn build --watch",
-        "build": "CHANNEL_ENV=prod webpack --config scripts/build/webpack.config.babel.js",
+        "start": "CHANNEL_ENV=dev yarn webpack --watch",
+        "build": "CHANNEL_ENV=prod yarn webpack",
+        "webpack": "webpack --config scripts/build/webpack.config.babel.js",
         "lint": "eslint src scripts"
     },
     "dependencies": {
