@@ -1,10 +1,13 @@
 .PHONY: build
 
+install:
+	yarn install
+
 start:
-	yarn run start
+	yarn start
 
 build:
-	yarn run build
+	yarn build
 
 lint:
-	yarn run eslint src/
+	yarn lint

@@ -1,5 +1,2 @@
-node_modules
-build
-secrets.*.js
-/psd/
-/build.zip
+/node_modules/
+/build/

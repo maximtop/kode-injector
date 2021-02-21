@@ -1,0 +1,1 @@
+export { InjectionsTable } from './InjectionsTable';

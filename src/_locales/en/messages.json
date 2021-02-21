@@ -1,0 +1,8 @@
+{
+    "name": {
+        "message": "Kode Injector"
+    },
+    "description": {
+        "message": "Helps to inject JavaScript and CSS from local files"
+    }
+}
