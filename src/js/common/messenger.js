@@ -57,12 +57,12 @@ class Messenger {
         return this.sendMessage(MESSAGE_TYPES.GET_INJECTIONS_CODE);
     }
 
-    disableInjectionsForSite = (url) => {
-        return this.sendMessage(MESSAGE_TYPES.DISABLE_INJECTIONS_FOR_SITE, { url });
+    disableInjectionsForSite = (tab) => {
+        return this.sendMessage(MESSAGE_TYPES.DISABLE_INJECTIONS_FOR_SITE, { tab });
     };
 
-    enableInjectionsForSite = (url) => {
-        return this.sendMessage(MESSAGE_TYPES.ENABLE_INJECTIONS_FOR_SITE, { url });
+    enableInjectionsForSite = (tab) => {
+        return this.sendMessage(MESSAGE_TYPES.ENABLE_INJECTIONS_FOR_SITE, { tab });
     };
 }
 
