@@ -83,11 +83,11 @@ export class SettingsStore {
 
     disableInjectionsForSite = async () => {
         const currentTab = await tabs.getCurrentTab();
-        return messenger.disableInjectionsForSite(currentTab.url);
+        await messenger.disableInjectionsForSite(currentTab);
     }
 
     enableInjectionsForSite = async () => {
         const currentTab = await tabs.getCurrentTab();
-        return messenger.enableInjectionsForSite(currentTab.url);
+        await messenger.enableInjectionsForSite(currentTab);
     }
 }

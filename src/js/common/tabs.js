@@ -1,4 +1,5 @@
 import browser from 'webextension-polyfill';
+import { log } from './log';
 
 class Tabs {
     openSettings = () => {
@@ -13,6 +14,14 @@ class Tabs {
         const [current] = await browser.tabs.query({ active: true, currentWindow: true });
         return current;
     }
+
+    reloadTab = async (tabId) => {
+        try {
+            await browser.tabs.reload(tabId);
+        } catch (e) {
+            log.error(e);
+        }
+    };
 }
 
 export const tabs = new Tabs();

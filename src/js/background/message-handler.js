@@ -50,10 +50,16 @@ class MessageHandler {
                 return injections.getInjectionsCode(sender.url);
             }
             case MESSAGE_TYPES.ENABLE_INJECTIONS_FOR_SITE: {
-                return injections.enableInjectionsForSite(data.url);
+                const { tab } = data;
+                injections.enableInjectionsForSite(tab.url);
+                await tabs.reloadTab(tab.id);
+                break;
             }
             case MESSAGE_TYPES.DISABLE_INJECTIONS_FOR_SITE: {
-                return injections.disableInjectionsForSite(data.url);
+                const { tab } = data;
+                injections.disableInjectionsForSite(tab.url);
+                await tabs.reloadTab(tab.id);
+                break;
             }
             case MESSAGE_TYPES.OPEN_TAB: {
                 return tabs.openTab(data.url);
