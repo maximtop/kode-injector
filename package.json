@@ -1,6 +1,6 @@
 {
     "name": "kode-injector",
-    "version": "0.7.1",
+    "version": "0.7.2",
     "description": "Helps to inject JavaScript and CSS from local files",
     "license": "MIT",
     "author": "Maxim Topciu [maximtop] <maximtop@gmail.com>",
@@ -10,8 +10,8 @@
         "url": "https://gitlab.com/maximtop/kode-injector.git"
     },
     "bugs": {
-        "url" : "https://gitlab.com/maximtop/kode-injector/issues",
-        "email" : "maximtop@gmail.com"
+        "url": "https://gitlab.com/maximtop/kode-injector/issues",
+        "email": "maximtop@gmail.com"
     },
     "scripts": {
         "start": "CHANNEL_ENV=dev yarn webpack --watch",
@@ -33,6 +33,7 @@
         "nanoid": "^3.1.20",
         "react": "^17.0.1",
         "react-dom": "^17.0.1",
+        "react-router-dom": "^5.2.0",
         "webextension-polyfill": "^0.7.0"
     },
     "devDependencies": {
