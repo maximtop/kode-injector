@@ -24,3 +24,6 @@ chrome_refresh:
 
 chrome_status:
 	../go-webext/go-webext status chrome -a $(CHROME_APP_ID)
+
+chrome_update:
+	../go-webext/go-webext update chrome -a $(CHROME_APP_ID) -f ./build/0.7.3-prod.zip
