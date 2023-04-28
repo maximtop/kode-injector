@@ -13,7 +13,7 @@ export const Footer = () => {
                     <a
                         href="https://gitlab.com/maximtop/kode-injector"
                         className="github"
-                        title="To fill an issue or view source code"
+                        title="To fill in an issue or view source code"
                     >
                         SourceCode
                     </a>
