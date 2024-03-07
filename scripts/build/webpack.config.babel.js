@@ -47,11 +47,6 @@ const plugins = [
         ],
     }),
     new HtmlWebpackPlugin({
-        template: path.join(BACKGROUND_PATH, 'index.html'),
-        filename: 'background.html',
-        chunks: ['background'],
-    }),
-    new HtmlWebpackPlugin({
         template: path.join(POPUP_PATH, 'index.html'),
         filename: 'popup.html',
         chunks: ['popup'],
@@ -80,7 +75,7 @@ if (IS_DEV) {
 
 const config = {
     mode: IS_DEV ? 'development' : 'production',
-    devtool: IS_DEV ? 'eval-cheap-module-source-map' : false,
+    devtool: 'inline-source-map',
     entry: {
         background: BACKGROUND_PATH,
         popup: POPUP_PATH,

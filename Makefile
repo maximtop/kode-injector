@@ -3,20 +3,22 @@
 include .env
 
 install:
-	yarn install
+	pnpm install
 
 start:
-	yarn start
+	pnpm start
 
 build:
-	yarn build
+	pnpm build
 
 lint:
-	yarn lint
+	pnpm lint
+
+zip:
+	cd build/pr
 
 chrome_code:
 	open "https://accounts.google.com/o/oauth2/auth?response_type=code&scope=https://www.googleapis.com/auth/chromewebstore&client_id=${CHROME_CLIENT_ID}&redirect_uri=urn:ietf:wg:oauth:2.0:oob"
-
 
 chrome_refresh:
 	curl "https://accounts.google.com/o/oauth2/token" -d \
@@ -26,4 +28,4 @@ chrome_status:
 	../go-webext/go-webext status chrome -a $(CHROME_APP_ID)
 
 chrome_update:
-	../go-webext/go-webext update chrome -a $(CHROME_APP_ID) -f ./build/0.7.3-prod.zip
+	../go-webext/go-webext update chrome -a $(CHROME_APP_ID) -f ./build/0.8.0-prod.zip

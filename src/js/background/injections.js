@@ -1,12 +1,12 @@
 import throttle from 'lodash/throttle';
 import find from 'lodash/find';
-import axios from 'axios';
 
 import { nanoid } from 'nanoid';
 import { storage } from './storage';
 import { log } from '../common/log';
 import { urlUtils } from '../common/url-utils';
 import { app } from './app';
+import { executeScript } from './execute-script';
 
 class Injections {
     STORAGE_KEY = 'injections';
@@ -93,10 +93,11 @@ class Injections {
 
     readFile = async (url) => {
         try {
-            const { data } = await axios(url);
+            const response = await fetch(url);
+            const data = await response.text();
             return data;
         } catch (e) {
-            log.error(e.message);
+            log.error(`Failed to get url: ${url}, due to: ${e.message}`);
             return '';
         }
     };
@@ -109,7 +110,27 @@ class Injections {
         return this.getInjectionsByUrl(url);
     }
 
-    getInjectionsCode = async (url) => {
+    injectJs = async (url, tabId) => {
+        if (!app.enabled) {
+            return;
+        }
+
+        const injections = this.getAllowedInjectionsByUrl(url);
+        if (!injections) {
+            return;
+        }
+
+        const enabledInjections = injections.filter((injection) => injection.enabled);
+        const promises = enabledInjections.map(async (injection) => {
+            const { jsPath } = injection;
+            const jsCode = await this.readFile(jsPath);
+            await executeScript(jsCode, tabId, jsPath);
+        });
+
+        await Promise.all(promises);
+    };
+
+    getCssInjection = async (url) => {
         if (!app.enabled) {
             return null;
         }
@@ -122,15 +143,9 @@ class Injections {
         const promises = injections
             .filter((injection) => injection.enabled)
             .map(async (injection) => {
-                const { jsPath, cssPath } = injection;
-                const [jsCode, cssCode] = await Promise.all(
-                    [
-                        this.readFile(jsPath),
-                        this.readFile(cssPath),
-                    ],
-                );
+                const { cssPath } = injection;
+                const cssCode = await this.readFile(cssPath);
                 return {
-                    js: { filename: jsPath, code: jsCode },
                     css: { filename: cssPath, code: cssCode },
                 };
             });

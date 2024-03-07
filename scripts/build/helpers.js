@@ -6,10 +6,6 @@ export const updateManifest = (content, isDev, options) => {
 
     manifest.version = options.version;
 
-    if (isDev) {
-        manifest.content_security_policy = "script-src 'self' 'unsafe-eval'; object-src 'self'";
-    }
-
     return JSON.stringify(manifest, null, 4);
 };
 

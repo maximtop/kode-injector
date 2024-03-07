@@ -7,6 +7,7 @@ import { tabs } from '../common/tabs';
 import { app } from './app';
 
 class MessageHandler {
+    // eslint-disable-next-line consistent-return
     messageHandler = async (message, sender) => {
         const { type, data } = message;
 
@@ -47,7 +48,8 @@ class MessageHandler {
                 return tabs.openSettings();
             }
             case MESSAGE_TYPES.GET_INJECTIONS_CODE: {
-                return injections.getInjectionsCode(sender.url);
+                injections.injectJs(sender.url, sender.tab.id);
+                return injections.getCssInjection(sender.url, sender.tab.id);
             }
             case MESSAGE_TYPES.ENABLE_INJECTIONS_FOR_SITE: {
                 const { tab } = data;

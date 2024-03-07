@@ -14,18 +14,6 @@ const injectCss = (insertNode, cssCode, filename) => {
     log.debug(`KI injected ${filename} at ${Date.now()}`);
 };
 
-const injectJs = (insertNode, jsCode, filename) => {
-    if (!jsCode) {
-        return;
-    }
-    const script = document.createElement('script');
-    script.setAttribute('data-source', dataSource);
-    script.type = 'text/javascript';
-    script.text = jsCode;
-    insertNode.appendChild(script);
-    log.debug(`KI injected ${filename} at ${Date.now()}`);
-};
-
 const inject = async () => {
     const head = document.getElementsByTagName('head')[0];
     // TODO can be received earlier
@@ -34,9 +22,8 @@ const inject = async () => {
         return;
     }
     injections.forEach(((injection) => {
-        const { css, js } = injection;
+        const { css } = injection;
         injectCss(head, css.code, css.filename);
-        injectJs(head, js.code, js.filename);
     }));
 };
 
