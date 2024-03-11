@@ -14,9 +14,6 @@ build:
 lint:
 	pnpm lint
 
-zip:
-	cd build/pr
-
 chrome_code:
 	open "https://accounts.google.com/o/oauth2/auth?response_type=code&scope=https://www.googleapis.com/auth/chromewebstore&client_id=${CHROME_CLIENT_ID}&redirect_uri=urn:ietf:wg:oauth:2.0:oob"
 
