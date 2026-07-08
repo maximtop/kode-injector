@@ -1,6 +1,6 @@
 {
     "name": "kode-injector",
-    "version": "0.8.1",
+    "version": "0.8.2",
     "description": "Helps to inject JavaScript and CSS from local files",
     "license": "MIT",
     "author": "Maxim Topciu [maximtop] <maximtop@gmail.com>",

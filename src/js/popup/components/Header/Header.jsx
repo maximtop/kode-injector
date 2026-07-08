@@ -39,7 +39,7 @@ export const Header = observer(() => {
                                 <Button
                                     type="text"
                                     icon={<PauseCircleOutlined />}
-                                    title="Pause injecting for all sites"
+                                    title="Pause injecting for all sites."
                                     onClick={handlePauseClick}
                                 />
                             )
