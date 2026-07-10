@@ -11,20 +11,20 @@ import type {
     OptionsDataResponse,
     PopupDataResponse,
     PopupTab,
-    RuntimeMessage,
+    RuntimeRequest,
 } from './contracts';
 import { MESSAGE_TYPES } from './constants';
 
 /**
  * Supported runtime message discriminator.
  */
-type RuntimeMessageType = RuntimeMessage['type'];
+type RuntimeMessageType = RuntimeRequest['type'];
 
 /**
  * Payload associated with a runtime message discriminator.
  */
 type RuntimeMessageData<TType extends RuntimeMessageType> =
-    Extract<RuntimeMessage, { type: TType }> extends { data: infer TData } ? TData : undefined;
+    Extract<RuntimeRequest, { type: TType }> extends { data: infer TData } ? TData : undefined;
 
 /**
  * Sends typed runtime messages to background services.
@@ -129,6 +129,17 @@ class Messenger {
      */
     enableInjectionsForSite = (tab: PopupTab): Promise<void> => {
         return this.sendMessage(MESSAGE_TYPES.ENABLE_INJECTIONS_FOR_SITE, { tab });
+    };
+
+    /**
+     * Requests a saved interface language change.
+     *
+     * @param language New language preference.
+     *
+     * @returns Normalized persisted preference.
+     */
+    setInterfaceLanguage = (language: import('./locale').LocalePreference): Promise<import('./locale').LocalePreference> => {
+        return this.sendMessage(MESSAGE_TYPES.SET_INTERFACE_LANGUAGE, { language });
     };
 }
 

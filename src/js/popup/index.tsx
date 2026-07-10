@@ -13,8 +13,6 @@ import { PopupApp } from './components/PopupApp';
  * Mounts the popup application into the page.
  */
 export const popupPage = () => {
-    document.title = 'Kode Injector popup';
-
     const root = document.getElementById('root');
 
     if (root) {

@@ -1,8 +1,32 @@
 {
-    "name": {
-        "message": "Kode Injector"
-    },
-    "description": {
-        "message": "Helps to inject JavaScript and CSS from local files"
-    }
+    "name": { "message": "Kode Injector", "description": "Product name. Do not translate Kode Injector." },
+    "description": { "message": "Inject JavaScript and CSS from local files into websites", "description": "Short browser extension description." },
+    "options_title": { "message": "Kode Injector settings", "description": "Options page document title." },
+    "popup_title": { "message": "Kode Injector popup", "description": "Toolbar popup document title." },
+    "language_label": { "message": "Interface language", "description": "Label for the interface language selector." },
+    "language_browser": { "message": "Browser language", "description": "Use the browser UI language automatically." },
+    "source_code": { "message": "Source code", "description": "Link label for the project source repository." },
+    "source_code_title": { "message": "Report an issue or view the source code", "description": "Tooltip for the project source link." },
+    "form_site_placeholder": { "message": "Site", "description": "Placeholder for the website hostname matched by an injection rule." },
+    "form_site_required": { "message": "Enter a site", "description": "Validation message when the site hostname is empty." },
+    "form_js_path_required": { "message": "Enter the path to a JavaScript file", "description": "Validation message when the local JavaScript file path is empty." },
+    "form_css_path_required": { "message": "Enter the path to a CSS file", "description": "Validation message when the local CSS file path is empty." },
+    "form_add_injection": { "message": "Add injection", "description": "Button that creates an injection rule." },
+    "table_site": { "message": "Site", "description": "Injection table column for the matched website." },
+    "table_js_path": { "message": "JavaScript file path", "description": "Injection table column for a local JavaScript file." },
+    "table_css_path": { "message": "CSS file path", "description": "Injection table column for a local CSS file." },
+    "table_actions": { "message": "Actions", "description": "Injection table column containing controls." },
+    "table_empty": { "message": "No injections added", "description": "Empty state shown when no injection rules exist." },
+    "injection_disable": { "message": "Turn off injection", "description": "Tooltip for disabling one injection rule." },
+    "injection_enable": { "message": "Turn on injection", "description": "Tooltip for enabling one injection rule." },
+    "injection_remove": { "message": "Remove injection", "description": "Tooltip for deleting one injection rule." },
+    "injection_remove_confirm": { "message": "This injection will be removed permanently. Are you sure?", "description": "Confirmation before permanently deleting an injection rule." },
+    "popup_pause_all": { "message": "Pause injecting on all sites", "description": "Tooltip for globally pausing Kode Injector." },
+    "popup_enable_all": { "message": "Enable injecting on all sites", "description": "Tooltip for globally enabling Kode Injector." },
+    "popup_open_settings": { "message": "Open settings", "description": "Tooltip for opening the options page." },
+    "popup_no_injections": { "message": "No injections", "description": "Popup state when the current site has no enabled injection rules." },
+    "popup_disable_site": { "message": "Disable injecting on this site", "description": "Tooltip for disabling all injection rules on the current site." },
+    "popup_enable_site": { "message": "Enable injecting on this site", "description": "Tooltip for enabling injection rules on the current site." },
+    "popup_report_issue_title": { "message": "Report an issue on GitLab", "description": "Tooltip for the issue reporting action." },
+    "popup_report_issue": { "message": "Report an issue", "description": "Button label for reporting a problem." }
 }

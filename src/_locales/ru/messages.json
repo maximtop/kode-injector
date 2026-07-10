@@ -1,8 +1,32 @@
 {
-    "name": {
-        "message": "Kode Injector"
-    },
-    "description": {
-        "message": "Помогает инжектить JavaScript и CSS из локальных файлов"
-    }
+    "name": { "message": "Kode Injector" },
+    "description": { "message": "Вставляет JavaScript и CSS из локальных файлов на сайты" },
+    "options_title": { "message": "Настройки Kode Injector" },
+    "popup_title": { "message": "Всплывающее окно Kode Injector" },
+    "language_label": { "message": "Язык интерфейса" },
+    "language_browser": { "message": "Язык браузера" },
+    "source_code": { "message": "Исходный код" },
+    "source_code_title": { "message": "Сообщить о проблеме или открыть исходный код" },
+    "form_site_placeholder": { "message": "Сайт" },
+    "form_site_required": { "message": "Укажите сайт" },
+    "form_js_path_required": { "message": "Укажите путь к файлу JavaScript" },
+    "form_css_path_required": { "message": "Укажите путь к файлу CSS" },
+    "form_add_injection": { "message": "Добавить инъекцию" },
+    "table_site": { "message": "Сайт" },
+    "table_js_path": { "message": "Путь к файлу JavaScript" },
+    "table_css_path": { "message": "Путь к файлу CSS" },
+    "table_actions": { "message": "Действия" },
+    "table_empty": { "message": "Инъекции не добавлены" },
+    "injection_disable": { "message": "Отключить инъекцию" },
+    "injection_enable": { "message": "Включить инъекцию" },
+    "injection_remove": { "message": "Удалить инъекцию" },
+    "injection_remove_confirm": { "message": "Инъекция будет удалена навсегда. Вы уверены?" },
+    "popup_pause_all": { "message": "Приостановить инъекции на всех сайтах" },
+    "popup_enable_all": { "message": "Включить инъекции на всех сайтах" },
+    "popup_open_settings": { "message": "Открыть настройки" },
+    "popup_no_injections": { "message": "Нет инъекций" },
+    "popup_disable_site": { "message": "Отключить инъекции на этом сайте" },
+    "popup_enable_site": { "message": "Включить инъекции на этом сайте" },
+    "popup_report_issue_title": { "message": "Сообщить о проблеме на GitLab" },
+    "popup_report_issue": { "message": "Сообщить о проблеме" }
 }

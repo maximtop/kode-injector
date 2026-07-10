@@ -11,6 +11,7 @@ import {
 import { PauseCircleOutlined, SettingOutlined, PlayCircleOutlined } from '@ant-design/icons';
 
 import { messenger } from '../../../common/messenger';
+import { translator } from '../../../common/translator';
 import { rootStore } from '../../stores/RootStore';
 
 export const Header = observer(() => {
@@ -48,7 +49,7 @@ export const Header = observer(() => {
                                 <Button
                                     type="text"
                                     icon={<PauseCircleOutlined />}
-                                    title="Pause injecting for all sites."
+                                    title={translator.getMessage('popup_pause_all')}
                                     onClick={handlePauseClick}
                                 />
                             )
@@ -56,7 +57,7 @@ export const Header = observer(() => {
                                 <Button
                                     type="text"
                                     icon={<PlayCircleOutlined />}
-                                    title="Enable injecting for all sites"
+                                    title={translator.getMessage('popup_enable_all')}
                                     onClick={handleEnableClick}
                                 />
                             )
@@ -65,7 +66,7 @@ export const Header = observer(() => {
                     <Button
                         type="text"
                         icon={<SettingOutlined />}
-                        title="Open settings"
+                        title={translator.getMessage('popup_open_settings')}
                         onClick={handleOpenSettingsClick}
                     />
                 </div>

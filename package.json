@@ -21,11 +21,16 @@
         "start": "CHANNEL_ENV=dev rspack build --watch --config rspack.config.ts",
         "build": "CHANNEL_ENV=prod rspack build --config rspack.config.ts",
         "rspack": "rspack build --config rspack.config.ts",
+        "test": "tsx --test scripts/build/*.test.ts tests/*.test.ts",
         "test:build": "tsx --test scripts/build/*.test.ts",
-        "lint": "eslint --ext .js,.jsx,.ts,.tsx src scripts rspack.config.ts",
+        "test:locales": "tsx --test tests/*.test.ts",
+        "locales:validate": "tsx scripts/locales/validate.ts",
+        "validate": "pnpm test && pnpm locales:validate && pnpm lint && pnpm typecheck",
+        "lint": "eslint --ext .js,.jsx,.ts,.tsx src scripts tests rspack.config.ts",
         "typecheck": "tsc --noEmit"
     },
     "dependencies": {
+        "@adguard/translate": "2.0.1",
         "@ant-design/icons": "^4.4.0",
         "antd": "^4.12.2",
         "classnames": "^2.2.6",
@@ -35,6 +40,7 @@
         "nanoid": "^3.1.20",
         "react": "^17.0.1",
         "react-dom": "^17.0.1",
+        "valibot": "^1.2.0",
         "webextension-polyfill": "^0.7.0"
     },
     "devDependencies": {

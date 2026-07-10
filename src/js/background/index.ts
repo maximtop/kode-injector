@@ -14,7 +14,6 @@ import { updateService } from './update-service';
  */
 export const backgroundPage = (): Promise<void> => {
     updateService.init();
-    messageHandler.init();
 
     /**
      * Initializes stores that require asynchronous storage access.
@@ -24,5 +23,7 @@ export const backgroundPage = (): Promise<void> => {
         await settings.init();
     };
 
-    return asyncInit();
+    const backgroundReady = asyncInit();
+    messageHandler.init(backgroundReady);
+    return backgroundReady;
 };

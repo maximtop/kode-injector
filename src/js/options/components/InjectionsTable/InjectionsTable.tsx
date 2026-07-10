@@ -18,11 +18,12 @@ import type { ColumnsType } from 'antd/lib/table';
 import { observer } from 'mobx-react';
 
 import type { InjectionRule } from '../../../common/contracts';
+import { InjectionField } from '../../../common/constants';
 import { rootStore } from '../../stores/RootStore';
+import { translator } from '../../../common/translator';
 
 import './injections-table.pcss';
 
-// TODO translate columns titles
 export const InjectionsTable = observer(() => {
     const { injectionsStore } = useContext(rootStore);
 
@@ -34,9 +35,8 @@ export const InjectionsTable = observer(() => {
      * @returns Injection removal click handler.
      */
     const handleRemoveClick = (id: string) => () => {
-        // TODO translate prompt
         // eslint-disable-next-line no-alert
-        const response = window.confirm('Injection would be removed permanently. Are you sure?');
+        const response = window.confirm(translator.getMessage('injection_remove_confirm'));
         if (response) {
             injectionsStore.removeInjection(id);
         }
@@ -55,35 +55,49 @@ export const InjectionsTable = observer(() => {
 
     const columns: ColumnsType<InjectionRule> = [
         {
-            title: 'Site',
-            dataIndex: 'site',
-            key: 'site',
+            title: translator.getMessage('table_site'),
+            dataIndex: InjectionField.Site,
+            key: InjectionField.Site,
         },
         {
-            title: 'JS file path',
-            dataIndex: 'jsPath',
-            key: 'jsPath',
+            title: translator.getMessage('table_js_path'),
+            dataIndex: InjectionField.JsPath,
+            key: InjectionField.JsPath,
+
+            /**
+             * Renders a JavaScript path as a technical link.
+             */
             render: (text: string) => {
-                return (<a href={text} target="_blank" rel="noreferrer">{text}</a>);
+                return (<a href={text} target="_blank" rel="noreferrer"><bdi className="technical-value" dir="ltr">{text}</bdi></a>);
             },
         },
         {
-            title: 'CSS file path',
-            dataIndex: 'cssPath',
-            key: 'cssPath',
+            title: translator.getMessage('table_css_path'),
+            dataIndex: InjectionField.CssPath,
+            key: InjectionField.CssPath,
+
+            /**
+             * Renders a CSS path as a technical link.
+             */
             render: (text: string) => {
-                return (<a href={text} target="_blank" rel="noreferrer">{text}</a>);
+                return (<a href={text} target="_blank" rel="noreferrer"><bdi className="technical-value" dir="ltr">{text}</bdi></a>);
             },
         },
         {
-            title: 'Actions',
+            title: translator.getMessage('table_actions'),
             key: 'action',
+
+            /**
+             * Renders the enable/disable and delete actions.
+             */
             render: (_text: unknown, record) => {
                 return (
                     <>
                         <Space>
                             <Switch
-                                title={record.enabled ? 'Turn off injection' : 'Turn on injection'}
+                                title={record.enabled
+                                    ? translator.getMessage('injection_disable')
+                                    : translator.getMessage('injection_enable')}
                                 checkedChildren={<CheckOutlined />}
                                 unCheckedChildren={<CloseOutlined />}
                                 defaultChecked={record.enabled}
@@ -91,7 +105,7 @@ export const InjectionsTable = observer(() => {
                             />
                             <Button
                                 danger
-                                title="Remove injection"
+                                title={translator.getMessage('injection_remove')}
                                 type="text"
                                 icon={<DeleteOutlined />}
                                 onClick={handleRemoveClick(record.id)}
@@ -109,6 +123,7 @@ export const InjectionsTable = observer(() => {
             dataSource={injectionsStore.injections.slice()}
             columns={columns}
             pagination={false}
+            locale={{ emptyText: translator.getMessage('table_empty') }}
             rowKey={(record) => record.id}
             rowClassName={(record) => (record.enabled ? '' : 'disabled')}
         />

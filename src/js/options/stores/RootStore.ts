@@ -6,6 +6,8 @@ import { createContext } from 'react';
 import { configure } from 'mobx';
 
 import { InjectionsStore } from './InjectionsStore';
+import { TranslationStore } from '../../common/locale';
+import { i18n } from '../../common/i18n';
 
 // Do not allow property change outside of store actions
 configure({ enforceActions: 'observed' });
@@ -20,9 +22,15 @@ class RootStore {
     injectionsStore: InjectionsStore;
 
     /**
+     * Options-page locale state.
+     */
+    translationStore: TranslationStore;
+
+    /**
      * Creates the options-page store graph.
      */
     constructor() {
+        this.translationStore = i18n.connectStore(TranslationStore);
         this.injectionsStore = new InjectionsStore(this);
     }
 }

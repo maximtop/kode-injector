@@ -13,6 +13,7 @@ import {
 import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
 
 import { rootStore } from '../../stores/RootStore';
+import { translator } from '../../../common/translator';
 
 export const Main = observer(() => {
     const { settingsStore } = useContext(rootStore);
@@ -39,18 +40,19 @@ export const Main = observer(() => {
         // TODO button to add injection for current tab
         if (!settingsStore.siteHasEnabledInjections) {
             return (
-                <div>No injections</div>
+                <div>{translator.getMessage('popup_no_injections')}</div>
             );
         }
 
         const enabled = !settingsStore.siteIsBlacklisted;
-        // TODO translate messages for title
         return (
             <Switch
                 checkedChildren={<CheckOutlined />}
                 unCheckedChildren={<CloseOutlined />}
                 defaultChecked={enabled}
-                title={enabled ? 'Disable injecting for current site' : 'Enable injecting for current site'}
+                title={enabled
+                    ? translator.getMessage('popup_disable_site')
+                    : translator.getMessage('popup_enable_site')}
                 onChange={handleSwitchChange}
             />
         );
@@ -62,7 +64,7 @@ export const Main = observer(() => {
                 <Col span={20} style={{ overflow: 'hidden' }}>
                     <Row justify="center">
                         <Col>
-                            <h3>{settingsStore.currentTabHostname}</h3>
+                            <h3 className="technical-value" dir="ltr">{settingsStore.currentTabHostname}</h3>
                         </Col>
                     </Row>
                     <Row justify="center">

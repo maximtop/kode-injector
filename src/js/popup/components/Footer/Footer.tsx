@@ -10,17 +10,17 @@ import {
     Row,
 } from 'antd';
 import { DislikeOutlined } from '@ant-design/icons';
+import { observer } from 'mobx-react';
 
 import { messenger } from '../../../common/messenger';
-
-// TODO translate
+import { translator } from '../../../common/translator';
 
 /**
  * Renders the popup footer and issue-report action.
  *
  * @returns Popup footer element.
  */
-export const Footer = (): JSX.Element => {
+export const Footer = observer((): JSX.Element => {
     /**
      * Opens the issue reporting page.
      */
@@ -35,12 +35,12 @@ export const Footer = (): JSX.Element => {
                     <Button
                         icon={<DislikeOutlined />}
                         onClick={handleReportClick}
-                        title="Report an issue on GitLab"
+                        title={translator.getMessage('popup_report_issue_title')}
                     >
-                        Report an issue
+                        {translator.getMessage('popup_report_issue')}
                     </Button>
                 </Col>
             </Row>
         </Layout.Footer>
     );
-};
+});

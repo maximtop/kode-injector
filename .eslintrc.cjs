@@ -34,12 +34,16 @@ module.exports = {
                 'no-use-before-define': 'off',
                 'no-undef': 'off',
                 'no-unused-vars': 'off',
+                'no-shadow': 'off',
+                '@typescript-eslint/no-shadow': 'error',
                 'react/jsx-filename-extension': ['error', { extensions: ['.jsx', '.tsx'] }],
             },
         },
         {
             files: [
                 'scripts/build/**/*.ts',
+                'scripts/locales/**/*.ts',
+                'tests/**/*.ts',
                 'rspack.config.ts',
             ],
             rules: {
@@ -48,6 +52,27 @@ module.exports = {
                     optionalDependencies: false,
                     peerDependencies: false,
                 }],
+                'no-restricted-syntax': 'off',
+                'no-continue': 'off',
+            },
+        },
+        {
+            files: ['scripts/locales/**/*.ts'],
+            rules: {
+                'jsdoc/require-file-overview': 'off',
+                'jsdoc/sort-tags': 'off',
+                'max-len': 'off',
+            },
+        },
+        {
+            files: ['tests/**/*.ts'],
+            rules: {
+                'jsdoc/require-file-overview': 'off',
+                'jsdoc/require-jsdoc': 'off',
+                'jsdoc/require-description': 'off',
+                'no-useless-constructor': 'off',
+                'no-empty-function': 'off',
+                'object-curly-newline': 'off',
             },
         },
     ],
@@ -97,11 +122,13 @@ module.exports = {
                 'TSTypeAliasDeclaration',
                 'TSTypeAliasDeclaration > TSTypeLiteral > TSPropertySignature',
                 'ExportNamedDeclaration > FunctionDeclaration',
-                'VariableDeclarator > ArrowFunctionExpression',
+                'FunctionDeclaration',
+                'FunctionExpression',
             ],
             require: {
-                ArrowFunctionExpression: false,
-                FunctionDeclaration: false,
+                ArrowFunctionExpression: true,
+                FunctionDeclaration: true,
+                FunctionExpression: true,
             },
         }],
         'jsdoc/require-description': ['error', {

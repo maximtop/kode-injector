@@ -4,13 +4,16 @@
 
 import React from 'react';
 import { Layout, Row } from 'antd';
+import { observer } from 'mobx-react';
+
+import { translator } from '../../../common/translator';
 
 /**
  * Renders the options page footer.
  *
  * @returns Options page footer element.
  */
-export const Footer = () => {
+export const Footer = observer(() => {
     return (
         <Layout.Footer>
             <Row justify="space-between">
@@ -22,12 +25,12 @@ export const Footer = () => {
                     <a
                         href="https://gitlab.com/maximtop/kode-injector"
                         className="github"
-                        title="To fill in an issue or view source code"
+                        title={translator.getMessage('source_code_title')}
                     >
-                        SourceCode
+                        {translator.getMessage('source_code')}
                     </a>
                 </div>
             </Row>
         </Layout.Footer>
     );
-};
+});

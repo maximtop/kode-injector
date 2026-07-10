@@ -5,9 +5,9 @@
 import React from 'react';
 import { Layout } from 'antd';
 
-import './header.pcss';
+import { LanguageSelect } from '../LanguageSelect';
 
-// TODO translate page title
+import './header.pcss';
 
 /**
  * Renders the options page header.
@@ -16,8 +16,9 @@ import './header.pcss';
  */
 export const Header = () => (
     <Layout.Header className="header">
-        <div>
+        <div className="header-content">
             <h1>Kode Injector</h1>
+            <LanguageSelect />
         </div>
     </Layout.Header>
 );

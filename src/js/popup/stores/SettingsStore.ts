@@ -11,11 +11,12 @@ import {
 
 import type { PopupTab } from '../../common/contracts';
 import { messenger } from '../../common/messenger';
-import { SETTINGS } from '../../common/constants';
 import { log } from '../../common/log';
 import { tabs } from '../../common/tabs';
 import { urlUtils } from '../../common/url-utils';
+import { i18n } from '../../common/i18n';
 import type { RootStoreType } from './RootStore';
+import { preparePopupState } from './popup-initialization';
 
 /**
  * Manages popup state and settings actions.
@@ -71,17 +72,16 @@ export class SettingsStore {
      */
     getPopupData = async (): Promise<void> => {
         const currentTab = await tabs.getCurrentTab();
-        const {
-            settings,
-            siteHasEnabledInjections,
-            siteIsBlacklisted,
-        } = await messenger.getPopupData(currentTab);
+        const popupData = await messenger.getPopupData(currentTab);
+        const state = await preparePopupState(currentTab, popupData, (language) => {
+            return i18n.init(language);
+        });
 
         runInAction(() => {
-            this.appEnabled = settings[SETTINGS.APP_ENABLED];
-            this.currentTab = currentTab;
-            this.siteHasEnabledInjections = siteHasEnabledInjections;
-            this.siteIsBlacklisted = siteIsBlacklisted;
+            this.appEnabled = state.appEnabled;
+            this.currentTab = state.currentTab;
+            this.siteHasEnabledInjections = state.siteHasEnabledInjections;
+            this.siteIsBlacklisted = state.siteIsBlacklisted;
             this.popupDataReady = true;
         });
     }

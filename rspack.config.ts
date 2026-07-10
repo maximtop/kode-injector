@@ -31,6 +31,10 @@ const plugins: NonNullable<Configuration['plugins']> = [
             {
                 from: path.join(SRC_PATH, 'manifest.json'),
                 to: 'manifest.json',
+
+                /**
+                 * Replaces build-time placeholders in the manifest.
+                 */
                 transform: (content) => updateManifest(
                     content,
                     { version: packageJson.version },
@@ -43,6 +47,10 @@ const plugins: NonNullable<Configuration['plugins']> = [
             {
                 from: path.join(SRC_PATH, '_locales'),
                 to: '_locales',
+
+                /**
+                 * Replaces build-time placeholders in locale catalogs.
+                 */
                 transform: (content) => updateLocalesMSGName(content, CHANNEL_ENV),
             },
         ],

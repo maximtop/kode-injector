@@ -16,6 +16,8 @@ export const MESSAGE_TYPES = {
     OPEN_TAB: 'open.tab',
     DISABLE_INJECTIONS_FOR_SITE: 'enable.injection.for.site',
     ENABLE_INJECTIONS_FOR_SITE: 'disable.injection.for.site',
+    SET_INTERFACE_LANGUAGE: 'set.interface.language',
+    LANGUAGE_CHANGED: 'language.changed',
 } as const;
 
 export const STORAGE_KEYS = {
@@ -25,4 +27,14 @@ export const STORAGE_KEYS = {
 
 export const SETTINGS = {
     APP_ENABLED: 'app.enabled',
+    SELECTED_LANGUAGE: 'language.selected',
 } as const;
+
+/**
+ * Field names shared by injection forms, tables, and contracts.
+ */
+export enum InjectionField {
+    Site = 'site',
+    JsPath = 'jsPath',
+    CssPath = 'cssPath',
+}

@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@adguard/translate':
+        specifier: 2.0.1
+        version: 2.0.1
       '@ant-design/icons':
         specifier: ^4.4.0
         version: 4.8.3(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
@@ -35,6 +38,9 @@ importers:
       react-dom:
         specifier: ^17.0.1
         version: 17.0.2(react@17.0.2)
+      valibot:
+        specifier: ^1.2.0
+        version: 1.4.2(typescript@5.9.3)
       webextension-polyfill:
         specifier: ^0.7.0
         version: 0.7.0
@@ -122,6 +128,9 @@ importers:
         version: 5.9.3
 
 packages:
+
+  '@adguard/translate@2.0.1':
+    resolution: {integrity: sha512-wMtm1p6/wzsoiRteIKLtUIX9zPDEQBz7wOyt7eRNr4EGxbcCMccPN0KgNVb0DXvKtvGKzOBrrarIMaScBAMNNQ==}
 
   '@ant-design/colors@6.0.0':
     resolution: {integrity: sha512-qAZRvPzfdWHtfameEGP2Qvuf838NhergR35o+EuVyB5XvSA98xod5r4utvi4TJ3ywmevm290g9nsCG5MryrdWQ==}
@@ -2457,6 +2466,14 @@ packages:
   v8-compile-cache@2.4.0:
     resolution: {integrity: sha512-ocyWc3bAHBB/guyqJQVI5o4BZkPhznPYUG2ea80Gond/BgNWpap8TOmLSeeQG7bnh2KMISxskdADG59j7zruhw==}
 
+  valibot@1.4.2:
+    resolution: {integrity: sha512-gjdCvJ6d3RyHAneqxMYMW9QMCwYMb3jpOO0IyHZV1bnRHFBHrX3VkIILt5XYR0WhwHiH7Mty8ovuPZ/O3gamrg==}
+    peerDependencies:
+      typescript: '>=5'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+
   webextension-polyfill@0.7.0:
     resolution: {integrity: sha512-su48BkMLxqzTTvPSE1eWxKToPS2Tv5DLGxKexLEVpwFd6Po6N8hhSLIvG6acPAg7qERoEaDL+Y5HQJeJeml5Aw==}
 
@@ -2492,6 +2509,8 @@ packages:
     resolution: {integrity: sha512-y7IRWW6PvEnYQZNZFMRLNJw+p3pezM4nKYPfr15g4OOW9i8VpeydycFuipE2297OvZnh3jSb2pxOt9QpkZUVng==}
 
 snapshots:
+
+  '@adguard/translate@2.0.1': {}
 
   '@ant-design/colors@6.0.0':
     dependencies:
@@ -5251,6 +5270,10 @@ snapshots:
       object.getownpropertydescriptors: 2.1.9
 
   v8-compile-cache@2.4.0: {}
+
+  valibot@1.4.2(typescript@5.9.3):
+    optionalDependencies:
+      typescript: 5.9.3
 
   webextension-polyfill@0.7.0: {}
 

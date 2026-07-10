@@ -3,10 +3,13 @@
  */
 
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useEffect, useContext } from 'react';
 import { Form, Input, Button } from 'antd';
+import { observer } from 'mobx-react';
 
 import type { NewInjectionData } from '../../../common/contracts';
+import { InjectionField } from '../../../common/constants';
+import { translator } from '../../../common/translator';
 import { rootStore } from '../../stores/RootStore';
 
 /**
@@ -14,14 +17,17 @@ import { rootStore } from '../../stores/RootStore';
  *
  * @returns New injection form element.
  */
-export const NewInjectionForm = () => {
+export const NewInjectionForm = observer(() => {
     const [form] = Form.useForm<NewInjectionData>();
-    const [, forceUpdate] = useState({});
-    const { injectionsStore } = useContext(rootStore);
+    const { injectionsStore, translationStore } = useContext(rootStore);
 
     useEffect(() => {
-        forceUpdate({});
-    }, []);
+        const touchedFields = Object.values(InjectionField)
+            .filter((name) => form.isFieldTouched(name));
+        if (touchedFields.length > 0) {
+            form.validateFields(touchedFields).catch(() => undefined);
+        }
+    }, [form, translationStore.currentLocale]);
 
     /**
      * Creates an injection rule from submitted form values.
@@ -52,40 +58,42 @@ export const NewInjectionForm = () => {
             onFinish={onFinish}
         >
             <Form.Item
-                name="site"
+                name={InjectionField.Site}
                 rules={[
                     {
                         required: true,
-                        message: 'Please enter site', // TODO handle cases when site is not defined, inject scripts on every site
+                        message: translator.getMessage('form_site_required'),
                     },
                 ]}
             >
-                <Input placeholder="Site" />
+                <Input placeholder={translator.getMessage('form_site_placeholder')} />
             </Form.Item>
             <Form.Item
-                name="jsPath"
+                name={InjectionField.JsPath}
                 rules={[
                     {
                         required: true,
-                        message: 'Please enter path to JS file',
+                        message: translator.getMessage('form_js_path_required'),
                     },
                 ]}
             >
                 <Input
                     placeholder="file:///index.js"
+                    dir="auto"
                 />
             </Form.Item>
             <Form.Item
-                name="cssPath"
+                name={InjectionField.CssPath}
                 rules={[
                     {
                         required: true,
-                        message: 'Please enter path to CSS file',
+                        message: translator.getMessage('form_css_path_required'),
                     },
                 ]}
             >
                 <Input
                     placeholder="file:///styles.css"
+                    dir="auto"
                 />
             </Form.Item>
             <Form.Item shouldUpdate>
@@ -97,10 +105,10 @@ export const NewInjectionForm = () => {
                             !!form.getFieldsError().filter(({ errors }) => errors.length).length
                         }
                     >
-                        Add injection
+                        {translator.getMessage('form_add_injection')}
                     </Button>
                 )}
             </Form.Item>
         </Form>
     );
-};
+});

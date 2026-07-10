@@ -13,8 +13,6 @@ import { OptionsApp } from './components/OptionsApp';
  * Mounts the options application into the page.
  */
 export const optionsPage = () => {
-    document.title = 'Kode Injector settings';
-
     const root = document.getElementById('root');
 
     if (root) {

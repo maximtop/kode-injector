@@ -27,8 +27,10 @@ Convenience targets are defined in the `Makefile` and map to `pnpm` scripts:
 | `make install` | Install dependencies (`pnpm install`) |
 | `make start` | Start the development build in watch mode |
 | `make build` | Create a production build |
-| `make lint` | Run ESLint and TypeScript validation |
+| `make lint` | Run ESLint over source, scripts, and tests |
 | `make typecheck` | Run TypeScript validation without emitting files |
+| `make test` | Run build and localization tests |
+| `make validate` | Run tests, catalog validation, lint, and typecheck |
 
 Equivalent `pnpm` scripts:
 
@@ -38,6 +40,9 @@ pnpm start     # development watch build (CHANNEL_ENV=dev)
 pnpm build     # production build (CHANNEL_ENV=prod)
 pnpm lint      # run ESLint over source, scripts, and the Rspack config
 pnpm typecheck # validate TypeScript and TSX without emitting files
+pnpm test      # run build-helper and localization tests
+pnpm locales:validate # validate all locale catalogs and UI usage
+pnpm validate  # run the complete local quality gate
 ```
 
 ## Build channels
@@ -81,11 +86,11 @@ or background changes.
 ```
 src/
   manifest.json          # MV3 manifest (version injected at build time)
-  _locales/              # i18n message bundles (en, ru)
+  _locales/              # i18n message bundles (30 supported locales)
   assets/                # Static images (icons)
   js/
     background/           # Service worker — injections logic, messaging, storage, update service
-    common/               # Shared utilities — messenger, tabs, url-utils, log, constants
+    common/               # Shared utilities, locale resolver, translator, messenger, tabs, and logs
     content-script/       # Content script injected at document_start on all URLs
     options/              # Options page UI (React) — manage injection rules
     popup/                # Toolbar popup UI (React) — per-site/global toggles
@@ -110,6 +115,25 @@ ESLint uses the Airbnb base config with React plugins. Key conventions:
 - 4-space indentation (JS and JSX)
 - Arrow body style is off; default exports are allowed alongside named exports
 - `react/prop-types` is disabled
+
+## Localization workflow
+
+Locale catalogs live in `src/_locales/<locale>/messages.json`. English is the
+canonical catalog: add a key there with a translator description, then add the
+same key to all 29 target catalogs. User-facing options and popup text must use
+`translator.getMessage()`; technical file paths, URLs, the product name, and
+copyright text stay literal where appropriate.
+
+Run `pnpm locales:validate` after changing a catalog or UI copy. It checks the
+exact 30-directory set, key parity, non-empty messages, formatter structure,
+manifest/source usage, and hardcoded component strings. The `@adguard/translate`
+validator is used for placeholder and plural compatibility. The selected
+language is persisted by the background service and synchronized to open UI
+contexts without a reload.
+
+For a browser smoke test, build with `pnpm start`, load `build/dev/` as an
+unpacked extension, open the options page, switch languages, and verify that
+the form, table, popup, document language, and RTL direction update immediately.
 
 ## TypeScript validation
 

@@ -2,7 +2,23 @@
  * @file
  */
 
-import { MESSAGE_TYPES, SETTINGS } from './constants';
+import {
+    boolean,
+    fallback,
+    object,
+    parse,
+    safeParse,
+    strictObject,
+    type InferOutput,
+} from 'valibot';
+
+import { InjectionField, MESSAGE_TYPES, SETTINGS } from './constants';
+import {
+    localePreferenceSchema,
+    localePreferenceValueSchema,
+    type LocalePreference,
+} from './locale';
+import type { LanguageChangedMessage } from './language-channel';
 
 /**
  * User-provided values for a new injection rule.
@@ -11,17 +27,17 @@ export interface NewInjectionData {
     /**
      * Hostname matched by the injection rule.
      */
-    site: string;
+    [InjectionField.Site]: string;
 
     /**
      * Local JavaScript file path.
      */
-    jsPath: string;
+    [InjectionField.JsPath]: string;
 
     /**
      * Local CSS file path.
      */
-    cssPath: string;
+    [InjectionField.CssPath]: string;
 }
 
 /**
@@ -62,16 +78,58 @@ export type OptionsDataResponse = {
      * Configured injection rules.
      */
     injections: InjectionRule[];
+
+    /**
+     * Persisted interface language preference.
+     */
+    selectedLanguage: LocalePreference;
 };
+
+/**
+ * Strict schema for persisted global application settings.
+ */
+export const appSettingsSchema = strictObject({
+    [SETTINGS.APP_ENABLED]: boolean(),
+    [SETTINGS.SELECTED_LANGUAGE]: localePreferenceValueSchema,
+});
 
 /**
  * Persisted global application settings.
  */
-export type AppSettings = {
+export type AppSettings = InferOutput<typeof appSettingsSchema>;
+
+/**
+ * Default application settings used during field-level recovery.
+ */
+const DEFAULT_APP_SETTINGS: AppSettings = {
+    [SETTINGS.APP_ENABLED]: true,
+    [SETTINGS.SELECTED_LANGUAGE]: 'auto',
+};
+
+/**
+ * Schema that normalizes invalid settings fields independently.
+ */
+const normalizedAppSettingsSchema = fallback(
+    object({
+        [SETTINGS.APP_ENABLED]: fallback(boolean(), true),
+        [SETTINGS.SELECTED_LANGUAGE]: localePreferenceSchema,
+    }),
+    () => ({ ...DEFAULT_APP_SETTINGS }),
+);
+
+/**
+ * Normalized settings and whether persistence needs repair.
+ */
+export type AppSettingsNormalization = {
     /**
-     * Whether the extension is globally enabled.
+     * Valid settings with field-level fallbacks applied.
      */
-    [SETTINGS.APP_ENABLED]: boolean;
+    settings: AppSettings;
+
+    /**
+     * Whether the persisted input failed strict validation.
+     */
+    shouldRepair: boolean;
 };
 
 /**
@@ -169,7 +227,20 @@ export type RuntimeMessage =
     | {
         type: typeof MESSAGE_TYPES.ENABLE_INJECTIONS_FOR_SITE;
         data: { tab: PopupTab };
-    };
+    }
+    | {
+        type: typeof MESSAGE_TYPES.SET_INTERFACE_LANGUAGE;
+        data: { language: LocalePreference };
+    }
+    | LanguageChangedMessage;
+
+/**
+ * Runtime messages handled as background requests.
+ */
+export type RuntimeRequest = Exclude<
+    RuntimeMessage,
+    LanguageChangedMessage
+>;
 
 /**
  * Checks whether a value is a non-null object.
@@ -206,20 +277,32 @@ export const isInjectionRule = (value: unknown): value is InjectionRule => {
  *
  * @param value Persisted settings value.
  *
+ * @returns Valid settings and whether persisted storage needs repair.
+ */
+export const normalizeAppSettingsWithRepair = (value: unknown): AppSettingsNormalization => {
+    const strictResult = safeParse(appSettingsSchema, value);
+    if (strictResult.success) {
+        return {
+            settings: strictResult.output,
+            shouldRepair: false,
+        };
+    }
+
+    return {
+        settings: parse(normalizedAppSettingsSchema, value),
+        shouldRepair: true,
+    };
+};
+
+/**
+ * Normalizes persisted application settings.
+ *
+ * @param value Persisted settings value.
+ *
  * @returns Valid application settings with defaults applied.
  */
 export const normalizeAppSettings = (value: unknown): AppSettings => {
-    const defaultSettings = { [SETTINGS.APP_ENABLED]: true };
-    if (!isRecord(value)) {
-        return defaultSettings;
-    }
-    const appEnabled = value[SETTINGS.APP_ENABLED];
-
-    return {
-        [SETTINGS.APP_ENABLED]: typeof appEnabled === 'boolean'
-            ? appEnabled
-            : defaultSettings[SETTINGS.APP_ENABLED],
-    };
+    return normalizeAppSettingsWithRepair(value).settings;
 };
 
 /**

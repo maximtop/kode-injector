@@ -22,6 +22,7 @@
         "src/**/*.tsx",
         "src/**/*.json",
         "scripts/**/*.ts",
+        "tests/**/*.ts",
         "rspack.config.ts"
     ],
     "exclude": [

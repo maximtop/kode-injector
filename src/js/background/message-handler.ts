@@ -12,10 +12,14 @@ import type {
     RuntimeMessage,
 } from '../common/contracts';
 import { MESSAGE_TYPES } from '../common/constants';
+import { toLocalePreference, type LocalePreference } from '../common/locale';
+import { browserLanguageChannel } from '../common/browser-language-channel';
+import { log } from '../common/log';
 import { injections } from './injections';
 import { settings } from './settings';
 import { tabs } from '../common/tabs';
 import { app } from './app';
+import { gateMessageHandler } from './message-readiness';
 
 /**
  * Values returned by background runtime message handlers.
@@ -26,6 +30,7 @@ type MessageResponse =
     | PopupDataResponse
     | InjectionsCodeResponse
     | browser.Tabs.Tab
+    | LocalePreference
     | null
     | void;
 
@@ -45,7 +50,10 @@ class MessageHandler {
         switch (type) {
             case MESSAGE_TYPES.GET_OPTIONS_DATA: {
                 const injectionsData = injections.getInjections();
-                return { injections: injectionsData };
+                return {
+                    injections: injectionsData,
+                    selectedLanguage: settings.getSelectedLanguage(),
+                };
             }
             case MESSAGE_TYPES.ADD_INJECTION: {
                 const { injectionData } = data;
@@ -101,6 +109,18 @@ class MessageHandler {
             case MESSAGE_TYPES.OPEN_TAB: {
                 return tabs.openTab(data.url);
             }
+            case MESSAGE_TYPES.SET_INTERFACE_LANGUAGE: {
+                const language = toLocalePreference(data.language);
+                await settings.setSelectedLanguage(language);
+                browserLanguageChannel.publish(language).catch((error) => {
+                    log.error('Failed to broadcast language change', error);
+                });
+                return language;
+            }
+            case MESSAGE_TYPES.LANGUAGE_CHANGED:
+                // The broadcast targets UI contexts, but the background receives it too.
+                // No background state change or response is required.
+                return undefined;
             default: {
                 const unknownMessage = message as { type: string };
                 throw new Error(`Unknown message type ${unknownMessage.type}`);
@@ -112,9 +132,13 @@ class MessageHandler {
 
     /**
      * Registers the runtime message listener.
+     *
+     * @param backgroundReady Shared background initialization promise.
      */
-    init = () => {
-        browser.runtime.onMessage.addListener(this.messageHandler);
+    init = (backgroundReady: Promise<void>): void => {
+        browser.runtime.onMessage.addListener(
+            gateMessageHandler(backgroundReady, this.messageHandler),
+        );
     };
 }
 

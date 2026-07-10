@@ -32,7 +32,7 @@ Browser extension with a React-based popup and options page.
 ```
 src/
   manifest.json              # MV3 manifest
-  _locales/{en,ru}/          # i18n message bundles
+  _locales/{...}/            # i18n message bundles (30 supported locales)
   assets/img/                # Extension icons
   js/
     background/              # Service worker
@@ -89,6 +89,16 @@ build/                      # Output (build/dev, build/prod)
 - **Messaging** flows through `src/js/common/messenger.ts`, with message types
   defined in `src/js/common/constants.ts`.
 
+### Settings ownership
+
+- `SettingsService` is the single owner of runtime application settings.
+- All settings changes must go through `SettingsService` methods. Code outside
+  the service must not write `STORAGE_KEYS.SETTINGS` directly.
+- After `SettingsService.init()` completes, its in-memory state is authoritative.
+  Persisted settings are validated and repaired during initialization.
+- Do not use `browser.storage.onChanged` to synchronize application settings.
+  Internal writes already update the in-memory state before persistence.
+
 ## Key Conventions
 
 - **Indentation:** 4 spaces (enforced by ESLint for JS and JSX).
@@ -99,6 +109,9 @@ build/                      # Output (build/dev, build/prod)
   `src/js/<name>/components/`.
 - **i18n:** Messages in `src/_locales/<locale>/messages.json`; referenced in
   the manifest via `__MSG_name__`.
+- **No magic values:** Repeated domain identifiers and literals must use named
+  constants or enums. Keep component-specific values local; place values shared
+  across modules in `src/js/common/constants.ts` or the relevant common contract.
 
 ## Build & Development Commands
 
@@ -114,4 +127,27 @@ Load the dev build via `chrome://extensions/` → **Load unpacked** → `build/d
 ## Testing
 
 Build helper tests run with `pnpm test:build`. Extension behavior is verified
-manually by loading the unpacked extension and testing target sites.
+with headless Playwright smoke tests that load the unpacked extension and test
+target sites.
+
+### Headless extension smoke testing
+
+Browser smoke and regression checks for this repository MUST run headlessly and
+must not open or expose a visible browser window. When Playwright is available,
+launch Chromium with the built extension loaded through both flags below:
+
+```ts
+const browser = await chromium.launch({
+    headless: true,
+    args: [
+        '--headless=new',
+        `--disable-extensions-except=${extensionPath}`,
+        `--load-extension=${extensionPath}`,
+    ],
+});
+```
+
+Use `build/dev/` for localization and workflow smoke checks. Keep the browser
+context isolated, verify popup/options pages through their extension URLs, and
+close the browser after the run. Do not use headed mode, attach to a user's
+visible browser session, or leave test tabs open.

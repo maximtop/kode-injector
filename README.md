@@ -98,6 +98,19 @@ Need to temporarily stop all injections across every site? Use the pause button
 in the popup header to suspend injecting everywhere, then resume with one click
 when you are ready.
 
+### Localized interface
+
+The interface is available in 30 languages, including English and Russian.
+The options page header has a language selector; choose **Browser language** to
+follow the browser UI automatically, or select a specific language. Changes
+apply immediately in open options pages and popups. Unsupported browser
+languages use English, and the extension preserves the browser's direction for
+Arabic, Persian, and Hebrew.
+
+The extension's manifest name and description remain controlled by the browser's
+WebExtension locale rules. The in-app selector changes the options and popup
+interface only.
+
 ## Permissions
 
 | Permission | Reason |
@@ -140,5 +153,4 @@ one type, point the other field at an empty file.
 
 - [Development](DEVELOPMENT.md) — how to set up and contribute
 - [LLM agent rules](AGENTS.md) — AI-assisted development guidelines
-
 

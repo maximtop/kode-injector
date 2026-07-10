@@ -12,6 +12,7 @@ import find from 'lodash/find';
 import type { InjectionRule, NewInjectionData } from '../../common/contracts';
 import { messenger } from '../../common/messenger';
 import { log } from '../../common/log';
+import { i18n } from '../../common/i18n';
 import type { RootStoreType } from './RootStore';
 
 /**
@@ -49,7 +50,8 @@ export class InjectionsStore {
      * Loads injection data for the options page.
      */
     getOptionsData = async (): Promise<void> => {
-        const { injections } = await messenger.getOptionsData();
+        const { injections, selectedLanguage } = await messenger.getOptionsData();
+        await i18n.init(selectedLanguage);
         runInAction(() => {
             this.injections = injections;
             this.optionsDataReady = true;
