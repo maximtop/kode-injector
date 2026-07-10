@@ -28,6 +28,7 @@ Convenience targets are defined in the `Makefile` and map to `pnpm` scripts:
 | `make start` | Start the development build in watch mode |
 | `make build` | Create a production build |
 | `make lint` | Run ESLint over `src/` and `scripts/` |
+| `make typecheck` | Run TypeScript validation without emitting files |
 
 Equivalent `pnpm` scripts:
 
@@ -35,7 +36,8 @@ Equivalent `pnpm` scripts:
 pnpm install   # install dependencies
 pnpm start     # development watch build (CHANNEL_ENV=dev)
 pnpm build     # production build (CHANNEL_ENV=prod)
-pnpm lint      # eslint src scripts
+pnpm lint      # eslint --ext .js,.jsx,.ts,.tsx src scripts
+pnpm typecheck # validate TypeScript and TSX without emitting files
 ```
 
 ## Build channels
@@ -49,7 +51,9 @@ automatically by the npm scripts:
 | `prod` | `pnpm build` | `build/prod/` | Optimized build; also produces `build/<version>-prod.zip` |
 
 Webpack configuration lives in `scripts/build/webpack.config.babel.js`. The
-manifest version is injected from `package.json` during the build.
+JavaScript file is a webpack-cli compatibility shim that loads the typed
+configuration from `scripts/build/webpack.config.ts`. The manifest version is
+injected from `package.json` during the build.
 
 ## Loading the extension for development
 
@@ -87,10 +91,11 @@ src/
     popup/                # Toolbar popup UI (React) — per-site/global toggles
   pages/                  # Webpack entry points (HTML + JS bootstrap)
 scripts/
-  constants.js            # Build-channel constants
+  constants.ts            # Build-channel constants
   build/
-    helpers.js            # Manifest & locale transforms
-    webpack.config.babel.js  # Webpack configuration
+    helpers.ts            # Manifest & locale transforms
+    webpack.config.babel.js  # Webpack CLI compatibility shim
+    webpack.config.ts     # Webpack configuration
 build/                    # Build output (dev/ and prod/)
 ```
 
@@ -105,6 +110,14 @@ ESLint uses the Airbnb base config with React plugins. Key conventions:
 - 4-space indentation (JS and JSX)
 - Arrow body style is off; default exports are allowed alongside named exports
 - `react/prop-types` is disabled
+
+## TypeScript validation
+
+```sh
+make typecheck
+```
+
+`make typecheck` mirrors `pnpm typecheck` and runs `tsc --noEmit`.
 
 ## Deployment
 

@@ -1,1 +1,0 @@
-export { NewInjectionForm } from './NewInjectionForm';

@@ -1,1 +1,0 @@
-export { InjectionsTable } from './InjectionsTable';

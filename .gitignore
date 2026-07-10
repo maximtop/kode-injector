@@ -2,3 +2,4 @@
 /build/
 deploy.sh
 .env
+.sdd/

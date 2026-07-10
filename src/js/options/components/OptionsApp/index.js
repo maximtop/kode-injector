@@ -1,1 +1,0 @@
-export { OptionsApp } from './OptionsApp';
