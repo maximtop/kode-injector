@@ -2,8 +2,7 @@
  * @file
  */
 
-import assert from 'node:assert/strict';
-import test from 'node:test';
+import { expect, test } from 'vitest';
 
 import { LanguageChannel } from '../src/app/common/language-channel';
 
@@ -39,8 +38,8 @@ test('language channel publishes and filters typed events', async () => {
     await channel.publish('de');
     await runtime.dispatch({ type: 'unrelated', data: {} });
 
-    assert.deepEqual(received, ['de']);
+    expect(received).toEqual(['de']);
     unsubscribe();
     await channel.publish('fr');
-    assert.deepEqual(received, ['de']);
+    expect(received).toEqual(['de']);
 });

@@ -2,10 +2,9 @@
  * @file
  */
 
-import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
-import test from 'node:test';
+import { expect, test } from 'vitest';
 
 import { AVAILABLE_LOCALES } from '../src/app/common/locale';
 
@@ -17,15 +16,15 @@ test('catalog glossary keeps protected product, platform, and technical tokens',
         const filePath = path.join(LOCALES_ROOT, locale, 'messages.json');
         const catalog = JSON.parse(fs.readFileSync(filePath, 'utf8')) as Record<string, { message: string }>;
 
-        assert.equal(catalog.name.message, 'Kode Injector', locale);
-        assert.match(catalog.popup_report_issue_title.message, /GitLab/u, locale);
-        assert.match(catalog.description.message, /JavaScript/u, locale);
-        assert.match(catalog.description.message, /CSS/u, locale);
-        assert.match(catalog.form_js_path_required.message, /JavaScript/u, locale);
-        assert.match(catalog.form_css_path_required.message, /CSS/u, locale);
+        expect(catalog.name.message, locale).toBe('Kode Injector');
+        expect(catalog.popup_report_issue_title.message, locale).toMatch(/GitLab/u);
+        expect(catalog.description.message, locale).toMatch(/JavaScript/u);
+        expect(catalog.description.message, locale).toMatch(/CSS/u);
+        expect(catalog.form_js_path_required.message, locale).toMatch(/JavaScript/u);
+        expect(catalog.form_css_path_required.message, locale).toMatch(/CSS/u);
 
         Object.entries(catalog).forEach(([key, entry]) => {
-            assert.doesNotMatch(entry.message, BIDI_CONTROL_PATTERN, `${locale}/${key}`);
+            expect(entry.message, `${locale}/${key}`).not.toMatch(BIDI_CONTROL_PATTERN);
         });
     });
 });

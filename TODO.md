@@ -5,4 +5,4 @@
 - [ ] Handle popup open on the service pages
 - [ ] Add possibility to deploy from github actions
 - [ ] Import/export injections
-- [ ] Switch to vitest
+- [x] Switch to vitest

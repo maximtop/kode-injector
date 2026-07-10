@@ -3,7 +3,6 @@
  */
 
 /* eslint-disable import/no-extraneous-dependencies */
-import assert from 'node:assert/strict';
 import {
     mkdtempSync,
     mkdirSync,
@@ -13,8 +12,8 @@ import {
 } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import test from 'node:test';
 import AdmZip from 'adm-zip';
+import { expect, test } from 'vitest';
 
 import { writeArchive } from './archive-plugin';
 
@@ -32,9 +31,9 @@ test('writeArchive packages output contents without the parent directory', () =>
     const archive = new AdmZip(archivePath);
     const entries = archive.getEntries().map((entry) => entry.entryName);
 
-    assert.equal(entries.includes('manifest.json'), true);
-    assert.equal(entries.includes('assets/icon.txt'), true);
-    assert.equal(entries.some((entry) => entry.startsWith('prod/')), false);
-    assert.equal(readFileSync(archivePath).length > 0, true);
+    expect(entries).toContain('manifest.json');
+    expect(entries).toContain('assets/icon.txt');
+    expect(entries.some((entry) => entry.startsWith('prod/'))).toBe(false);
+    expect(readFileSync(archivePath).length).toBeGreaterThan(0);
     rmSync(root, { recursive: true, force: true });
 });

@@ -2,8 +2,7 @@
  * @file
  */
 
-import assert from 'node:assert/strict';
-import test from 'node:test';
+import { expect, test } from 'vitest';
 
 import { applyDocumentLocale } from '../src/app/common/document-locale';
 
@@ -15,7 +14,7 @@ test('applyDocumentLocale updates title, language, and direction', () => {
 
     applyDocumentLocale(target, 'pt-BR', 'ltr', 'Configurações do Kode Injector');
 
-    assert.equal(target.title, 'Configurações do Kode Injector');
-    assert.equal(target.documentElement.lang, 'pt-BR');
-    assert.equal(target.documentElement.dir, 'ltr');
+    expect(target.title).toBe('Configurações do Kode Injector');
+    expect(target.documentElement.lang).toBe('pt-BR');
+    expect(target.documentElement.dir).toBe('ltr');
 });

@@ -2,8 +2,7 @@
  * @file
  */
 
-import assert from 'node:assert/strict';
-import test from 'node:test';
+import { expect, test } from 'vitest';
 
 import { preparePopupState } from '../src/app/popup/stores/popup-initialization';
 
@@ -20,8 +19,8 @@ test('popup locale initializes before presentation state is returned', async () 
     );
 
     calls.push('ready');
-    assert.deepEqual(calls, ['locale:de', 'ready']);
-    assert.deepEqual(result, {
+    expect(calls).toEqual(['locale:de', 'ready']);
+    expect(result).toEqual({
         appEnabled: true,
         currentTab: { id: 7, url: 'https://example.com' },
         siteHasEnabledInjections: true,

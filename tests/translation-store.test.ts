@@ -2,8 +2,7 @@
  * @file
  */
 
-import assert from 'node:assert/strict';
-import test from 'node:test';
+import { expect, test } from 'vitest';
 
 import { TranslationStore, type AvailableLocale, type LocalePreference } from '../src/app/common/locale';
 
@@ -31,11 +30,11 @@ test('store resolves preference and direction atomically', async () => {
     const store = new TranslationStore(service);
     await store.init('ar');
 
-    assert.equal(store.userLocalePreference, 'ar');
-    assert.equal(store.currentLocale, 'ar');
-    assert.equal(store.direction, 'rtl');
-    assert.equal(store.htmlLanguage, 'ar');
-    assert.equal(store.isLoading, false);
+    expect(store.userLocalePreference).toBe('ar');
+    expect(store.currentLocale).toBe('ar');
+    expect(store.direction).toBe('rtl');
+    expect(store.htmlLanguage).toBe('ar');
+    expect(store.isLoading).toBe(false);
 });
 
 test('first-time auto initialization is not skipped', async () => {
@@ -43,8 +42,8 @@ test('first-time auto initialization is not skipped', async () => {
     const store = new TranslationStore(service);
     await store.init();
 
-    assert.equal(service.calls, 1);
-    assert.equal(store.currentLocale, 'de');
+    expect(service.calls).toBe(1);
+    expect(store.currentLocale).toBe('de');
 });
 
 test('failed locale activation keeps the preference and falls back to English', async () => {
@@ -52,9 +51,9 @@ test('failed locale activation keeps the preference and falls back to English', 
     const store = new TranslationStore(service);
     await store.setLocalePreference('de');
 
-    assert.equal(store.userLocalePreference, 'de');
-    assert.equal(store.currentLocale, 'en');
-    assert.equal(store.isLoading, false);
+    expect(store.userLocalePreference).toBe('de');
+    expect(store.currentLocale).toBe('en');
+    expect(store.isLoading).toBe(false);
 });
 
 test('reapplying an active preference does not load again', async () => {
@@ -63,5 +62,5 @@ test('reapplying an active preference does not load again', async () => {
     await store.init('de');
     await store.setLocalePreference('de');
 
-    assert.equal(service.calls, 1);
+    expect(service.calls).toBe(1);
 });

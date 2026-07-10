@@ -2,8 +2,7 @@
  * @file
  */
 
-import assert from 'node:assert/strict';
-import test from 'node:test';
+import { expect, test } from 'vitest';
 
 import {
     BASE_LOCALE,
@@ -47,47 +46,47 @@ test('loads English and the browser locale in auto mode', async () => {
     const { service, calls } = createService('de');
     const resolved = await service.loadLocaleData();
 
-    assert.equal(resolved, 'de');
-    assert.deepEqual(calls, [
+    expect(resolved).toBe('de');
+    expect(calls).toEqual([
         'extension://_locales/en/messages.json',
         'extension://_locales/de/messages.json',
     ]);
-    assert.equal(service.getMessage('de', 'greeting'), 'Hallo');
+    expect(service.getMessage('de', 'greeting')).toBe('Hallo');
 });
 
 test('uses cache for repeated and concurrent loads', async () => {
     const { service, calls } = createService('de');
     await Promise.all([service.loadLocale('de'), service.loadLocale('de')]);
 
-    assert.equal(calls.length, 1);
+    expect(calls).toHaveLength(1);
 });
 
 test('uses explicit preference instead of browser locale', async () => {
     const { service } = createService('en');
-    assert.equal(await service.loadLocaleData('de'), 'de');
-    assert.equal(service.getMessage('de', 'greeting'), 'Hallo');
+    expect(await service.loadLocaleData('de')).toBe('de');
+    expect(service.getMessage('de', 'greeting')).toBe('Hallo');
 });
 
 test('returns English for unsupported and Traditional Chinese browser locales', async () => {
     const unsupported = createService('xx-YY').service;
-    assert.equal(await unsupported.loadLocaleData(LANGUAGE_AUTO), BASE_LOCALE);
+    expect(await unsupported.loadLocaleData(LANGUAGE_AUTO)).toBe(BASE_LOCALE);
 
     const traditional = createService('zh-Hant-TW').service;
-    assert.equal(await traditional.loadLocaleData(), BASE_LOCALE);
+    expect(await traditional.loadLocaleData()).toBe(BASE_LOCALE);
 });
 
 test('returns empty for missing translated keys and throws for missing English keys', async () => {
     const { service } = createService();
     await service.loadLocaleData('de');
 
-    assert.equal(service.getMessage('de', 'english_only'), '');
-    assert.throws(() => service.getMessage('de', 'unknown'), /There is no such key "unknown"/);
+    expect(service.getMessage('de', 'english_only')).toBe('');
+    expect(() => service.getMessage('de', 'unknown')).toThrow(/There is no such key "unknown"/);
 });
 
 test('formats locale codes for the translator library', () => {
     const { service } = createService();
-    assert.equal(service.getUILanguage('en'), 'en');
-    assert.equal(service.getUILanguage('pt_BR'), 'pt_br');
-    assert.equal(service.getUILanguage('zh_CN'), 'zh_cn');
-    assert.equal(service.getBaseUILanguage(), 'en');
+    expect(service.getUILanguage('en')).toBe('en');
+    expect(service.getUILanguage('pt_BR')).toBe('pt_br');
+    expect(service.getUILanguage('zh_CN')).toBe('zh_cn');
+    expect(service.getBaseUILanguage()).toBe('en');
 });

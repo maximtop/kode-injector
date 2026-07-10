@@ -2,10 +2,9 @@
  * @file
  */
 
-import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
-import test from 'node:test';
+import { expect, test } from 'vitest';
 
 import { CHANNEL_ENVS } from '../constants';
 import { AVAILABLE_LOCALES } from '../../src/app/common/locale/locale-constants';
@@ -17,7 +16,7 @@ test('updateManifest applies the package version', () => {
         { version: '1.2.3' },
     ));
 
-    assert.deepEqual(result, { name: 'Kode Injector', version: '1.2.3' });
+    expect(result).toEqual({ name: 'Kode Injector', version: '1.2.3' });
 });
 
 test('updateLocalesMSGName marks development builds', () => {
@@ -26,7 +25,7 @@ test('updateLocalesMSGName marks development builds', () => {
         CHANNEL_ENVS.DEV,
     ));
 
-    assert.equal(result.name.message, 'Kode Injector (Dev)');
+    expect(result.name.message).toBe('Kode Injector (Dev)');
 });
 
 test('updateLocalesMSGName leaves production names unchanged', () => {
@@ -35,7 +34,7 @@ test('updateLocalesMSGName leaves production names unchanged', () => {
         CHANNEL_ENVS.PROD,
     ));
 
-    assert.equal(result.name.message, 'Kode Injector');
+    expect(result.name.message).toBe('Kode Injector');
 });
 
 test('locale build transforms cover every packaged catalog', () => {
@@ -50,7 +49,7 @@ test('locale build transforms cover every packaged catalog', () => {
             updateLocalesMSGName(source, CHANNEL_ENVS.PROD),
         ).name.message as string;
 
-        assert.equal(devName, `${sourceName} (Dev)`, locale);
-        assert.equal(prodName, sourceName, locale);
+        expect(devName, locale).toBe(`${sourceName} (Dev)`);
+        expect(prodName, locale).toBe(sourceName);
     }
 });

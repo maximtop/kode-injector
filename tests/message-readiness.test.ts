@@ -2,8 +2,7 @@
  * @file
  */
 
-import assert from 'node:assert/strict';
-import test from 'node:test';
+import { expect, test } from 'vitest';
 
 import { gateMessageHandler } from '../src/app/background/message-readiness';
 
@@ -18,11 +17,11 @@ test('gated handler waits for background initialization', async () => {
 
     const result = handler('message');
     await Promise.resolve();
-    assert.equal(handled, false);
+    expect(handled).toBe(false);
 
     resolveReady();
-    assert.equal(await result, 'message:handled');
-    assert.equal(handled, true);
+    expect(await result).toBe('message:handled');
+    expect(handled).toBe(true);
 });
 
 test('gated handler propagates initialization failure without handling', async () => {
@@ -32,6 +31,6 @@ test('gated handler propagates initialization failure without handling', async (
         handled = true;
     });
 
-    await assert.rejects(handler(), failure);
-    assert.equal(handled, false);
+    await expect(handler()).rejects.toBe(failure);
+    expect(handled).toBe(false);
 });

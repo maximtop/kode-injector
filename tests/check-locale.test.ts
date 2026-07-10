@@ -2,8 +2,7 @@
  * @file
  */
 
-import assert from 'node:assert/strict';
-import test from 'node:test';
+import { expect, test } from 'vitest';
 
 import { AVAILABLE_LOCALES, checkLocale } from '../src/app/common/locale';
 
@@ -29,6 +28,6 @@ const CASES: Array<[string | null, string | null]> = [
 test('checkLocale resolves only compatible supported locales', () => {
     CASES.forEach(([input, expected]) => {
         const result = checkLocale(AVAILABLE_LOCALES, input);
-        assert.equal(result.suitable ? result.locale : null, expected, String(input));
+        expect(result.suitable ? result.locale : null, String(input)).toBe(expected);
     });
 });

@@ -1,8 +1,7 @@
-import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import test from 'node:test';
+import { expect, test } from 'vitest';
 
 import { validateLocales } from '../scripts/locales/validate';
 
@@ -55,13 +54,13 @@ test('reports catalog, usage, and hardcoded UI defects', () => {
     });
 
     const errors = validateLocales({ rootPath, expectedLocales: ['en', 'ru', 'de'] });
-    assert.ok(errors.includes('Missing locale directory: de'));
-    assert.ok(errors.includes('Unexpected locale directory: zz'));
-    assert.ok(errors.includes('ru: missing key options_title'));
-    assert.ok(errors.includes('ru: empty message popup_title'));
-    assert.ok(errors.includes('ru: unexpected key obsolete_key'));
-    assert.ok(errors.includes('Unused English message: unused_key'));
-    assert.ok(errors.some((error) => error.includes('Hardcoded UI string: src/app/options/components/Sample.tsx:4 "Save"')));
+    expect(errors).toContain('Missing locale directory: de');
+    expect(errors).toContain('Unexpected locale directory: zz');
+    expect(errors).toContain('ru: missing key options_title');
+    expect(errors).toContain('ru: empty message popup_title');
+    expect(errors).toContain('ru: unexpected key obsolete_key');
+    expect(errors).toContain('Unused English message: unused_key');
+    expect(errors.some((error) => error.includes('Hardcoded UI string: src/app/options/components/Sample.tsx:4 "Save"'))).toBe(true);
 });
 
 test('accepts a complete fixture with matching usage', () => {
@@ -74,5 +73,5 @@ test('accepts a complete fixture with matching usage', () => {
         source: "import { translator } from '../../../common/translator';\ntranslator.getMessage('options_title');",
     });
 
-    assert.deepEqual(validateLocales({ rootPath, expectedLocales: ['en', 'ru'] }), []);
+    expect(validateLocales({ rootPath, expectedLocales: ['en', 'ru'] })).toEqual([]);
 });

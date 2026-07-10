@@ -2,8 +2,7 @@
  * @file
  */
 
-import assert from 'node:assert/strict';
-import test from 'node:test';
+import { expect, test } from 'vitest';
 
 import { SETTINGS, STORAGE_KEYS } from '../src/app/common/constants';
 import { SettingsService } from '../src/app/background/settings-service';
@@ -37,17 +36,17 @@ test('valid app settings do not require repair', () => {
         [SETTINGS.SELECTED_LANGUAGE]: 'de',
     };
 
-    assert.deepEqual(normalizeAppSettingsWithRepair(settings), {
+    expect(normalizeAppSettingsWithRepair(settings)).toEqual({
         settings,
         shouldRepair: false,
     });
 });
 
 test('invalid language normalization preserves a valid app state', () => {
-    assert.deepEqual(normalizeAppSettingsWithRepair({
+    expect(normalizeAppSettingsWithRepair({
         [SETTINGS.APP_ENABLED]: false,
         [SETTINGS.SELECTED_LANGUAGE]: 'unsupported',
-    }), {
+    })).toEqual({
         settings: {
             [SETTINGS.APP_ENABLED]: false,
             [SETTINGS.SELECTED_LANGUAGE]: 'auto',
@@ -57,10 +56,10 @@ test('invalid language normalization preserves a valid app state', () => {
 });
 
 test('invalid app state normalization preserves a valid language', () => {
-    assert.deepEqual(normalizeAppSettingsWithRepair({
+    expect(normalizeAppSettingsWithRepair({
         [SETTINGS.APP_ENABLED]: 'yes',
         [SETTINGS.SELECTED_LANGUAGE]: 'de',
-    }), {
+    })).toEqual({
         settings: {
             [SETTINGS.APP_ENABLED]: true,
             [SETTINGS.SELECTED_LANGUAGE]: 'de',
@@ -70,11 +69,11 @@ test('invalid app state normalization preserves a valid language', () => {
 });
 
 test('unexpected settings properties require strict repair', () => {
-    assert.deepEqual(normalizeAppSettingsWithRepair({
+    expect(normalizeAppSettingsWithRepair({
         [SETTINGS.APP_ENABLED]: true,
         [SETTINGS.SELECTED_LANGUAGE]: 'de',
         unexpected: true,
-    }), {
+    })).toEqual({
         settings: {
             [SETTINGS.APP_ENABLED]: true,
             [SETTINGS.SELECTED_LANGUAGE]: 'de',
@@ -89,11 +88,11 @@ test('legacy settings retain app state and default language to auto', async () =
 
     await service.init();
 
-    assert.deepEqual(service.getSettings(), {
+    expect(service.getSettings()).toEqual({
         [SETTINGS.APP_ENABLED]: false,
         [SETTINGS.SELECTED_LANGUAGE]: 'auto',
     });
-    assert.deepEqual(storage.writes[storage.writes.length - 1], service.getSettings());
+    expect(storage.writes[storage.writes.length - 1]).toEqual(service.getSettings());
 });
 
 test('invalid language repairs to auto', async () => {
@@ -105,11 +104,10 @@ test('invalid language repairs to auto', async () => {
 
     await service.init();
 
-    assert.equal(service.getSelectedLanguage(), 'auto');
-    assert.equal(
+    expect(service.getSelectedLanguage()).toBe('auto');
+    expect(
         storage.writes[storage.writes.length - 1]?.[SETTINGS.SELECTED_LANGUAGE],
-        'auto',
-    );
+    ).toBe('auto');
 });
 
 test('setSelectedLanguage persists before resolving', async () => {
@@ -119,13 +117,12 @@ test('setSelectedLanguage persists before resolving', async () => {
 
     await service.setSelectedLanguage('de');
 
-    assert.equal(
+    expect(
         storage.writes[storage.writes.length - 1]?.[SETTINGS.SELECTED_LANGUAGE],
-        'de',
-    );
-    assert.equal(service.getSelectedLanguage(), 'de');
+    ).toBe('de');
+    expect(service.getSelectedLanguage()).toBe('de');
 });
 
 test('settings expose the expected storage key', () => {
-    assert.equal(STORAGE_KEYS.SETTINGS, 'settings');
+    expect(STORAGE_KEYS.SETTINGS).toBe('settings');
 });

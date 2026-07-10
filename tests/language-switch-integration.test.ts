@@ -2,8 +2,7 @@
  * @file
  */
 
-import assert from 'node:assert/strict';
-import test from 'node:test';
+import { expect, test } from 'vitest';
 
 import { LanguageChannel } from '../src/app/common/language-channel';
 import { TranslationStore, type LocalePreference } from '../src/app/common/locale';
@@ -42,6 +41,6 @@ test('open UI contexts converge on a language event without resetting applicatio
 
     await optionsChannel.publish('ar');
 
-    assert.equal(popupStore.currentLocale, 'ar');
-    assert.deepEqual(applicationState, { injectionCount: 3, currentSite: 'example.com' });
+    expect(popupStore.currentLocale).toBe('ar');
+    expect(applicationState).toEqual({ injectionCount: 3, currentSite: 'example.com' });
 });

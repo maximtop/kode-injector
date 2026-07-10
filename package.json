@@ -21,9 +21,9 @@
         "start": "CHANNEL_ENV=dev rspack build --watch --config rspack.config.ts",
         "build": "CHANNEL_ENV=prod rspack build --config rspack.config.ts",
         "rspack": "rspack build --config rspack.config.ts",
-        "test": "tsx --test scripts/build/*.test.ts tests/*.test.ts",
-        "test:build": "tsx --test scripts/build/*.test.ts",
-        "test:locales": "tsx --test tests/*.test.ts",
+        "test": "vitest run",
+        "test:build": "vitest run scripts/build",
+        "test:locales": "vitest run tests",
         "locales:validate": "tsx scripts/locales/validate.ts",
         "validate": "pnpm test && pnpm locales:validate && pnpm lint && pnpm typecheck",
         "lint": "eslint --ext .js,.jsx,.ts,.tsx src scripts tests rspack.config.ts",
@@ -70,6 +70,7 @@
         "postcss-preset-env": "^6.7.0",
         "postcss-svg": "^3.0.0",
         "tsx": "4.23.0",
-        "typescript": "^5.9.3"
+        "typescript": "^5.9.3",
+        "vitest": "4.1.10"
     }
 }
