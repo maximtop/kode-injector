@@ -2,6 +2,6 @@
  * @file
  */
 
-import { contentScript } from '../../js/content-script';
+import { contentScript } from '../../app/content-script';
 
 contentScript.init();

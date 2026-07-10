@@ -5,7 +5,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { AVAILABLE_LOCALES, checkLocale } from '../src/js/common/locale';
+import { AVAILABLE_LOCALES, checkLocale } from '../src/app/common/locale';
 
 const CASES: Array<[string | null, string | null]> = [
     ['EN', 'en'],

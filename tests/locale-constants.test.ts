@@ -11,7 +11,7 @@ import {
     LANGUAGE_NAMES,
     RTL_LOCALES,
     toLocalePreference,
-} from '../src/js/common/locale';
+} from '../src/app/common/locale';
 
 test('locale constants define the exact supported set', () => {
     assert.equal(AVAILABLE_LOCALES.length, 30);

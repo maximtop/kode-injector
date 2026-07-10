@@ -34,7 +34,7 @@ src/
   manifest.json              # MV3 manifest
   _locales/{...}/            # i18n message bundles (30 supported locales)
   assets/img/                # Extension icons
-  js/
+  app/
     background/              # Service worker
       index.ts              # Entry — wires up stores and message handler
       injections.ts         # Injection rules store (CRUD, matching, code fetch)
@@ -86,8 +86,8 @@ build/                      # Output (build/dev, build/prod)
   blacklisted?) and provides per-site and global toggles.
 - **Options page** manages injection rules: add (site + JS path + CSS path),
   enable/disable, and delete.
-- **Messaging** flows through `src/js/common/messenger.ts`, with message types
-  defined in `src/js/common/constants.ts`.
+- **Messaging** flows through `src/app/common/messenger.ts`, with message types
+  defined in `src/app/common/constants.ts`.
 
 ### Settings ownership
 
@@ -106,12 +106,12 @@ build/                      # Output (build/dev, build/prod)
   or via camelCase class names.
 - **State management:** MobX observables and `observer` components.
 - **Entry naming:** Pages live under `src/pages/<name>/`; React UI under
-  `src/js/<name>/components/`.
+  `src/app/<name>/components/`.
 - **i18n:** Messages in `src/_locales/<locale>/messages.json`; referenced in
   the manifest via `__MSG_name__`.
 - **No magic values:** Repeated domain identifiers and literals must use named
   constants or enums. Keep component-specific values local; place values shared
-  across modules in `src/js/common/constants.ts` or the relevant common contract.
+  across modules in `src/app/common/constants.ts` or the relevant common contract.
 
 ## Build & Development Commands
 

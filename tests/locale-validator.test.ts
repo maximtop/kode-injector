@@ -19,10 +19,10 @@ const makeFixture = (options: {
         fs.mkdirSync(localePath, { recursive: true });
         fs.writeFileSync(path.join(localePath, 'messages.json'), JSON.stringify(catalog));
     }
-    fs.mkdirSync(path.join(rootPath, 'src/js/options/components'), { recursive: true });
+    fs.mkdirSync(path.join(rootPath, 'src/app/options/components'), { recursive: true });
     fs.writeFileSync(path.join(rootPath, 'src/manifest.json'), options.manifest ?? '');
     fs.writeFileSync(
-        path.join(rootPath, 'src/js/options/components/Sample.tsx'),
+        path.join(rootPath, 'src/app/options/components/Sample.tsx'),
         options.source ?? "translator.getMessage('options_title');",
     );
     return rootPath;
@@ -61,7 +61,7 @@ test('reports catalog, usage, and hardcoded UI defects', () => {
     assert.ok(errors.includes('ru: empty message popup_title'));
     assert.ok(errors.includes('ru: unexpected key obsolete_key'));
     assert.ok(errors.includes('Unused English message: unused_key'));
-    assert.ok(errors.some((error) => error.includes('Hardcoded UI string: src/js/options/components/Sample.tsx:4 "Save"')));
+    assert.ok(errors.some((error) => error.includes('Hardcoded UI string: src/app/options/components/Sample.tsx:4 "Save"')));
 });
 
 test('accepts a complete fixture with matching usage', () => {

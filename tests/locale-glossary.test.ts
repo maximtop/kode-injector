@@ -7,7 +7,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import test from 'node:test';
 
-import { AVAILABLE_LOCALES } from '../src/js/common/locale';
+import { AVAILABLE_LOCALES } from '../src/app/common/locale';
 
 const LOCALES_ROOT = path.join(process.cwd(), 'src/_locales');
 const BIDI_CONTROL_PATTERN = /[\u202A-\u202E\u2066-\u2069]/u;

@@ -88,7 +88,7 @@ src/
   manifest.json          # MV3 manifest (version injected at build time)
   _locales/              # i18n message bundles (30 supported locales)
   assets/                # Static images (icons)
-  js/
+  app/
     background/           # Service worker — injections logic, messaging, storage, update service
     common/               # Shared utilities, locale resolver, translator, messenger, tabs, and logs
     content-script/       # Content script injected at document_start on all URLs

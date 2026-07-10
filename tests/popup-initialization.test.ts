@@ -5,7 +5,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { preparePopupState } from '../src/js/popup/stores/popup-initialization';
+import { preparePopupState } from '../src/app/popup/stores/popup-initialization';
 
 test('popup locale initializes before presentation state is returned', async () => {
     const calls: string[] = [];

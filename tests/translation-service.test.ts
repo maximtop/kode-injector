@@ -10,7 +10,7 @@ import {
     LANGUAGE_AUTO,
     type MessagesJson,
     TranslationService,
-} from '../src/js/common/locale';
+} from '../src/app/common/locale';
 
 const FIXTURES: Record<string, MessagesJson> = {
     en: {

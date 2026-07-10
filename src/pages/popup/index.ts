@@ -2,6 +2,6 @@
  * @file
  */
 
-import { popupPage } from '../../js/popup';
+import { popupPage } from '../../app/popup';
 
 popupPage();

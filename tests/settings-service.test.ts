@@ -5,12 +5,12 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { SETTINGS, STORAGE_KEYS } from '../src/js/common/constants';
-import { SettingsService } from '../src/js/background/settings-service';
+import { SETTINGS, STORAGE_KEYS } from '../src/app/common/constants';
+import { SettingsService } from '../src/app/background/settings-service';
 import {
     normalizeAppSettingsWithRepair,
     type AppSettings,
-} from '../src/js/common/contracts';
+} from '../src/app/common/contracts';
 
 class FakeStorage {
     private value: unknown;

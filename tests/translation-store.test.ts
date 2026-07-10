@@ -5,7 +5,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { TranslationStore, type AvailableLocale, type LocalePreference } from '../src/js/common/locale';
+import { TranslationStore, type AvailableLocale, type LocalePreference } from '../src/app/common/locale';
 
 const createService = (
     resolved: AvailableLocale,

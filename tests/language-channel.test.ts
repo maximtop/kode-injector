@@ -5,7 +5,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { LanguageChannel } from '../src/js/common/language-channel';
+import { LanguageChannel } from '../src/app/common/language-channel';
 
 class FakeRuntime {
     private listeners: Array<(message: unknown) => unknown> = [];

@@ -2,6 +2,6 @@
  * @file
  */
 
-import { optionsPage } from '../../js/options';
+import { optionsPage } from '../../app/options';
 
 optionsPage();

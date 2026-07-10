@@ -8,7 +8,7 @@ import path from 'node:path';
 import test from 'node:test';
 
 import { CHANNEL_ENVS } from '../constants';
-import { AVAILABLE_LOCALES } from '../../src/js/common/locale/locale-constants';
+import { AVAILABLE_LOCALES } from '../../src/app/common/locale/locale-constants';
 import { updateLocalesMSGName, updateManifest } from './helpers';
 
 test('updateManifest applies the package version', () => {

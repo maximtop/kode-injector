@@ -5,8 +5,8 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { LanguageChannel } from '../src/js/common/language-channel';
-import { TranslationStore, type LocalePreference } from '../src/js/common/locale';
+import { LanguageChannel } from '../src/app/common/language-channel';
+import { TranslationStore, type LocalePreference } from '../src/app/common/locale';
 
 class FakeRuntime {
     private listeners = new Set<(message: unknown) => unknown>();

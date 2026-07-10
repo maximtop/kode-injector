@@ -8,8 +8,8 @@ import ts from 'typescript';
 import { pathToFileURL } from 'node:url';
 import { validator, type Locale } from '@adguard/translate';
 
-import { AVAILABLE_LOCALES, BASE_LOCALE } from '../../src/js/common/locale/locale-constants';
-import type { MessagesJson } from '../../src/js/common/locale/locale-types';
+import { AVAILABLE_LOCALES, BASE_LOCALE } from '../../src/app/common/locale/locale-constants';
+import type { MessagesJson } from '../../src/app/common/locale/locale-types';
 
 /**
  * Paths and locale expectations used by the locale validator.
@@ -46,11 +46,11 @@ const TRANSLATOR_KEY_PATTERN = /translator\.getMessage\(\s*['"]([^'"]+)['"]/g;
 const UI_ATTRIBUTE_NAMES = new Set(['title', 'placeholder', 'aria-label', 'alt']);
 
 const UI_STRING_EXEMPTIONS = new Map([
-    ['src/js/options/components/Header/Header.tsx:Kode Injector', 'Product name'],
-    ['src/js/popup/components/Header/Header.tsx:Kode Injector', 'Product name'],
-    ['src/js/options/components/Footer/Footer.tsx:© maximtop, 2017-', 'Copyright'],
-    ['src/js/options/components/NewInjectionForm/NewInjectionForm.tsx:file:///index.js', 'Technical example'],
-    ['src/js/options/components/NewInjectionForm/NewInjectionForm.tsx:file:///styles.css', 'Technical example'],
+    ['src/app/options/components/Header/Header.tsx:Kode Injector', 'Product name'],
+    ['src/app/popup/components/Header/Header.tsx:Kode Injector', 'Product name'],
+    ['src/app/options/components/Footer/Footer.tsx:© maximtop, 2017-', 'Copyright'],
+    ['src/app/options/components/NewInjectionForm/NewInjectionForm.tsx:file:///index.js', 'Technical example'],
+    ['src/app/options/components/NewInjectionForm/NewInjectionForm.tsx:file:///styles.css', 'Technical example'],
 ]);
 
 /**
@@ -306,7 +306,7 @@ const validateCatalog = (
  */
 export const validateLocales = (options: LocaleValidationOptions): string[] => {
     const localesPath = options.localesPath ?? path.join(options.rootPath, 'src/_locales');
-    const sourcePath = options.sourcePath ?? path.join(options.rootPath, 'src/js');
+    const sourcePath = options.sourcePath ?? path.join(options.rootPath, 'src/app');
     const manifestPath = options.manifestPath ?? path.join(options.rootPath, 'src/manifest.json');
     const errors: string[] = [];
     const actualLocales = fs.existsSync(localesPath)

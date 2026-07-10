@@ -5,7 +5,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { buildLanguageOptions } from '../src/js/options/components/LanguageSelect/language-options';
+import { buildLanguageOptions } from '../src/app/options/components/LanguageSelect/language-options';
 
 test('auto selection places browser language first', () => {
     const options = buildLanguageOptions('auto', 'Browser language');

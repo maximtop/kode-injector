@@ -2,8 +2,8 @@
  * @file
  */
 
-import { backgroundPage } from '../../js/background';
-import { log } from '../../js/common/log';
+import { backgroundPage } from '../../app/background';
+import { log } from '../../app/common/log';
 
 backgroundPage()
     .then(() => { log.debug('All modules initiated'); })
