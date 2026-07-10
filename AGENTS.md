@@ -21,8 +21,8 @@ Browser extension with a React-based popup and options page.
 ## Tech Stack
 
 - **UI:** React 17, MobX 6, Ant Design 4
-- **Bundling:** Webpack 5, Babel 7
-- **Styling:** PostCSS (CSS Modules via `css-loader`)
+- **Bundling:** Rspack 2 with built-in SWC
+- **Styling:** PostCSS with Rspack native CSS Modules
 - **Cross-browser API:** `webextension-polyfill`
 - **Linting:** ESLint (Airbnb config, 4-space indent)
 - **Package manager:** pnpm
@@ -36,40 +36,41 @@ src/
   assets/img/                # Extension icons
   js/
     background/              # Service worker
-      index.js              # Entry — wires up stores and message handler
-      injections.js          # Injection rules store (CRUD, matching, code fetch)
-      settings.js            # App-level settings (enabled/disabled)
-      storage.js             # chrome.storage wrapper
-      message-handler.js     # Routes runtime messages to injections/settings/app
-      execute-script.js      # Injects JS into tabs
-      app.js                 # Global enable/disable
-      update-service.js      # Update checks
+      index.ts              # Entry — wires up stores and message handler
+      injections.ts         # Injection rules store (CRUD, matching, code fetch)
+      settings.ts           # App-level settings (enabled/disabled)
+      storage.ts            # chrome.storage wrapper
+      message-handler.ts    # Routes runtime messages to injections/settings/app
+      execute-script.ts     # Injects JS into tabs
+      app.ts                # Global enable/disable
+      update-service.ts     # Update checks
     common/
-      constants.js           # MESSAGE_TYPES, STORAGE_KEYS, SETTINGS
-      messenger.js           # Message-passing helpers between popup/options and background
-      tabs.js                # Tab helpers
-      url-utils.js           # URL/hostname parsing
-      log.js                 # Logging
+      constants.ts          # MESSAGE_TYPES, STORAGE_KEYS, SETTINGS
+      messenger.ts          # Message-passing helpers between popup/options and background
+      tabs.ts               # Tab helpers
+      url-utils.ts          # URL/hostname parsing
+      log.ts                # Logging
     content-script/
-      index.js               # Runs at document_start; requests injection code
+      index.ts              # Runs at document_start; requests injection code
     options/
-      index.jsx              # Options page root
+      index.tsx             # Options page root
       components/            # Header, Footer, OptionsApp, NewInjectionForm, InjectionsTable
-      stores/InjectionsStore.js, RootStore.js
+      stores/InjectionsStore.ts, RootStore.ts
     popup/
-      index.jsx              # Popup root
+      index.tsx             # Popup root
       components/            # Header, Footer, Main, PopupApp
-      stores/RootStore.js, SettingsStore.js
+      stores/RootStore.ts, SettingsStore.ts
   pages/
     background/              # Background HTML + JS bootstrap
     content-script/         # Content script entry
     options/                 # Options HTML + JS bootstrap
     popup/                   # Popup HTML + JS bootstrap
 scripts/
-  constants.js              # Build channel constants (dev/prod)
+  constants.ts              # Build channel constants (dev/prod)
   build/
-    helpers.js              # Manifest & locale transforms
-    webpack.config.babel.js # Webpack config
+    archive-plugin.ts       # Production ZIP archive plugin
+    helpers.ts              # Manifest & locale transforms
+rspack.config.ts            # Typed Rspack and SWC config
 build/                      # Output (build/dev, build/prod)
 ```
 
@@ -85,8 +86,8 @@ build/                      # Output (build/dev, build/prod)
   blacklisted?) and provides per-site and global toggles.
 - **Options page** manages injection rules: add (site + JS path + CSS path),
   enable/disable, and delete.
-- **Messaging** flows through `src/js/common/messenger.js`, with message types
-  defined in `src/js/common/constants.js`.
+- **Messaging** flows through `src/js/common/messenger.ts`, with message types
+  defined in `src/js/common/constants.ts`.
 
 ## Key Conventions
 
@@ -104,14 +105,13 @@ build/                      # Output (build/dev, build/prod)
 ```sh
 pnpm install   # install dependencies
 pnpm start     # dev watch build -> build/dev/
-pnpm build     # production build -> build/prod/
-pnpm lint      # eslint src scripts
+pnpm build     # production build -> build/prod/ and versioned ZIP
+make lint      # ESLint and TypeScript validation
 ```
 
 Load the dev build via `chrome://extensions/` → **Load unpacked** → `build/dev/`.
 
 ## Testing
 
-There is no automated test framework configured in this project. Manual testing
-is done by loading the unpacked extension and verifying injection behavior on
-target sites.
+Build helper tests run with `pnpm test:build`. Extension behavior is verified
+manually by loading the unpacked extension and testing target sites.

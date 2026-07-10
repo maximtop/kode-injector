@@ -1,5 +1,4 @@
 module.exports = {
-    parser: 'babel-eslint',
     extends: [
         'airbnb',
         'plugin:jsdoc/recommended',
@@ -36,6 +35,19 @@ module.exports = {
                 'no-undef': 'off',
                 'no-unused-vars': 'off',
                 'react/jsx-filename-extension': ['error', { extensions: ['.jsx', '.tsx'] }],
+            },
+        },
+        {
+            files: [
+                'scripts/build/**/*.ts',
+                'rspack.config.ts',
+            ],
+            rules: {
+                'import/no-extraneous-dependencies': ['error', {
+                    devDependencies: true,
+                    optionalDependencies: false,
+                    peerDependencies: false,
+                }],
             },
         },
     ],

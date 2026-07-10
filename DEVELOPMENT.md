@@ -5,7 +5,7 @@ extension, and contribute to the project.
 
 ## Prerequisites
 
-- [Node.js](https://nodejs.org/) (LTS or later)
+- [Node.js 24 LTS](https://nodejs.org/)
 - [pnpm](https://pnpm.io/) package manager
 
 ## Getting started
@@ -27,7 +27,7 @@ Convenience targets are defined in the `Makefile` and map to `pnpm` scripts:
 | `make install` | Install dependencies (`pnpm install`) |
 | `make start` | Start the development build in watch mode |
 | `make build` | Create a production build |
-| `make lint` | Run ESLint over `src/` and `scripts/` |
+| `make lint` | Run ESLint and TypeScript validation |
 | `make typecheck` | Run TypeScript validation without emitting files |
 
 Equivalent `pnpm` scripts:
@@ -36,7 +36,7 @@ Equivalent `pnpm` scripts:
 pnpm install   # install dependencies
 pnpm start     # development watch build (CHANNEL_ENV=dev)
 pnpm build     # production build (CHANNEL_ENV=prod)
-pnpm lint      # eslint --ext .js,.jsx,.ts,.tsx src scripts
+pnpm lint      # run ESLint over source, scripts, and the Rspack config
 pnpm typecheck # validate TypeScript and TSX without emitting files
 ```
 
@@ -50,10 +50,10 @@ automatically by the npm scripts:
 | `dev` | `pnpm start` | `build/dev/` | Watch mode, source maps, appends `(Dev)` to the extension name |
 | `prod` | `pnpm build` | `build/prod/` | Optimized build; also produces `build/<version>-prod.zip` |
 
-Webpack configuration lives in `scripts/build/webpack.config.babel.js`. The
-JavaScript file is a webpack-cli compatibility shim that loads the typed
-configuration from `scripts/build/webpack.config.ts`. The manifest version is
-injected from `package.json` during the build.
+Rspack 2 loads the typed `rspack.config.ts` configuration directly. Its built-in
+SWC compiler handles TypeScript, TSX, legacy decorators, and React JSX. Rspack
+built-ins handle HTML generation, copy transforms, output cleanup, assets, and
+CSS. The manifest version is injected from `package.json` during the build.
 
 ## Loading the extension for development
 
@@ -70,9 +70,9 @@ or background changes.
 
 - **Runtime:** Manifest V3 browser extension (Chrome / Firefox / Edge)
 - **UI:** React 17, MobX 6, Ant Design 4
-- **Bundling:** Webpack 5, Babel 7
+- **Bundling:** Rspack 2 with built-in SWC
 - **Styling:** PostCSS with `postcss-import`, `postcss-preset-env`,
-  `postcss-nested`, and `postcss-svg`; CSS Modules via `css-loader`
+  `postcss-nested`, and `postcss-svg`; CSS Modules via Rspack native CSS
 - **Polyfill:** `webextension-polyfill` for cross-browser APIs
 - **Linting:** ESLint with the Airbnb config; 4-space indentation
 
@@ -89,13 +89,13 @@ src/
     content-script/       # Content script injected at document_start on all URLs
     options/              # Options page UI (React) — manage injection rules
     popup/                # Toolbar popup UI (React) — per-site/global toggles
-  pages/                  # Webpack entry points (HTML + JS bootstrap)
+  pages/                  # Rspack entry points (HTML + TypeScript bootstrap)
 scripts/
   constants.ts            # Build-channel constants
   build/
+    archive-plugin.ts     # Production ZIP archive plugin
     helpers.ts            # Manifest & locale transforms
-    webpack.config.babel.js  # Webpack CLI compatibility shim
-    webpack.config.ts     # Webpack configuration
+rspack.config.ts          # Typed Rspack and SWC configuration
 build/                    # Build output (dev/ and prod/)
 ```
 
@@ -121,9 +121,9 @@ make typecheck
 
 ## Deployment
 
-Production uploads to the Chrome Web Store are handled by `deploy.sh`, which
-runs the [`adguard/extension-deployer`](https://hub.docker.com/r/adguard/extension-deployer)
-Docker image. Store credentials and app IDs are stored in `.env` (gitignored).
+Production uploads to the Chrome Web Store use the `Makefile` targets below and
+the local `go-webext` checkout. Store credentials and app IDs are stored in
+`.env` (gitignored).
 
 The `Makefile` exposes additional targets:
 

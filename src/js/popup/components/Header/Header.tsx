@@ -6,9 +6,7 @@ import React, { useContext } from 'react';
 import { observer } from 'mobx-react';
 import {
     Button,
-    Col,
     Layout,
-    Row,
 } from 'antd';
 import { PauseCircleOutlined, SettingOutlined, PlayCircleOutlined } from '@ant-design/icons';
 
@@ -21,31 +19,29 @@ export const Header = observer(() => {
     /**
      * Opens the extension settings page.
      */
-    const handleOpenSettingsClick = (): void => {
-        messenger.openSettings();
+    const handleOpenSettingsClick = async (): Promise<void> => {
+        await messenger.openSettings();
     };
 
     /**
      * Disables the extension globally.
      */
-    const handlePauseClick = (): void => {
-        settingsStore.disableApp();
+    const handlePauseClick = async (): Promise<void> => {
+        await settingsStore.disableApp();
     };
 
     /**
      * Enables the extension globally.
      */
-    const handleEnableClick = (): void => {
-        settingsStore.enableApp();
+    const handleEnableClick = async (): Promise<void> => {
+        await settingsStore.enableApp();
     };
 
     return (
         <Layout.Header className="header">
-            <Row justify="space-between">
-                <Col>
-                    <h1>Kode Injector</h1>
-                </Col>
-                <Col>
+            <div className="header-content">
+                <h1>Kode Injector</h1>
+                <div className="header-actions">
                     {
                         settingsStore.appEnabled
                             ? (
@@ -72,8 +68,8 @@ export const Header = observer(() => {
                         title="Open settings"
                         onClick={handleOpenSettingsClick}
                     />
-                </Col>
-            </Row>
+                </div>
+            </div>
         </Layout.Header>
     );
 });

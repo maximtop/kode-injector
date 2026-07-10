@@ -1,10 +1,29 @@
 .popup-app {
-    width: 250px;
+    width: 320px;
     height: 250px;
 
     .header {
         background-color: white;
-        padding: 0 20px;
+        padding: 0 16px;
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 100%;
+            gap: 8px;
+        }
+
+        .header-actions {
+            display: flex;
+            flex-shrink: 0;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 22px;
+            white-space: nowrap;
+        }
     }
 
     .footer {

@@ -2,6 +2,8 @@
 
 include .env
 
+PACKAGE_VERSION := $(shell node -p "require('./package.json').version")
+
 install:
 	pnpm install
 
@@ -29,4 +31,4 @@ chrome_status:
 	../go-webext/go-webext status chrome -a $(CHROME_APP_ID)
 
 chrome_update:
-	../go-webext/go-webext update chrome -a $(CHROME_APP_ID) -f ./build/0.8.1-prod.zip
+	../go-webext/go-webext update chrome -a $(CHROME_APP_ID) -f ./build/$(PACKAGE_VERSION)-prod.zip

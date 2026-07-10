@@ -2,11 +2,13 @@
  * @file
  */
 
-import { capitalize } from 'lodash';
+import lodash from 'lodash';
 import { CHANNEL_ENVS, type BuildEnv } from '../constants';
 
+const { capitalize } = lodash;
+
 /**
- * Source content accepted by webpack transforms.
+ * Source content accepted by build transforms.
  */
 type TransformContent = Buffer | string;
 

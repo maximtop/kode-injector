@@ -95,6 +95,7 @@ export class SettingsStore {
             runInAction(() => {
                 this.appEnabled = false;
             });
+            await tabs.reloadTab(this.currentTab.id);
         } catch (e) {
             log.error(e instanceof Error ? e.message : e);
         }
@@ -109,6 +110,7 @@ export class SettingsStore {
             runInAction(() => {
                 this.appEnabled = true;
             });
+            await tabs.reloadTab(this.currentTab.id);
         } catch (e) {
             log.error(e instanceof Error ? e.message : e);
         }
