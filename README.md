@@ -47,9 +47,17 @@ Install Kode Injector from the Chrome Web Store.
 To run the latest development build from source:
 
 1. Clone the repository.
-2. Run `make build` to create a production build in `build/prod/`.
-3. Open `chrome://extensions/` and enable **Developer mode**.
-4. Click **Load unpacked** and select the `build/prod/` directory.
+2. Run `make build` to create release builds for Chrome, Edge, and Firefox.
+3. In Chrome or Edge, open the browser's extensions page and enable
+   **Developer mode**.
+4. Click **Load unpacked** and select `build/release/chrome/` for Chrome or
+   `build/release/edge/` for Edge.
+
+For Firefox, open `about:debugging`, select **This Firefox**, click
+**Load Temporary Add-on**, and select `build/release/firefox/manifest.json`.
+Firefox 153 or newer is required. In the extension's settings, open
+**Permissions** and enable **Access local files on your computer** before using
+local injection paths.
 
 See [DEVELOPMENT.md](DEVELOPMENT.md) for full setup details.
 
@@ -140,7 +148,10 @@ add a rule for this site.
 
 Ensure the path is a valid `file:///` URL and that the file exists at that
 location. The extension reads local files over `fetch()`, so the path must be
-directly accessible by the browser.
+directly accessible by the browser. In Chrome or Edge, enable **Allow access to
+file URLs** for Kode Injector. In Firefox 153 or newer, enable **Access local
+files on your computer** from the extension's permissions. Kode Injector shows
+a warning while this browser permission is disabled.
 
 **How do I inject only JavaScript or only CSS?**
 
@@ -153,4 +164,3 @@ one type, point the other field at an empty file.
 
 - [Development](DEVELOPMENT.md) — how to set up and contribute
 - [LLM agent rules](AGENTS.md) — AI-assisted development guidelines
-

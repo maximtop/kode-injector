@@ -11,6 +11,7 @@ test('popup locale initializes before presentation state is returned', async () 
     const result = await preparePopupState(
         { id: 7, url: 'https://example.com' },
         {
+            fileAccessAllowed: false,
             settings: { 'app.enabled': true, 'language.selected': 'de' },
             siteHasEnabledInjections: true,
             siteIsBlacklisted: false,
@@ -23,6 +24,7 @@ test('popup locale initializes before presentation state is returned', async () 
     expect(result).toEqual({
         appEnabled: true,
         currentTab: { id: 7, url: 'https://example.com' },
+        fileAccessAllowed: false,
         siteHasEnabledInjections: true,
         siteIsBlacklisted: false,
     });

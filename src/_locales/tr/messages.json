@@ -28,5 +28,10 @@
     "popup_disable_site": { "message": "Bu sitede enjeksiyonu kapat" },
     "popup_enable_site": { "message": "Bu sitede enjeksiyonu aç" },
     "popup_report_issue_title": { "message": "GitLab'da sorun bildir" },
-    "popup_report_issue": { "message": "Sorun bildir" }
+    "popup_report_issue": { "message": "Sorun bildir" },
+    "file_access_disabled": { "message": "Yerel dosya erişimi devre dışı" },
+    "file_access_instructions": { "message": "Tarayıcınızda Kode Injector uzantı ayarlarını açın, yerel dosya erişimini etkinleştirin ve ardından yeniden kontrol edin." },
+    "file_access_open_extension_settings": { "message": "Uzantı ayarlarını aç" },
+    "file_access_check_again": { "message": "Yeniden kontrol et" },
+    "popup_file_access_disabled": { "message": "Yerel dosya erişimi devre dışı. Talimatlar için ayarları açın." }
 }

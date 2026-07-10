@@ -11,8 +11,8 @@ code is injected automatically when those sites are visited.
 
 ## Target Platform
 
-Browser extension running on Chrome, Firefox, and Edge (Manifest V3 service
-worker model).
+Browser extension running on Chrome, Firefox, and Edge. Chrome and Edge use a
+Manifest V3 service worker; Firefox uses a Manifest V3 background page.
 
 ## Project Type
 
@@ -66,19 +66,22 @@ src/
     options/                 # Options HTML + JS bootstrap
     popup/                   # Popup HTML + JS bootstrap
 scripts/
-  constants.ts              # Build channel constants (dev/prod)
+  constants.ts              # Build channel and browser target constants
   build/
-    archive-plugin.ts       # Production ZIP archive plugin
+    bundle.ts               # Commander-based build entry point
+    bundle-runner.ts        # Rspack run/watch orchestration
+    cli.ts                  # Browser subcommands and watch validation
+    archive-plugin.ts       # Browser ZIP archive plugin
     helpers.ts              # Manifest & locale transforms
 rspack.config.ts            # Typed Rspack and SWC config
-build/                      # Output (build/dev, build/prod)
+build/                      # Output (build/<channel>/<browser>)
 ```
 
 ## Architecture
 
-- **Background service worker** holds the single source of truth: an in-memory
-  `injections` list and `settings`, both persisted to `chrome.storage`. It
-  listens for runtime messages from the popup and options page.
+- **Background runtime** holds the single source of truth: an in-memory
+  `injections` list and `settings`, both persisted to `chrome.storage`. It runs
+  as a service worker in Chromium and a background page in Firefox.
 - **Content script** runs at `document_start` on `<all_urls>`. On load it sends
   a `GET_INJECTIONS_CODE` message to the background, receives matching JS/CSS,
   and executes them on the page.
@@ -110,19 +113,29 @@ build/                      # Output (build/dev, build/prod)
 - **i18n:** Messages in `src/_locales/<locale>/messages.json`; referenced in
   the manifest via `__MSG_name__`.
 - **No magic values:** Repeated domain identifiers and literals must use named
-  constants or enums. Keep component-specific values local; place values shared
-  across modules in `src/app/common/constants.ts` or the relevant common contract.
+  constants or enums. Represent closed domain sets, such as browser targets,
+  with TypeScript enums instead of string unions or repeated string literals.
+  Keep component-specific values local; place values shared across modules in
+  `src/app/common/constants.ts` or the relevant common contract.
 
 ## Build & Development Commands
 
 ```sh
 pnpm install   # install dependencies
-pnpm start     # dev watch build -> build/dev/
-pnpm build     # production build -> build/prod/ and versioned ZIP
+pnpm dev       # one-shot dev build for Chrome, Edge, and Firefox
+pnpm dev chrome --watch # watch one explicit dev browser target
+pnpm release   # release build for Chrome, Edge, and Firefox
 make lint      # ESLint and TypeScript validation
 ```
 
-Load the dev build via `chrome://extensions/` → **Load unpacked** → `build/dev/`.
+Append `chrome`, `edge`, or `firefox` to `pnpm dev` or `pnpm release` to build
+one target. Outputs are `build/<channel>/<browser>/` and
+`build/<channel>/<browser>.zip`. Load the Chrome dev build via
+`chrome://extensions/` → **Load unpacked** → `build/dev/chrome/`.
+
+Firefox builds require Firefox 153 or newer. Users must grant **Access local
+files on your computer** in the extension permissions; the UI reports the
+current browser-owned permission state and must not persist its own copy.
 
 ## Testing
 
@@ -147,7 +160,7 @@ const browser = await chromium.launch({
 });
 ```
 
-Use `build/dev/` for localization and workflow smoke checks. Keep the browser
+Use `build/dev/chrome/` for localization and workflow smoke checks. Keep the browser
 context isolated, verify popup/options pages through their extension URLs, and
 close the browser after the run. Do not use headed mode, attach to a user's
 visible browser session, or leave test tabs open.

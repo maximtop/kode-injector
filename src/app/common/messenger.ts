@@ -76,6 +76,13 @@ class Messenger {
     }
 
     /**
+     * Requests the browser-owned local-file permission state.
+     */
+    getFileAccessStatus = (): Promise<boolean> => {
+        return this.sendMessage(MESSAGE_TYPES.GET_FILE_ACCESS_STATUS);
+    }
+
+    /**
      * Requests data required by the popup.
      */
     getPopupData = (tab: PopupTab): Promise<PopupDataResponse> => {

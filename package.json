@@ -18,9 +18,8 @@
         "node": ">=24 <25"
     },
     "scripts": {
-        "start": "CHANNEL_ENV=dev rspack build --watch --config rspack.config.ts",
-        "build": "CHANNEL_ENV=prod rspack build --config rspack.config.ts",
-        "rspack": "rspack build --config rspack.config.ts",
+        "dev": "CHANNEL_ENV=dev tsx scripts/build/bundle.ts",
+        "release": "CHANNEL_ENV=release tsx scripts/build/bundle.ts",
         "test": "vitest run",
         "test:build": "vitest run scripts/build",
         "test:locales": "vitest run tests",
@@ -44,7 +43,6 @@
         "webextension-polyfill": "^0.7.0"
     },
     "devDependencies": {
-        "@rspack/cli": "2.1.3",
         "@rspack/core": "2.1.3",
         "@swc/helpers": "0.5.23",
         "@types/adm-zip": "0.5.8",
@@ -56,6 +54,7 @@
         "@typescript-eslint/eslint-plugin": "4.33.0",
         "@typescript-eslint/parser": "4.33.0",
         "adm-zip": "0.5.18",
+        "commander": "12.1.0",
         "eslint": "^7.19.0",
         "eslint-config-airbnb": "^18.2.1",
         "eslint-plugin-import": "^2.22.1",

@@ -28,5 +28,10 @@
     "popup_disable_site": { "message": "Nonaktifkan injeksi di situs ini" },
     "popup_enable_site": { "message": "Aktifkan injeksi di situs ini" },
     "popup_report_issue_title": { "message": "Laporkan masalah di GitLab" },
-    "popup_report_issue": { "message": "Laporkan masalah" }
+    "popup_report_issue": { "message": "Laporkan masalah" },
+    "file_access_disabled": { "message": "Akses file lokal dinonaktifkan" },
+    "file_access_instructions": { "message": "Buka pengaturan ekstensi Kode Injector di browser, aktifkan akses file lokal, lalu periksa lagi." },
+    "file_access_open_extension_settings": { "message": "Buka pengaturan ekstensi" },
+    "file_access_check_again": { "message": "Periksa lagi" },
+    "popup_file_access_disabled": { "message": "Akses file lokal dinonaktifkan. Buka pengaturan untuk petunjuk." }
 }

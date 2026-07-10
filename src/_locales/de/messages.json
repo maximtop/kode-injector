@@ -28,5 +28,10 @@
     "popup_disable_site": { "message": "Injektionen auf dieser Website deaktivieren" },
     "popup_enable_site": { "message": "Injektionen auf dieser Website aktivieren" },
     "popup_report_issue_title": { "message": "Problem auf GitLab melden" },
-    "popup_report_issue": { "message": "Problem melden" }
+    "popup_report_issue": { "message": "Problem melden" },
+    "file_access_disabled": { "message": "Der Zugriff auf lokale Dateien ist deaktiviert" },
+    "file_access_instructions": { "message": "Öffnen Sie die Erweiterungseinstellungen für Kode Injector, aktivieren Sie den Zugriff auf lokale Dateien und prüfen Sie anschließend erneut." },
+    "file_access_open_extension_settings": { "message": "Erweiterungseinstellungen öffnen" },
+    "file_access_check_again": { "message": "Erneut prüfen" },
+    "popup_file_access_disabled": { "message": "Der Zugriff auf lokale Dateien ist deaktiviert. Anweisungen finden Sie in den Einstellungen." }
 }

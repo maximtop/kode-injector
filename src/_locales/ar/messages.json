@@ -28,5 +28,10 @@
     "popup_disable_site": { "message": "تعطيل الحقن في هذا الموقع" },
     "popup_enable_site": { "message": "تفعيل الحقن في هذا الموقع" },
     "popup_report_issue_title": { "message": "الإبلاغ عن مشكلة على GitLab" },
-    "popup_report_issue": { "message": "الإبلاغ عن مشكلة" }
+    "popup_report_issue": { "message": "الإبلاغ عن مشكلة" },
+    "file_access_disabled": { "message": "تم تعطيل الوصول إلى الملفات المحلية" },
+    "file_access_instructions": { "message": "افتح إعدادات إضافة Kode Injector في متصفحك وفعّل الوصول إلى الملفات المحلية على جهازك أو السماح بالوصول إلى عناوين URL للملفات، ثم تحقق مرة أخرى." },
+    "file_access_open_extension_settings": { "message": "فتح إعدادات الإضافة" },
+    "file_access_check_again": { "message": "تحقق مرة أخرى" },
+    "popup_file_access_disabled": { "message": "تم تعطيل الوصول إلى الملفات المحلية. افتح الإعدادات للحصول على التعليمات." }
 }

@@ -28,5 +28,10 @@
     "popup_disable_site": { "message": "Disable injecting on this site", "description": "Tooltip for disabling all injection rules on the current site." },
     "popup_enable_site": { "message": "Enable injecting on this site", "description": "Tooltip for enabling injection rules on the current site." },
     "popup_report_issue_title": { "message": "Report an issue on GitLab", "description": "Tooltip for the issue reporting action." },
-    "popup_report_issue": { "message": "Report an issue", "description": "Button label for reporting a problem." }
+    "popup_report_issue": { "message": "Report an issue", "description": "Button label for reporting a problem." },
+    "file_access_disabled": { "message": "Local file access is disabled", "description": "Warning title shown when the browser denies access to local file URLs." },
+    "file_access_instructions": { "message": "Open your browser's extension settings for Kode Injector and enable Access local files on your computer or Allow access to file URLs, then check again.", "description": "Instructions for enabling browser permission to read local injection files." },
+    "file_access_open_extension_settings": { "message": "Open extension settings", "description": "Button that opens the browser-managed settings for Kode Injector." },
+    "file_access_check_again": { "message": "Check again", "description": "Button that rechecks browser local-file permission." },
+    "popup_file_access_disabled": { "message": "Local file access is disabled. Open settings for instructions.", "description": "Compact popup warning when local injection files cannot be read." }
 }

@@ -1,17 +1,27 @@
-.PHONY: build
+.PHONY: build dev release chrome edge firefox
 
 include .env
 
-PACKAGE_VERSION := $(shell node -p "require('./package.json').version")
+BROWSERS := chrome edge firefox
+BROWSER_TARGET := $(firstword $(filter $(BROWSERS),$(MAKECMDGOALS)))
 
 install:
 	pnpm install
 
 start:
-	pnpm start
+	pnpm dev chrome --watch
 
 build:
-	pnpm build
+	pnpm release $(BROWSER_TARGET)
+
+dev:
+	pnpm dev $(BROWSER_TARGET)
+
+release:
+	pnpm release $(BROWSER_TARGET)
+
+chrome edge firefox:
+	@:
 
 lint:
 	pnpm lint
@@ -37,4 +47,4 @@ chrome_status:
 	../go-webext/go-webext status chrome -a $(CHROME_APP_ID)
 
 chrome_update:
-	../go-webext/go-webext update chrome -a $(CHROME_APP_ID) -f ./build/$(PACKAGE_VERSION)-prod.zip
+	../go-webext/go-webext update chrome -a $(CHROME_APP_ID) -f ./build/release/chrome.zip

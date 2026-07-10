@@ -19,6 +19,11 @@ export interface PopupPresentationState {
     appEnabled: boolean;
 
     /**
+     * Whether the browser currently permits local-file access.
+     */
+    fileAccessAllowed: boolean;
+
+    /**
      * Active browser tab.
      */
     currentTab: PopupTab;
@@ -53,6 +58,7 @@ export const preparePopupState = async (
     return {
         appEnabled: popupData.settings[SETTINGS.APP_ENABLED],
         currentTab,
+        fileAccessAllowed: popupData.fileAccessAllowed,
         siteHasEnabledInjections: popupData.siteHasEnabledInjections,
         siteIsBlacklisted: popupData.siteIsBlacklisted,
     };

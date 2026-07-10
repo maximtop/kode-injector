@@ -144,7 +144,6 @@ class Injections {
     getInjectionsByUrl = (url: string): InjectionRule[] | null => {
         const hostname = urlUtils.getHostnameWithoutWww(url);
         if (!hostname) {
-            log.error(`Url: "${url}" does not have hostname`);
             return null;
         }
         // TODO on enter format site input

@@ -28,5 +28,10 @@
     "popup_disable_site": { "message": "Vypnúť injekcie na tomto webe" },
     "popup_enable_site": { "message": "Zapnúť injekcie na tomto webe" },
     "popup_report_issue_title": { "message": "Nahlásiť problém na GitLab" },
-    "popup_report_issue": { "message": "Nahlásiť problém" }
+    "popup_report_issue": { "message": "Nahlásiť problém" },
+    "file_access_disabled": { "message": "Prístup k miestnym súborom je zakázaný" },
+    "file_access_instructions": { "message": "Otvorte nastavenia rozšírenia Kode Injector, povoľte prístup k miestnym súborom a potom kontrolu zopakujte." },
+    "file_access_open_extension_settings": { "message": "Otvoriť nastavenia rozšírenia" },
+    "file_access_check_again": { "message": "Skontrolovať znova" },
+    "popup_file_access_disabled": { "message": "Prístup k miestnym súborom je zakázaný. Pokyny nájdete v nastaveniach." }
 }

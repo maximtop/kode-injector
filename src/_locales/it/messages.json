@@ -28,5 +28,10 @@
     "popup_disable_site": { "message": "Disattiva le iniezioni su questo sito" },
     "popup_enable_site": { "message": "Attiva le iniezioni su questo sito" },
     "popup_report_issue_title": { "message": "Segnala un problema su GitLab" },
-    "popup_report_issue": { "message": "Segnala un problema" }
+    "popup_report_issue": { "message": "Segnala un problema" },
+    "file_access_disabled": { "message": "L’accesso ai file locali è disattivato" },
+    "file_access_instructions": { "message": "Apri le impostazioni dell’estensione Kode Injector, abilita l’accesso ai file locali, quindi controlla di nuovo." },
+    "file_access_open_extension_settings": { "message": "Apri le impostazioni dell’estensione" },
+    "file_access_check_again": { "message": "Controlla di nuovo" },
+    "popup_file_access_disabled": { "message": "L’accesso ai file locali è disattivato. Apri le impostazioni per le istruzioni." }
 }

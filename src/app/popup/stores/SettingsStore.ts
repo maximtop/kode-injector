@@ -50,6 +50,12 @@ export class SettingsStore {
     popupDataReady = false;
 
     /**
+     * Whether the browser currently permits local-file access.
+     */
+    @observable
+    fileAccessAllowed = true;
+
+    /**
      * Active browser tab displayed by the popup.
      */
     @observable
@@ -80,6 +86,7 @@ export class SettingsStore {
         runInAction(() => {
             this.appEnabled = state.appEnabled;
             this.currentTab = state.currentTab;
+            this.fileAccessAllowed = state.fileAccessAllowed;
             this.siteHasEnabledInjections = state.siteHasEnabledInjections;
             this.siteIsBlacklisted = state.siteIsBlacklisted;
             this.popupDataReady = true;

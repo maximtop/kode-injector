@@ -28,5 +28,10 @@
     "popup_disable_site": { "message": "このサイトでインジェクションを無効化" },
     "popup_enable_site": { "message": "このサイトでインジェクションを有効化" },
     "popup_report_issue_title": { "message": "GitLab で問題を報告" },
-    "popup_report_issue": { "message": "問題を報告" }
+    "popup_report_issue": { "message": "問題を報告" },
+    "file_access_disabled": { "message": "ローカルファイルへのアクセスが無効です" },
+    "file_access_instructions": { "message": "ブラウザーで Kode Injector の拡張機能設定を開き、ローカルファイルへのアクセスを有効にしてから、もう一度確認してください。" },
+    "file_access_open_extension_settings": { "message": "拡張機能の設定を開く" },
+    "file_access_check_again": { "message": "もう一度確認" },
+    "popup_file_access_disabled": { "message": "ローカルファイルへのアクセスが無効です。手順を確認するには設定を開いてください。" }
 }

@@ -28,5 +28,10 @@
     "popup_disable_site": { "message": "Wyłącz wstrzykiwanie w tej witrynie" },
     "popup_enable_site": { "message": "Włącz wstrzykiwanie w tej witrynie" },
     "popup_report_issue_title": { "message": "Zgłoś problem w GitLab" },
-    "popup_report_issue": { "message": "Zgłoś problem" }
+    "popup_report_issue": { "message": "Zgłoś problem" },
+    "file_access_disabled": { "message": "Dostęp do plików lokalnych jest wyłączony" },
+    "file_access_instructions": { "message": "Otwórz ustawienia rozszerzenia Kode Injector, włącz dostęp do plików lokalnych, a następnie sprawdź ponownie." },
+    "file_access_open_extension_settings": { "message": "Otwórz ustawienia rozszerzenia" },
+    "file_access_check_again": { "message": "Sprawdź ponownie" },
+    "popup_file_access_disabled": { "message": "Dostęp do plików lokalnych jest wyłączony. Otwórz ustawienia, aby zobaczyć instrukcje." }
 }

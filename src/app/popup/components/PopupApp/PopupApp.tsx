@@ -15,6 +15,7 @@ import { applyDocumentLocale } from '../../../common/document-locale';
 import { i18n } from '../../../common/i18n';
 import { translator } from '../../../common/translator';
 
+import '../../../common/file-access-warning.pcss';
 import './popup-app.pcss';
 
 export const PopupApp = observer(() => {

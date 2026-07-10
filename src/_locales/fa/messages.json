@@ -28,5 +28,10 @@
     "popup_disable_site": { "message": "غیرفعال کردن تزریق در این سایت" },
     "popup_enable_site": { "message": "فعال کردن تزریق در این سایت" },
     "popup_report_issue_title": { "message": "گزارش مشکل در GitLab" },
-    "popup_report_issue": { "message": "گزارش مشکل" }
+    "popup_report_issue": { "message": "گزارش مشکل" },
+    "file_access_disabled": { "message": "دسترسی به فایل‌های محلی غیرفعال است" },
+    "file_access_instructions": { "message": "تنظیمات افزونه Kode Injector را در مرورگر باز کنید، دسترسی به فایل‌های محلی را فعال کنید و سپس دوباره بررسی کنید." },
+    "file_access_open_extension_settings": { "message": "باز کردن تنظیمات افزونه" },
+    "file_access_check_again": { "message": "بررسی دوباره" },
+    "popup_file_access_disabled": { "message": "دسترسی به فایل‌های محلی غیرفعال است. برای راهنما تنظیمات را باز کنید." }
 }

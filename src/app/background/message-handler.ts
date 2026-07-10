@@ -20,6 +20,7 @@ import { settings } from './settings';
 import { tabs } from '../common/tabs';
 import { app } from './app';
 import { gateMessageHandler } from './message-readiness';
+import { fileAccess } from './file-access';
 
 /**
  * Values returned by background runtime message handlers.
@@ -31,6 +32,7 @@ type MessageResponse =
     | InjectionsCodeResponse
     | browser.Tabs.Tab
     | LocalePreference
+    | boolean
     | null
     | void;
 
@@ -51,9 +53,13 @@ class MessageHandler {
             case MESSAGE_TYPES.GET_OPTIONS_DATA: {
                 const injectionsData = injections.getInjections();
                 return {
+                    fileAccessAllowed: await fileAccess.isAllowed(),
                     injections: injectionsData,
                     selectedLanguage: settings.getSelectedLanguage(),
                 };
+            }
+            case MESSAGE_TYPES.GET_FILE_ACCESS_STATUS: {
+                return fileAccess.isAllowed();
             }
             case MESSAGE_TYPES.ADD_INJECTION: {
                 const { injectionData } = data;
@@ -73,6 +79,7 @@ class MessageHandler {
                 const { tab } = data;
                 const tabUrl = tab.url || '';
                 const popupData: PopupDataResponse = {
+                    fileAccessAllowed: await fileAccess.isAllowed(),
                     settings: settings.getSettings(),
                     siteHasEnabledInjections: injections.hasSiteEnabledInjections(tabUrl),
                     siteIsBlacklisted: injections.isSiteBlacklisted(tabUrl),

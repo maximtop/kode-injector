@@ -28,5 +28,10 @@
     "popup_disable_site": { "message": "ปิดใช้การแทรกโค้ดในเว็บไซต์นี้" },
     "popup_enable_site": { "message": "เปิดใช้การแทรกโค้ดในเว็บไซต์นี้" },
     "popup_report_issue_title": { "message": "รายงานปัญหาใน GitLab" },
-    "popup_report_issue": { "message": "รายงานปัญหา" }
+    "popup_report_issue": { "message": "รายงานปัญหา" },
+    "file_access_disabled": { "message": "การเข้าถึงไฟล์ในเครื่องถูกปิดใช้งาน" },
+    "file_access_instructions": { "message": "เปิดการตั้งค่าส่วนขยาย Kode Injector ในเบราว์เซอร์ เปิดใช้การเข้าถึงไฟล์ในเครื่อง แล้วตรวจสอบอีกครั้ง" },
+    "file_access_open_extension_settings": { "message": "เปิดการตั้งค่าส่วนขยาย" },
+    "file_access_check_again": { "message": "ตรวจสอบอีกครั้ง" },
+    "popup_file_access_disabled": { "message": "การเข้าถึงไฟล์ในเครื่องถูกปิดใช้งาน เปิดการตั้งค่าเพื่อดูคำแนะนำ" }
 }

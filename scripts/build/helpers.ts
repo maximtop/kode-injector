@@ -3,7 +3,12 @@
  */
 
 import lodash from 'lodash';
-import { CHANNEL_ENVS, type BuildEnv } from '../constants';
+import {
+    BROWSER_TARGETS,
+    CHANNEL_ENVS,
+    type BrowserTarget,
+    type BuildEnv,
+} from '../constants';
 
 const { capitalize } = lodash;
 
@@ -16,6 +21,11 @@ type TransformContent = Buffer | string;
  * Manifest values supplied by the build configuration.
  */
 interface ManifestOptions {
+    /**
+     * Browser receiving the generated manifest.
+     */
+    browser: BrowserTarget;
+
     /**
      * Extension version written to the manifest.
      */
@@ -51,7 +61,30 @@ export const updateManifest = (
 ): string => {
     const manifest = JSON.parse(content.toString()) as Record<string, unknown>;
 
+    const background = options.browser === BROWSER_TARGETS.FIREFOX
+        ? { page: 'background.html' }
+        : { service_worker: 'background.js' };
+
+    const browserSpecificSettings = options.browser === BROWSER_TARGETS.FIREFOX
+        ? {
+            gecko: {
+                id: 'kode-injector@maximtop.dev',
+                strict_min_version: '153.0',
+                data_collection_permissions: {
+                    required: ['none'],
+                },
+            },
+        }
+        : undefined;
+
+    manifest.background = background;
     manifest.version = options.version;
+
+    if (browserSpecificSettings) {
+        manifest.browser_specific_settings = browserSpecificSettings;
+    } else {
+        delete manifest.browser_specific_settings;
+    }
 
     return JSON.stringify(manifest, null, 4);
 };
@@ -69,9 +102,9 @@ export const updateLocalesMSGName = (
     buildEnv: BuildEnv,
 ): string => {
     const messages = JSON.parse(content.toString()) as LocaleMessages;
-    const isProd = buildEnv === CHANNEL_ENVS.PROD;
+    const isRelease = buildEnv === CHANNEL_ENVS.RELEASE;
 
-    if (!isProd) {
+    if (!isRelease) {
         messages.name.message += ` (${capitalize(buildEnv)})`;
     }
 

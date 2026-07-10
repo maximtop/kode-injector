@@ -28,5 +28,10 @@
     "popup_disable_site": { "message": "Injekciók kikapcsolása ezen a webhelyen" },
     "popup_enable_site": { "message": "Injekciók bekapcsolása ezen a webhelyen" },
     "popup_report_issue_title": { "message": "Hiba bejelentése a GitLab" },
-    "popup_report_issue": { "message": "Hiba bejelentése" }
+    "popup_report_issue": { "message": "Hiba bejelentése" },
+    "file_access_disabled": { "message": "A helyi fájlok elérése le van tiltva" },
+    "file_access_instructions": { "message": "Nyissa meg a Kode Injector bővítmény beállításait, engedélyezze a helyi fájlok elérését, majd ellenőrizze újra." },
+    "file_access_open_extension_settings": { "message": "Bővítménybeállítások megnyitása" },
+    "file_access_check_again": { "message": "Ellenőrzés újra" },
+    "popup_file_access_disabled": { "message": "A helyi fájlok elérése le van tiltva. Útmutatásért nyissa meg a beállításokat." }
 }

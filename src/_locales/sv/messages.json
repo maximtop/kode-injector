@@ -28,5 +28,10 @@
     "popup_disable_site": { "message": "Stäng av injektioner på den här webbplatsen" },
     "popup_enable_site": { "message": "Slå på injektioner på den här webbplatsen" },
     "popup_report_issue_title": { "message": "Rapportera ett problem på GitLab" },
-    "popup_report_issue": { "message": "Rapportera ett problem" }
+    "popup_report_issue": { "message": "Rapportera ett problem" },
+    "file_access_disabled": { "message": "Åtkomst till lokala filer är inaktiverad" },
+    "file_access_instructions": { "message": "Öppna webbläsarens tilläggsinställningar för Kode Injector, aktivera åtkomst till lokala filer och kontrollera sedan igen." },
+    "file_access_open_extension_settings": { "message": "Öppna tilläggsinställningar" },
+    "file_access_check_again": { "message": "Kontrollera igen" },
+    "popup_file_access_disabled": { "message": "Åtkomst till lokala filer är inaktiverad. Öppna inställningarna för instruktioner." }
 }

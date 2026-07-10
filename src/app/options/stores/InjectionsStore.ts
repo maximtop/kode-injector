@@ -47,16 +47,41 @@ export class InjectionsStore {
     optionsDataReady = false;
 
     /**
+     * Whether the browser currently permits local-file access.
+     */
+    @observable
+    fileAccessAllowed = true;
+
+    /**
      * Loads injection data for the options page.
      */
     getOptionsData = async (): Promise<void> => {
-        const { injections, selectedLanguage } = await messenger.getOptionsData();
+        const {
+            fileAccessAllowed,
+            injections,
+            selectedLanguage,
+        } = await messenger.getOptionsData();
         await i18n.init(selectedLanguage);
         runInAction(() => {
+            this.fileAccessAllowed = fileAccessAllowed;
             this.injections = injections;
             this.optionsDataReady = true;
         });
     }
+
+    /**
+     * Refreshes browser-owned local-file permission state.
+     */
+    refreshFileAccess = async (): Promise<void> => {
+        try {
+            const fileAccessAllowed = await messenger.getFileAccessStatus();
+            runInAction(() => {
+                this.fileAccessAllowed = fileAccessAllowed;
+            });
+        } catch (error) {
+            log.error(error instanceof Error ? error.message : error);
+        }
+    };
 
     /**
      * Adds an injection rule and refreshes options data.

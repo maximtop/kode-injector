@@ -4,6 +4,10 @@
 
 import browser from 'webextension-polyfill';
 
+import {
+    BrowserTarget,
+    getExtensionSettingsUrl,
+} from './browser-target';
 import type { PopupTab } from './contracts';
 import { log } from './log';
 
@@ -17,6 +21,20 @@ class Tabs {
     openSettings = (): Promise<void> => {
         return browser.runtime.openOptionsPage();
     }
+
+    /**
+     * Opens this extension's browser-managed settings page when supported.
+     *
+     * @param target Browser hosting the extension.
+     */
+    openBrowserExtensionSettings = async (target: BrowserTarget): Promise<void> => {
+        const url = getExtensionSettingsUrl(target, browser.runtime.id);
+        if (!url) {
+            return;
+        }
+
+        await this.openTab(url);
+    };
 
     /**
      * Opens a browser tab for a URL.

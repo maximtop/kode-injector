@@ -28,5 +28,10 @@
     "popup_disable_site": { "message": "Изключване на инжекциите в този сайт" },
     "popup_enable_site": { "message": "Включване на инжекциите в този сайт" },
     "popup_report_issue_title": { "message": "Докладване на проблем в GitLab" },
-    "popup_report_issue": { "message": "Докладване на проблем" }
+    "popup_report_issue": { "message": "Докладване на проблем" },
+    "file_access_disabled": { "message": "Достъпът до локални файлове е изключен" },
+    "file_access_instructions": { "message": "Отворете настройките на разширението Kode Injector в браузъра и включете достъпа до локални файлове, след което проверете отново." },
+    "file_access_open_extension_settings": { "message": "Отваряне на настройките на разширението" },
+    "file_access_check_again": { "message": "Проверете отново" },
+    "popup_file_access_disabled": { "message": "Достъпът до локални файлове е изключен. Отворете настройките за инструкции." }
 }

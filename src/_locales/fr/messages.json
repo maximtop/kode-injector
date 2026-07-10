@@ -28,5 +28,10 @@
     "popup_disable_site": { "message": "Désactiver les injections sur ce site" },
     "popup_enable_site": { "message": "Activer les injections sur ce site" },
     "popup_report_issue_title": { "message": "Signaler un problème sur GitLab" },
-    "popup_report_issue": { "message": "Signaler un problème" }
+    "popup_report_issue": { "message": "Signaler un problème" },
+    "file_access_disabled": { "message": "L’accès aux fichiers locaux est désactivé" },
+    "file_access_instructions": { "message": "Ouvrez les paramètres de l’extension Kode Injector, activez l’accès aux fichiers locaux, puis vérifiez à nouveau." },
+    "file_access_open_extension_settings": { "message": "Ouvrir les paramètres de l’extension" },
+    "file_access_check_again": { "message": "Vérifier à nouveau" },
+    "popup_file_access_disabled": { "message": "L’accès aux fichiers locaux est désactivé. Ouvrez les paramètres pour voir les instructions." }
 }

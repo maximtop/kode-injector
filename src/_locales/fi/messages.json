@@ -28,5 +28,10 @@
     "popup_disable_site": { "message": "Poista tämän sivuston injektiot käytöstä" },
     "popup_enable_site": { "message": "Ota tämän sivuston injektiot käyttöön" },
     "popup_report_issue_title": { "message": "Ilmoita ongelmasta GitLab" },
-    "popup_report_issue": { "message": "Ilmoita ongelmasta" }
+    "popup_report_issue": { "message": "Ilmoita ongelmasta" },
+    "file_access_disabled": { "message": "Paikallisten tiedostojen käyttö on poistettu käytöstä" },
+    "file_access_instructions": { "message": "Avaa selaimen Kode Injector -laajennuksen asetukset, salli paikallisten tiedostojen käyttö ja tarkista sitten uudelleen." },
+    "file_access_open_extension_settings": { "message": "Avaa laajennuksen asetukset" },
+    "file_access_check_again": { "message": "Tarkista uudelleen" },
+    "popup_file_access_disabled": { "message": "Paikallisten tiedostojen käyttö on poistettu käytöstä. Avaa asetukset nähdäksesi ohjeet." }
 }

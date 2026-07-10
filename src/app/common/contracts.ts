@@ -80,6 +80,11 @@ export type OptionsDataResponse = {
     injections: InjectionRule[];
 
     /**
+     * Whether the browser currently permits local-file access.
+     */
+    fileAccessAllowed: boolean;
+
+    /**
      * Persisted interface language preference.
      */
     selectedLanguage: LocalePreference;
@@ -152,6 +157,11 @@ export interface PopupTab {
  */
 export type PopupDataResponse = {
     /**
+     * Whether the browser currently permits local-file access.
+     */
+    fileAccessAllowed: boolean;
+
+    /**
      * Current global application settings.
      */
     settings: AppSettings;
@@ -210,6 +220,7 @@ export type ExecuteScriptPayload = {
  */
 export type RuntimeMessage =
     | { type: typeof MESSAGE_TYPES.GET_OPTIONS_DATA; data?: undefined }
+    | { type: typeof MESSAGE_TYPES.GET_FILE_ACCESS_STATUS; data?: undefined }
     | { type: typeof MESSAGE_TYPES.ADD_INJECTION; data: { injectionData: NewInjectionData } }
     | { type: typeof MESSAGE_TYPES.REMOVE_INJECTION; data: { id: string } }
     | { type: typeof MESSAGE_TYPES.ENABLE_INJECTION; data: { id: string } }

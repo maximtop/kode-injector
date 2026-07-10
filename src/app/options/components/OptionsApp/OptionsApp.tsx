@@ -12,15 +12,31 @@ import { InjectionsTable } from '../InjectionsTable';
 import { NewInjectionForm } from '../NewInjectionForm';
 import { rootStore } from '../../stores/RootStore';
 import { browserLanguageChannel } from '../../../common/browser-language-channel';
+import {
+    BrowserTarget,
+    getCurrentBrowserTarget,
+} from '../../../common/browser-target';
 import { applyDocumentLocale } from '../../../common/document-locale';
 import { i18n } from '../../../common/i18n';
 import { translator } from '../../../common/translator';
+import { FileAccessWarning } from '../../../common/FileAccessWarning';
+import { log } from '../../../common/log';
+import { tabs } from '../../../common/tabs';
+import { subscribeFileAccessRefreshOnFocus } from '../../file-access-focus';
 
+import '../../../common/file-access-warning.pcss';
 import './options-app.pcss';
 
 export const OptionsApp = observer(() => {
     const { injectionsStore, translationStore } = useContext(rootStore);
-    const { getOptionsData } = injectionsStore;
+    const { getOptionsData, refreshFileAccess } = injectionsStore;
+    const browserTarget = getCurrentBrowserTarget();
+
+    const openBrowserExtensionSettings = browserTarget === BrowserTarget.Firefox
+        ? undefined
+        : (): void => {
+            tabs.openBrowserExtensionSettings(browserTarget).catch(log.error);
+        };
 
     useEffect(() => {
         getOptionsData();
@@ -31,6 +47,10 @@ export const OptionsApp = observer(() => {
             return i18n.setLocalePreference(language);
         });
     }, []);
+
+    useEffect(() => {
+        return subscribeFileAccessRefreshOnFocus(window, refreshFileAccess);
+    }, [refreshFileAccess]);
 
     useLayoutEffect(() => {
         applyDocumentLocale(
@@ -56,6 +76,13 @@ export const OptionsApp = observer(() => {
             <Layout style={{ minHeight: '100vh' }}>
                 <Header />
                 <Layout.Content className="content">
+                    <FileAccessWarning
+                        allowed={injectionsStore.fileAccessAllowed}
+                        browserTarget={browserTarget}
+                        compact={false}
+                        onCheckAgain={refreshFileAccess}
+                        onOpenSettings={openBrowserExtensionSettings}
+                    />
                     <NewInjectionForm />
                     <InjectionsTable />
                 </Layout.Content>

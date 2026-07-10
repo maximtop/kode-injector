@@ -25,8 +25,8 @@ Convenience targets are defined in the `Makefile` and map to `pnpm` scripts:
 | Command | What it does |
 | --- | --- |
 | `make install` | Install dependencies (`pnpm install`) |
-| `make start` | Start the development build in watch mode |
-| `make build` | Create a production build |
+| `make start` | Watch the Chrome development build |
+| `make build` | Create release builds for every browser |
 | `make lint` | Run ESLint over source, scripts, and tests |
 | `make typecheck` | Run TypeScript validation without emitting files |
 | `make test` | Run build and localization tests |
@@ -36,8 +36,9 @@ Equivalent `pnpm` scripts:
 
 ```sh
 pnpm install   # install dependencies
-pnpm start     # development watch build (CHANNEL_ENV=dev)
-pnpm build     # production build (CHANNEL_ENV=prod)
+pnpm dev       # one-shot development build for every browser
+pnpm dev chrome --watch # watch one development target
+pnpm release   # release build for every browser
 pnpm lint      # run ESLint over source, scripts, and the Rspack config
 pnpm typecheck # validate TypeScript and TSX without emitting files
 pnpm test      # run build-helper and localization tests
@@ -45,27 +46,43 @@ pnpm locales:validate # validate all locale catalogs and UI usage
 pnpm validate  # run the complete local quality gate
 ```
 
-## Build channels
+## Build channels and browser targets
 
-The build is driven by the `CHANNEL_ENV` environment variable, which is set
-automatically by the npm scripts:
+The build CLI accepts `chrome`, `edge`, or `firefox` as an optional browser
+subcommand. Omitting the browser builds all three targets:
 
-| Channel | Command | Output directory | Notes |
-| --- | --- | --- | --- |
-| `dev` | `pnpm start` | `build/dev/` | Watch mode, source maps, appends `(Dev)` to the extension name |
-| `prod` | `pnpm build` | `build/prod/` | Optimized build; also produces `build/<version>-prod.zip` |
+```sh
+pnpm dev
+pnpm dev edge
+pnpm release
+pnpm release firefox
+```
 
-Rspack 2 loads the typed `rspack.config.ts` configuration directly. Its built-in
-SWC compiler handles TypeScript, TSX, legacy decorators, and React JSX. Rspack
+Development builds are emitted under `build/dev/<browser>/`; release builds
+are emitted under `build/release/<browser>/`. Each unpacked directory has a
+matching `build/<channel>/<browser>.zip`. Development locale names receive the
+`(Dev)` suffix; release names remain unchanged.
+
+Watch mode requires one explicit development target:
+
+```sh
+pnpm dev chrome --watch
+```
+
+`pnpm dev --watch` and release watch commands fail by design.
+
+The Commander build entry point imports the typed `rspack.config.ts`
+configuration factory. Rspack's built-in SWC compiler handles TypeScript, TSX,
+legacy decorators, and React JSX. Rspack
 built-ins handle HTML generation, copy transforms, output cleanup, assets, and
 CSS. The manifest version is injected from `package.json` during the build.
 
 ## Loading the extension for development
 
-1. Run `make start` (or `pnpm start`) to start the watch build.
+1. Run `make start` (or `pnpm dev chrome --watch`) to start the Chrome watcher.
 2. Open `chrome://extensions/` in Chrome.
 3. Enable **Developer mode** (top-right toggle).
-4. Click **Load unpacked** and select the `build/dev/` directory.
+4. Click **Load unpacked** and select the `build/dev/chrome/` directory.
 
 The extension reloads automatically when source files change. Use the reload
 button on the extension card in `chrome://extensions/` after content-script
@@ -131,7 +148,8 @@ validator is used for placeholder and plural compatibility. The selected
 language is persisted by the background service and synchronized to open UI
 contexts without a reload.
 
-For a browser smoke test, build with `pnpm start`, load `build/dev/` as an
+For a browser smoke test, build with `pnpm dev chrome`, load
+`build/dev/chrome/` as an
 unpacked extension, open the options page, switch languages, and verify that
 the form, table, popup, document language, and RTL direction update immediately.
 
@@ -161,5 +179,14 @@ The `Makefile` exposes additional targets:
 ## Releases
 
 1. Bump the `version` field in `package.json`.
-2. Run `make build` to produce `build/prod/` and `build/<version>-prod.zip`.
+2. Run `make build` to produce the browser directories and ZIPs under
+   `build/release/`.
 3. Run `make chrome_update` to publish to the Chrome Web Store.
+
+## Firefox local-file permission
+
+Firefox uses a Manifest V3 background page because it does not support
+extension service workers. The generated manifest requires Firefox 153 or newer.
+Users must open the Kode Injector extension permissions and enable **Access
+local files on your computer** before local injection paths can be read. The
+options page and popup display guidance while access is disabled.
