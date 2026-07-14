@@ -41,5 +41,19 @@
     "native_host_download": { "message": "Download native host", "description": "Button opening native helper installation instructions." },
     "native_host_install_instructions": { "message": "Download and install the package for your operating system, then return here and check again.", "description": "Native helper installation guidance." },
     "native_host_check_again": { "message": "Check again", "description": "Button rechecking native helper status." },
-    "popup_native_host_unavailable": { "message": "Local file injection needs the Kode Injector Native Host. Open settings for installation or recovery instructions.", "description": "Compact popup warning when the native helper is unavailable." }
+    "popup_native_host_unavailable": { "message": "Local file injection needs the Kode Injector Native Host. Open settings for installation or recovery instructions.", "description": "Compact popup warning when the native helper is unavailable." },
+    "file_access_disabled": { "message": "로컬 파일 접근이 비활성화되어 있습니다" },
+    "file_access_instructions": { "message": "브라우저에서 Kode Injector 확장 프로그램 설정을 열고 로컬 파일 접근을 허용한 다음 다시 확인하세요." },
+    "file_access_open_extension_settings": { "message": "확장 프로그램 설정 열기" },
+    "file_access_check_again": { "message": "다시 확인" },
+    "popup_file_access_disabled": { "message": "로컬 파일 접근이 비활성화되어 있습니다. 안내를 보려면 설정을 여세요." },
+    "local_source_method": { "message": "로컬 파일 액세스 방식" },
+    "local_source_method_browser": { "message": "브라우저 파일 액세스" },
+    "local_source_method_browser_description": { "message": "브라우저를 통해 로컬 파일을 직접 읽으며 브라우저의 파일 URL 액세스를 활성화해야 합니다." },
+    "local_source_method_native_host": { "message": "Native Host" },
+    "native_host_permission_denied": { "message": "Native Host 권한이 허용되지 않았습니다. 현재 액세스 방식은 변경되지 않았습니다." },
+    "local_source_method_native_host_description": { "message": "별도로 설치된 읽기 전용 도우미를 사용하며 브라우저의 파일 URL 액세스가 필요하지 않습니다. 선택하면 브라우저에 선택적 Native Host 권한을 요청합니다." },
+    "local_source_method_change_failed": { "message": "로컬 파일 액세스 방식을 변경할 수 없습니다. 다시 시도하세요." },
+    "native_host_permission_required": { "message": "Native Host가 선택되었지만 브라우저 권한이 활성화되지 않았습니다." },
+    "native_host_enable_permission": { "message": "권한 활성화" }
 }

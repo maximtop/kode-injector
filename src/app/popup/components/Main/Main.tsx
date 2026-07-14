@@ -15,9 +15,13 @@ import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
 import { rootStore } from '../../stores/RootStore';
 import { translator } from '../../../common/translator';
 import { LocalSourceAccessWarning } from '../../../common/LocalSourceAccessWarning';
+import { FileAccessWarning } from '../../../common/FileAccessWarning';
+import { getCurrentBrowserTarget } from '../../../common/browser-target';
+import { LocalSourceAccessMethod } from '../../../common/contracts';
 
 export const Main = observer(() => {
     const { settingsStore } = useContext(rootStore);
+    const browserTarget = getCurrentBrowserTarget();
 
     /**
      * Updates injection availability for the current site.
@@ -61,12 +65,24 @@ export const Main = observer(() => {
 
     return (
         <Layout.Content className="popup-main">
-            <LocalSourceAccessWarning
-                state={settingsStore.localSourceAccess}
-                compact
-                onCheckAgain={undefined}
-                onDownload={undefined}
-            />
+            {settingsStore.localSourceAccess.kind === LocalSourceAccessMethod.Browser ? (
+                <FileAccessWarning
+                    allowed={settingsStore.localSourceAccess.allowed}
+                    browserTarget={browserTarget}
+                    compact
+                    onCheckAgain={undefined}
+                    onOpenSettings={undefined}
+                />
+            ) : (
+                <LocalSourceAccessWarning
+                    state={settingsStore.localSourceAccess}
+                    compact
+                    disabled={false}
+                    onCheckAgain={undefined}
+                    onDownload={undefined}
+                    onRequestPermission={undefined}
+                />
+            )}
             <Row className="popup-main-controls" align="middle" justify="center">
                 <Col span={20} style={{ overflow: 'hidden' }}>
                     <Row justify="center">

@@ -16,6 +16,7 @@ import { i18n } from '../../../common/i18n';
 import { translator } from '../../../common/translator';
 
 import '../../../common/local-source-access-warning.pcss';
+import '../../../common/file-access-warning.pcss';
 import './popup-app.pcss';
 
 export const PopupApp = observer(() => {

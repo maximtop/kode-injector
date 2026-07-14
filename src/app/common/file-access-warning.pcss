@@ -1,0 +1,78 @@
+.file-access-warning {
+    max-width: 1100px;
+    margin-bottom: 16px;
+}
+
+.file-access-warning-guidance {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.file-access-warning-actions {
+    display: flex;
+    flex: none;
+    gap: 8px;
+}
+
+.file-access-warning-actions .ant-btn {
+    flex: none;
+}
+
+.file-access-warning-image-frame {
+    position: relative;
+    width: 100%;
+    max-width: 720px;
+    margin-top: 12px;
+    overflow: hidden;
+    border: 1px solid #d9d9d9;
+}
+
+.file-access-warning-image-frame-chrome {
+    aspect-ratio: 1400 / 600;
+}
+
+.file-access-warning-image-frame-edge {
+    aspect-ratio: 1600 / 600;
+}
+
+.file-access-warning-image-frame-firefox {
+    aspect-ratio: 1450 / 735;
+}
+
+.file-access-warning-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    max-width: none;
+    height: auto;
+}
+
+.file-access-warning-image-chrome {
+    width: 184.43%;
+    transform: translate(-39.5%, -50.07%);
+}
+
+.file-access-warning-image-edge {
+    width: 156.5%;
+    transform: translate(-29.95%, -38.3%);
+}
+
+.file-access-warning-image-firefox {
+    width: 141.52%;
+    transform: translate(-28.27%, -25.68%);
+}
+
+.file-access-warning-compact {
+    margin: 8px 12px 0;
+}
+
+@media (max-width: 640px) {
+    .file-access-warning-guidance {
+        flex-direction: column;
+    }
+
+    .file-access-warning-actions {
+        flex-wrap: wrap;
+    }
+}

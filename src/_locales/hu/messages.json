@@ -41,5 +41,19 @@
     "native_host_download": { "message": "Download native host", "description": "Button opening native helper installation instructions." },
     "native_host_install_instructions": { "message": "Download and install the package for your operating system, then return here and check again.", "description": "Native helper installation guidance." },
     "native_host_check_again": { "message": "Check again", "description": "Button rechecking native helper status." },
-    "popup_native_host_unavailable": { "message": "Local file injection needs the Kode Injector Native Host. Open settings for installation or recovery instructions.", "description": "Compact popup warning when the native helper is unavailable." }
+    "popup_native_host_unavailable": { "message": "Local file injection needs the Kode Injector Native Host. Open settings for installation or recovery instructions.", "description": "Compact popup warning when the native helper is unavailable." },
+    "file_access_disabled": { "message": "A helyi fájlok elérése le van tiltva" },
+    "file_access_instructions": { "message": "Nyissa meg a Kode Injector bővítmény beállításait, engedélyezze a helyi fájlok elérését, majd ellenőrizze újra." },
+    "file_access_open_extension_settings": { "message": "Bővítménybeállítások megnyitása" },
+    "file_access_check_again": { "message": "Ellenőrzés újra" },
+    "popup_file_access_disabled": { "message": "A helyi fájlok elérése le van tiltva. Útmutatásért nyissa meg a beállításokat." },
+    "local_source_method": { "message": "Helyi fájlok elérési módja" },
+    "local_source_method_browser": { "message": "Böngészőn keresztüli fájlelérés" },
+    "local_source_method_browser_description": { "message": "A helyi fájlokat közvetlenül a böngészőn keresztül olvassa, és megköveteli a fájl-URL-ekhez való hozzáférés engedélyezését." },
+    "local_source_method_native_host": { "message": "Native Host" },
+    "native_host_permission_denied": { "message": "A Native Host engedélye nem lett megadva. A jelenlegi hozzáférési mód nem változott." },
+    "local_source_method_native_host_description": { "message": "Külön telepített, csak olvasható segédprogramot használ, és nincs szüksége a böngésző fájl-URL-hozzáférésére. Kiválasztásakor a böngésző kéri az opcionális Native Host-engedélyt." },
+    "local_source_method_change_failed": { "message": "Nem sikerült módosítani a helyi fájlok elérési módját. Próbálja újra." },
+    "native_host_permission_required": { "message": "A Native Host van kiválasztva, de a böngészőengedélye nincs bekapcsolva." },
+    "native_host_enable_permission": { "message": "Engedély bekapcsolása" }
 }

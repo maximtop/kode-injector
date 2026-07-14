@@ -41,5 +41,19 @@
     "native_host_download": { "message": "Download native host", "description": "Button opening native helper installation instructions." },
     "native_host_install_instructions": { "message": "Download and install the package for your operating system, then return here and check again.", "description": "Native helper installation guidance." },
     "native_host_check_again": { "message": "Check again", "description": "Button rechecking native helper status." },
-    "popup_native_host_unavailable": { "message": "Local file injection needs the Kode Injector Native Host. Open settings for installation or recovery instructions.", "description": "Compact popup warning when the native helper is unavailable." }
+    "popup_native_host_unavailable": { "message": "Local file injection needs the Kode Injector Native Host. Open settings for installation or recovery instructions.", "description": "Compact popup warning when the native helper is unavailable." },
+    "file_access_disabled": { "message": "การเข้าถึงไฟล์ในเครื่องถูกปิดใช้งาน" },
+    "file_access_instructions": { "message": "เปิดการตั้งค่าส่วนขยาย Kode Injector ในเบราว์เซอร์ เปิดใช้การเข้าถึงไฟล์ในเครื่อง แล้วตรวจสอบอีกครั้ง" },
+    "file_access_open_extension_settings": { "message": "เปิดการตั้งค่าส่วนขยาย" },
+    "file_access_check_again": { "message": "ตรวจสอบอีกครั้ง" },
+    "popup_file_access_disabled": { "message": "การเข้าถึงไฟล์ในเครื่องถูกปิดใช้งาน เปิดการตั้งค่าเพื่อดูคำแนะนำ" },
+    "local_source_method": { "message": "วิธีเข้าถึงไฟล์ในเครื่อง" },
+    "local_source_method_browser": { "message": "การเข้าถึงไฟล์ผ่านเบราว์เซอร์" },
+    "local_source_method_browser_description": { "message": "อ่านไฟล์ในเครื่องผ่านเบราว์เซอร์โดยตรง และต้องเปิดใช้การเข้าถึง URL ของไฟล์ในเบราว์เซอร์" },
+    "local_source_method_native_host": { "message": "Native Host" },
+    "native_host_permission_denied": { "message": "ไม่ได้รับสิทธิ์สำหรับ Native Host วิธีการเข้าถึงปัจจุบันไม่เปลี่ยนแปลง" },
+    "local_source_method_native_host_description": { "message": "ใช้ตัวช่วยแบบอ่านอย่างเดียวที่ติดตั้งแยกต่างหาก และไม่ต้องใช้การเข้าถึง URL ของไฟล์ในเบราว์เซอร์ เมื่อเลือก เบราว์เซอร์จะขอสิทธิ์ Native Host แบบไม่บังคับ" },
+    "local_source_method_change_failed": { "message": "ไม่สามารถเปลี่ยนวิธีเข้าถึงไฟล์ในเครื่องได้ โปรดลองอีกครั้ง" },
+    "native_host_permission_required": { "message": "เลือก Native Host อยู่ แต่ยังไม่ได้เปิดใช้สิทธิ์ในเบราว์เซอร์" },
+    "native_host_enable_permission": { "message": "เปิดใช้สิทธิ์" }
 }

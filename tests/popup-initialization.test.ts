@@ -5,7 +5,7 @@
 import { expect, test } from 'vitest';
 
 import { preparePopupState } from '../src/app/popup/stores/popup-initialization';
-import { LocalSourceAccessKind } from '../src/app/common/contracts';
+import { LocalSourceAccessMethod } from '../src/app/common/contracts';
 import { NativeHostStatus } from '../src/app/common/native-host-protocol';
 
 test('popup locale initializes before presentation state is returned', async () => {
@@ -14,10 +14,15 @@ test('popup locale initializes before presentation state is returned', async () 
         { id: 7, url: 'https://example.com' },
         {
             localSourceAccess: {
-                kind: LocalSourceAccessKind.NativeHost,
+                kind: LocalSourceAccessMethod.NativeHost,
+                permissionGranted: true,
                 host: { status: NativeHostStatus.NotInstalled },
             },
-            settings: { 'app.enabled': true, 'language.selected': 'de' },
+            settings: {
+                'app.enabled': true,
+                'localSourceAccess.method': LocalSourceAccessMethod.NativeHost,
+                'language.selected': 'de',
+            },
             siteHasEnabledInjections: true,
             siteIsBlacklisted: false,
         },
@@ -30,7 +35,8 @@ test('popup locale initializes before presentation state is returned', async () 
         appEnabled: true,
         currentTab: { id: 7, url: 'https://example.com' },
         localSourceAccess: {
-            kind: LocalSourceAccessKind.NativeHost,
+            kind: LocalSourceAccessMethod.NativeHost,
+            permissionGranted: true,
             host: { status: NativeHostStatus.NotInstalled },
         },
         siteHasEnabledInjections: true,

@@ -22,7 +22,8 @@ test('updateManifest applies the package version', () => {
     expect(result).toEqual({
         background: { service_worker: 'background.js' },
         name: 'Kode Injector',
-        permissions: ['nativeMessaging'],
+        optional_permissions: ['nativeMessaging'],
+        permissions: [],
         version: '1.2.3',
     });
 });
@@ -40,17 +41,37 @@ test.each([BROWSER_TARGETS.CHROME, BROWSER_TARGETS.EDGE])(
     },
 );
 
-test.each(Object.values(BROWSER_TARGETS))(
-    'updateManifest adds native messaging permission for %s',
+test.each([BROWSER_TARGETS.CHROME, BROWSER_TARGETS.EDGE])(
+    'updateManifest makes native messaging optional for %s',
     (browser) => {
         const result = JSON.parse(updateManifest(
-            '{"permissions":["storage","activeTab"]}',
+            JSON.stringify({
+                permissions: ['storage', 'nativeMessaging', 'storage'],
+                optional_permissions: ['downloads', 'nativeMessaging', 'downloads'],
+            }),
             { browser, version: '1.2.3' },
         ));
 
-        expect(result.permissions).toEqual(['storage', 'activeTab', 'nativeMessaging']);
+        expect(result.permissions).toEqual(['storage']);
+        expect(result.optional_permissions).toEqual(['downloads', 'nativeMessaging']);
     },
 );
+
+test('updateManifest requires native messaging only for Firefox', () => {
+    const result = JSON.parse(updateManifest(
+        JSON.stringify({
+            permissions: ['storage', 'nativeMessaging', 'storage'],
+            optional_permissions: ['downloads', 'nativeMessaging', 'downloads'],
+        }),
+        {
+            browser: BROWSER_TARGETS.FIREFOX,
+            version: '1.2.3',
+        },
+    ));
+
+    expect(result.permissions).toEqual(['storage', 'nativeMessaging']);
+    expect(result.optional_permissions).toEqual(['downloads']);
+});
 
 test('updateManifest creates the Firefox background and signing metadata', () => {
     const result = JSON.parse(updateManifest(
@@ -70,6 +91,27 @@ test('updateManifest creates the Firefox background and signing metadata', () =>
             },
         },
     });
+});
+
+test('source manifest keeps required permissions stable across browser transforms', () => {
+    const source = fs.readFileSync(
+        path.join(process.cwd(), 'src/manifest.json'),
+        'utf8',
+    );
+    const requiredPermissions = ['storage', 'scripting', 'activeTab'];
+
+    for (const browser of [BROWSER_TARGETS.CHROME, BROWSER_TARGETS.EDGE]) {
+        const manifest = JSON.parse(updateManifest(source, { browser, version: '1.2.3' }));
+        expect(manifest.permissions, browser).toEqual(requiredPermissions);
+        expect(manifest.optional_permissions, browser).toEqual(['nativeMessaging']);
+    }
+
+    const firefox = JSON.parse(updateManifest(source, {
+        browser: BROWSER_TARGETS.FIREFOX,
+        version: '1.2.3',
+    }));
+    expect(firefox.permissions).toEqual([...requiredPermissions, 'nativeMessaging']);
+    expect(firefox.optional_permissions).toBeUndefined();
 });
 
 test('updateLocalesMSGName marks development builds', () => {

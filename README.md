@@ -40,12 +40,17 @@ and CSS — every time, without manual steps.
   https://chrome.google.com/webstore/detail/kode-injector/fgdehkdkmaiedleekbjpfoicpmodbicg
 )
 
-Install Kode Injector from the Chrome Web Store. Local-file injection in
-Firefox, Chrome, and Edge also requires the separately installed
+Install Kode Injector from the Chrome Web Store. Chrome and Edge use the
+browser's built-in local-file access by default, so they do not require a
+separate application. Open the extension's details in the browser and enable
+**Allow access to file URLs** when the warning appears in Kode Injector.
+
+Firefox reads local files through the separately installed
 [Kode Injector Native Host](https://github.com/maximtop/kode-injector/releases).
-The same small read-only helper serves all three browsers. Platform packages
-appear on that page after the tagged workflow creates a draft, the maintainer
-verifies its assets, and the draft is published as a normal release.
+Chrome and Edge can use the same read-only helper as an optional alternative;
+select **Native Host** in Kode Injector settings to request the browser
+permission and switch methods. Platform packages appear on the releases page
+after the maintainer verifies and publishes a draft release.
 
 ### Install from source
 
@@ -57,18 +62,21 @@ To run the latest development build from source:
    **Developer mode**.
 4. Click **Load unpacked** and select `build/dev/chrome/` for Chrome or
    `build/dev/edge/` for Edge.
+5. Open the unpacked extension's details and enable **Allow access to file
+   URLs** to use the default browser-file method.
 
 For Firefox, open `about:debugging`, select **This Firefox**, click
 **Load Temporary Add-on**, and select `build/dev/firefox/manifest.json`.
 
-Install the native host package for your operating system. For unpacked Chrome
-and Edge builds, copy their displayed extension IDs into
-`native-host/dev-extension-ids.json` using the committed example, then run the
-packaged installer's explicit development-registration flow. Review the printed
-origins before confirming them. Production installation ignores this local file.
-Until an Edge Add-ons ID is configured for a release, production registration
-contains the Chrome Store origin only; unpacked Edge remains supported through
-the explicit development-registration flow.
+Install the native host package for your operating system before testing
+Firefox. To test the optional Native Host method with unpacked Chrome or Edge,
+copy the displayed extension IDs into `native-host/dev-extension-ids.json`
+using the committed example, then run the packaged installer's explicit
+development-registration flow. Review the printed origins before confirming
+them. Production installation ignores this local file. Until an Edge Add-ons
+ID is configured for a release, production registration contains the Chrome
+Store origin only; unpacked Edge remains supported through the explicit
+development-registration flow.
 
 See [DEVELOPMENT.md](DEVELOPMENT.md) for full setup details.
 
@@ -96,6 +104,20 @@ Each rule specifies:
 - **CSS file path** — a `file:///` URL to a CSS file.
 
 Matching rules are applied automatically whenever you visit the site.
+
+### Local file access methods
+
+Chrome and Edge initially read configured `file:///` URLs through the browser.
+This preserves the extension's established behavior and requires only the
+browser-managed **Allow access to file URLs** toggle. The separately installed
+Native Host is optional in these browsers. Choosing it in Options requests the
+optional `nativeMessaging` permission; declining the request leaves browser
+file access selected.
+
+Firefox always uses the Native Host because extension pages cannot directly
+load arbitrary local files. The host is read-only and uses the same configured
+`file:///` paths; no rule migration is needed when changing methods in Chrome
+or Edge.
 
 ### Manage injections
 
@@ -132,13 +154,13 @@ interface only.
 
 ## Permissions
 
-| Permission | Reason |
-| --- | --- |
-| `storage` | Save injection rules, settings, and the per-site blocklist |
-| `scripting` | Inject JavaScript and CSS into web pages |
-| `activeTab` | Read the current tab's URL to match injection rules |
-| `nativeMessaging` | Ask the separately installed read-only helper to read configured local files |
-| `<all_urls>` (host permission) | Run the content script and apply injections on any website |
+| Permission | Availability | Reason |
+| --- | --- | --- |
+| `storage` | All browsers | Save injection rules, settings, and the per-site blocklist |
+| `scripting` | All browsers | Inject JavaScript and CSS into web pages |
+| `activeTab` | All browsers | Read the current tab's URL to match injection rules |
+| `nativeMessaging` | Required in Firefox; optional in Chrome and Edge | Ask the separately installed read-only helper to read configured local files |
+| `<all_urls>` (host permission) | All browsers | Run the content script and apply injections on any website |
 
 ---
 
@@ -159,16 +181,26 @@ add a rule for this site.
 **The extension can't read my local file.**
 
 Ensure the path is a valid `file:///` URL and that the file exists at that
-location. Install or update the Kode Injector Native Host, then use **Check
-again** in Options. The helper only reads explicitly requested local regular
-files up to 5 MiB. It cannot write files, execute programs, list directories, or
-access the network. Browser file-URL permission toggles do not replace the host.
+location. In Chrome or Edge browser-file mode, open the extension's browser
+settings, enable **Allow access to file URLs**, then use **Check again** in
+Options. In Firefox or Native Host mode, install or update the Kode Injector
+Native Host and check again. The helper only reads explicitly requested local
+regular files up to 5 MiB. It cannot write files, execute programs, list
+directories, or access the network.
 
 Native-host updates are manual. Download the current package from the
 [GitHub Releases page](https://github.com/maximtop/kode-injector/releases)
 and run its installer again. The packaged uninstaller removes the executable
 and Kode Injector browser registrations without touching extension rules or
 settings.
+
+**Should I use Native Host in Chrome or Edge?**
+
+Browser file access is the simplest default and does not require another
+application or the `nativeMessaging` permission. Native Host avoids depending
+on the browser's file-URL toggle and provides the same file-size limits and
+diagnostics as Firefox. It is an interoperability choice, not a performance
+optimization.
 
 **How do I inject only JavaScript or only CSS?**
 

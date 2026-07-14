@@ -21,15 +21,15 @@ class App {
     /**
      * Enables the extension globally.
      */
-    enable(): void {
-        settings.setSetting(SETTINGS.APP_ENABLED, true);
+    enable(): Promise<void> {
+        return settings.setSetting(SETTINGS.APP_ENABLED, true);
     }
 
     /**
      * Disables the extension globally.
      */
-    disable(): void {
-        settings.setSetting(SETTINGS.APP_ENABLED, false);
+    disable(): Promise<void> {
+        return settings.setSetting(SETTINGS.APP_ENABLED, false);
     }
 }
 

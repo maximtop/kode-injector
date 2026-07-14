@@ -9,9 +9,28 @@ import {
     type BrowserTarget,
     type BuildEnv,
 } from '../constants';
+import { BrowserPermission } from '../../src/app/common/constants';
 
 const { capitalize } = lodash;
-const NATIVE_MESSAGING_PERMISSION = 'nativeMessaging';
+
+/**
+ * Returns unique string permissions from an unknown manifest value.
+ *
+ * @param value Manifest permission list.
+ *
+ * @returns Normalized permission list.
+ */
+const normalizePermissions = (value: unknown): string[] => {
+    if (!Array.isArray(value)) {
+        return [];
+    }
+
+    const permissions = value.filter((permission): permission is string => {
+        return typeof permission === 'string';
+    });
+
+    return [...new Set(permissions)];
+};
 
 /**
  * Source content accepted by build transforms.
@@ -79,10 +98,24 @@ export const updateManifest = (
 
     manifest.background = background;
     manifest.version = options.version;
-    const permissions = Array.isArray(manifest.permissions)
-        ? manifest.permissions.filter((value): value is string => typeof value === 'string')
-        : [];
-    manifest.permissions = [...new Set([...permissions, NATIVE_MESSAGING_PERMISSION])];
+    const permissions = normalizePermissions(manifest.permissions)
+        .filter((permission) => permission !== BrowserPermission.NativeMessaging);
+    const optionalPermissions = normalizePermissions(manifest.optional_permissions)
+        .filter((permission) => permission !== BrowserPermission.NativeMessaging);
+
+    if (options.browser === BROWSER_TARGETS.FIREFOX) {
+        manifest.permissions = [...permissions, BrowserPermission.NativeMessaging];
+
+        if (Array.isArray(manifest.optional_permissions)) {
+            manifest.optional_permissions = optionalPermissions;
+        }
+    } else {
+        manifest.permissions = permissions;
+        manifest.optional_permissions = [
+            ...optionalPermissions,
+            BrowserPermission.NativeMessaging,
+        ];
+    }
 
     if (browserSpecificSettings) {
         manifest.browser_specific_settings = browserSpecificSettings;

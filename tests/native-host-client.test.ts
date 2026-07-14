@@ -34,11 +34,21 @@ class FakePort implements NativePort {
 
     posted: unknown[] = [];
 
+    disconnected = false;
+
     postMessage = (message: unknown): void => {
+        if (this.disconnected) {
+            throw new Error('Attempting to use a disconnected port object');
+        }
         this.posted.push(message);
     };
 
     disconnect = (): void => {
+        this.disconnected = true;
+    };
+
+    remoteDisconnect = (): void => {
+        this.disconnected = true;
         this.onDisconnect.emit();
     };
 }
@@ -76,10 +86,8 @@ test('rejects pending work on disconnect and reconnects on later demand', async 
     const connect = vi.fn(() => ports.shift() as FakePort);
     const client = new NativeHostClient(connect);
     const first = client.ping();
-    ports[0]?.disconnect();
-    // The first port was shifted out of the array.
     const connectedPort = connect.mock.results[0].value;
-    connectedPort.disconnect();
+    connectedPort.remoteDisconnect();
     await expect(first).rejects.toThrowError('NATIVE_DISCONNECTED');
 
     const second = client.ping();
@@ -103,6 +111,49 @@ test('times out unanswered requests', async () => {
     await vi.advanceTimersByTimeAsync(2000);
     await assertion;
     vi.useRealTimers();
+});
+
+test('explicit disconnect closes the persistent port and reconnects on demand', async () => {
+    const ports = [new FakePort(), new FakePort()];
+    const connect = vi.fn(() => ports.shift() as FakePort);
+    const client = new NativeHostClient(connect);
+    const first = client.ping();
+    const firstPort = connect.mock.results[0].value;
+
+    client.disconnect();
+
+    expect(firstPort.disconnected).toBe(true);
+    await expect(first).rejects.toThrowError('NATIVE_DISCONNECTED');
+    const second = client.ping();
+    expect(connect).toHaveBeenCalledTimes(2);
+    connect.mock.results[1].value.remoteDisconnect();
+    await expect(second).rejects.toThrowError('NATIVE_DISCONNECTED');
+});
+
+test('a stale disconnect event cannot clear a replacement port', async () => {
+    const ports = [new FakePort(), new FakePort()];
+    const connect = vi.fn(() => ports.shift() as FakePort);
+    const client = new NativeHostClient(connect);
+    const first = client.ping();
+    const firstPort = connect.mock.results[0].value;
+    const staleDisconnect = [...firstPort.onDisconnect.listeners][0];
+
+    client.disconnect();
+    await expect(first).rejects.toThrowError('NATIVE_DISCONNECTED');
+
+    const second = client.ping();
+    const secondPort = connect.mock.results[1].value;
+    staleDisconnect?.();
+    const request = secondPort.posted[0] as { requestId: string };
+    secondPort.onMessage.emit({
+        protocolVersion: 1,
+        requestId: request.requestId,
+        type: NativeResponseType.Status,
+        ok: true,
+        hostVersion: '0.8.3',
+    });
+
+    await expect(second).resolves.toMatchObject({ hostVersion: '0.8.3' });
 });
 
 const completeRead = (port: FakePort, requestId: string, content: string): void => {

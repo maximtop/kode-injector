@@ -41,5 +41,19 @@
     "native_host_download": { "message": "Download native host", "description": "Button opening native helper installation instructions." },
     "native_host_install_instructions": { "message": "Download and install the package for your operating system, then return here and check again.", "description": "Native helper installation guidance." },
     "native_host_check_again": { "message": "Check again", "description": "Button rechecking native helper status." },
-    "popup_native_host_unavailable": { "message": "Local file injection needs the Kode Injector Native Host. Open settings for installation or recovery instructions.", "description": "Compact popup warning when the native helper is unavailable." }
+    "popup_native_host_unavailable": { "message": "Local file injection needs the Kode Injector Native Host. Open settings for installation or recovery instructions.", "description": "Compact popup warning when the native helper is unavailable." },
+    "file_access_disabled": { "message": "Yerel dosya erişimi devre dışı" },
+    "file_access_instructions": { "message": "Tarayıcınızda Kode Injector uzantı ayarlarını açın, yerel dosya erişimini etkinleştirin ve ardından yeniden kontrol edin." },
+    "file_access_open_extension_settings": { "message": "Uzantı ayarlarını aç" },
+    "file_access_check_again": { "message": "Yeniden kontrol et" },
+    "popup_file_access_disabled": { "message": "Yerel dosya erişimi devre dışı. Talimatlar için ayarları açın." },
+    "local_source_method": { "message": "Yerel dosyalara erişim yöntemi" },
+    "local_source_method_browser": { "message": "Tarayıcı üzerinden dosya erişimi" },
+    "local_source_method_browser_description": { "message": "Yerel dosyaları doğrudan tarayıcı üzerinden okur ve tarayıcının dosya URL’lerine erişiminin etkinleştirilmesini gerektirir." },
+    "local_source_method_native_host": { "message": "Native Host" },
+    "native_host_permission_denied": { "message": "Native Host izni verilmedi. Geçerli erişim yöntemi değiştirilmedi." },
+    "local_source_method_native_host_description": { "message": "Ayrı kurulan salt okunur bir yardımcı kullanır ve tarayıcının dosya URL’lerine erişimini gerektirmez. Seçildiğinde tarayıcıdan isteğe bağlı Native Host izni istenir." },
+    "local_source_method_change_failed": { "message": "Yerel dosyalara erişim yöntemi değiştirilemedi. Tekrar deneyin." },
+    "native_host_permission_required": { "message": "Native Host seçili, ancak tarayıcı izni etkin değil." },
+    "native_host_enable_permission": { "message": "İzni etkinleştir" }
 }

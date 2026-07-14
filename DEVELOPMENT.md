@@ -88,12 +88,14 @@ CSS. The manifest version is injected from `package.json` during the build.
 2. Open `chrome://extensions/` in Chrome.
 3. Enable **Developer mode** (top-right toggle).
 4. Click **Load unpacked** and select the `build/dev/chrome/` directory.
+5. Open the extension's details and enable **Allow access to file URLs** for
+   the default browser-file access method.
 
 The extension reloads automatically when source files change. Use the reload
 button on the extension card in `chrome://extensions/` after content-script
 or background changes.
 
-### Testing unpacked builds with the native host
+### Testing local-file access in unpacked builds
 
 Build every unpacked target:
 
@@ -109,16 +111,29 @@ pnpm dev
 Firefox Native Messaging uses the stable Gecko ID
 `kode-injector@maximtop.dev`; the changing `moz-extension://` UUID is not an
 authorization ID. Use separate Firefox profiles if development and release
-builds must coexist.
+builds must coexist. Firefox supports only the Native Host method, so install
+the package before testing injection there.
 
-Chrome and Edge show their unpacked IDs on their extension-management pages.
-Copy `native-host/dev-extension-ids.example.json` to the gitignored
+Chrome and Edge use browser file access by default. Enable **Allow access to
+file URLs** on the unpacked extension's details page and confirm that Options
+dismisses its warning after **Check again**. This path does not require the
+Native Host or `nativeMessaging`.
+
+To test Native Host as an optional Chromium method, choose **Native Host** in
+Options and accept the browser's permission request. Chrome and Edge show their
+unpacked IDs on their extension-management pages. Copy
+`native-host/dev-extension-ids.example.json` to the gitignored
 `native-host/dev-extension-ids.json`, enter those IDs, and open the packaged
 native installer application in development mode. It prints the exact
 `chrome-extension://<id>/` origins and requires confirmation before updating
-the development registrations. If an unpacked ID changes, update the local file
-and repeat that native-app flow. There are intentionally no Makefile install or
-verification shortcuts.
+the development registrations. If an unpacked ID changes, update the local
+file and repeat that native-app flow. There are intentionally no Makefile
+install or verification shortcuts.
+
+Switching back to **Browser file access** removes the optional Chromium
+`nativeMessaging` permission. Permission requests must originate from the
+Options user action; background code must never request it automatically or
+silently fall back between methods.
 
 ## Tech stack
 
@@ -226,6 +241,11 @@ Per-user manifests are installed in each browser's documented
 `NativeMessagingHosts` location. Windows uses the Mozilla, Google Chrome, and
 Microsoft Edge HKCU registry keys. macOS and Linux use browser-specific manifest
 directories. Every manifest points to the same executable.
+
+Firefox declares `nativeMessaging` as a required permission. Chrome and Edge
+declare it in `optional_permissions`; existing Chromium users remain on browser
+file access unless they explicitly choose Native Host in Options. This avoids a
+new required-permission prompt or upgrade disablement for those users.
 
 `pnpm native:package` produces a universal macOS DMG, Linux x86-64/ARM64
 tarballs, Windows x86-64/ARM64 ZIPs, and `SHA256SUMS` under

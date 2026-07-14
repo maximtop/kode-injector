@@ -43,6 +43,8 @@ interface PendingRequest {
 export class NativeHostClient {
     private port: NativePort | undefined;
 
+    private portDisconnectListener: (() => void) | undefined;
+
     private readonly pending = new Map<string, PendingRequest>();
 
     private requestCounter = 0;
@@ -61,7 +63,14 @@ export class NativeHostClient {
     };
 
     public disconnect = (): void => {
-        this.port?.disconnect();
+        const { port } = this;
+        if (!port) {
+            return;
+        }
+
+        this.detachPort(port);
+        this.rejectAllPending(new Error('NATIVE_DISCONNECTED'));
+        port.disconnect();
     };
 
     private request(operation: NativeOperation, fileUrl?: string): Promise<NativeHostInfo | string> {
@@ -83,9 +92,14 @@ export class NativeHostClient {
 
     private getPort(): NativePort {
         if (!this.port) {
-            this.port = this.connect(NATIVE_HOST_NAME);
-            this.port.onMessage.addListener(this.handleMessage);
-            this.port.onDisconnect.addListener(this.handleDisconnect);
+            const port = this.connect(NATIVE_HOST_NAME);
+            const handleDisconnect = (): void => {
+                this.handleDisconnect(port);
+            };
+            this.port = port;
+            this.portDisconnectListener = handleDisconnect;
+            port.onMessage.addListener(this.handleMessage);
+            port.onDisconnect.addListener(handleDisconnect);
         }
         return this.port;
     }
@@ -175,10 +189,31 @@ export class NativeHostClient {
         pending.reject(error);
     }
 
-    private readonly handleDisconnect = (): void => {
-        this.port = undefined;
-        for (const requestId of [...this.pending.keys()]) {
-            this.rejectPending(requestId, new Error('NATIVE_DISCONNECTED'));
+    private handleDisconnect(port: NativePort): void {
+        if (this.port !== port) {
+            return;
         }
-    };
+
+        this.detachPort(port);
+        this.rejectAllPending(new Error('NATIVE_DISCONNECTED'));
+    }
+
+    private detachPort(port: NativePort): void {
+        if (this.port !== port) {
+            return;
+        }
+
+        port.onMessage.removeListener(this.handleMessage);
+        if (this.portDisconnectListener) {
+            port.onDisconnect.removeListener(this.portDisconnectListener);
+        }
+        this.port = undefined;
+        this.portDisconnectListener = undefined;
+    }
+
+    private rejectAllPending(error: Error): void {
+        for (const requestId of [...this.pending.keys()]) {
+            this.rejectPending(requestId, error);
+        }
+    }
 }
