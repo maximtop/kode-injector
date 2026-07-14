@@ -21,7 +21,11 @@ export const MESSAGE_TYPES = {
     LANGUAGE_CHANGED: 'language.changed',
 } as const;
 
-export const NATIVE_HOST_INSTALLATION_URL = 'https://gitlab.com/maximtop/kode-injector/-/releases';
+export const PROJECT_REPOSITORY_URL = 'https://github.com/maximtop/kode-injector';
+
+export const PROJECT_NEW_ISSUE_URL = `${PROJECT_REPOSITORY_URL}/issues/new`;
+
+export const NATIVE_HOST_INSTALLATION_URL = `${PROJECT_REPOSITORY_URL}/releases`;
 
 export const STORAGE_KEYS = {
     SETTINGS: 'settings',

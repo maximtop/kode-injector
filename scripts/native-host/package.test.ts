@@ -6,7 +6,12 @@
 
 import { expect, test } from 'vitest';
 
-import { getNativeArtifactNames, NATIVE_TARGETS } from './package';
+import {
+    getInstallerLdflags,
+    getNativeArtifactNames,
+    NATIVE_TARGETS,
+    PRODUCTION_CHROME_EXTENSION_ID,
+} from './package';
 
 test('native package matrix covers every supported target', () => {
     expect(NATIVE_TARGETS).toEqual([
@@ -27,4 +32,26 @@ test('native artifact names are deterministic', () => {
         'kode-injector-native-0.8.2-windows-amd64.zip',
         'kode-injector-native-0.8.2-windows-arm64.zip',
     ]);
+});
+
+test('installer embeds the production Chrome ID without requiring Edge', () => {
+    const flags = getInstallerLdflags();
+
+    expect(PRODUCTION_CHROME_EXTENSION_ID).toBe('fgdehkdkmaiedleekbjpfoicpmodbicg');
+    expect(flags).toContain(
+        `-X=main.defaultChromeID=${PRODUCTION_CHROME_EXTENSION_ID}`,
+    );
+    expect(flags).not.toContain('main.defaultEdgeID');
+});
+
+test('installer embeds an explicit valid Edge ID when configured', () => {
+    const edgeID = 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb';
+
+    expect(getInstallerLdflags(edgeID)).toContain(`-X=main.defaultEdgeID=${edgeID}`);
+});
+
+test('installer rejects invalid Edge origins instead of using a wildcard', () => {
+    expect(() => getInstallerLdflags('*')).toThrow(
+        'KODE_INJECTOR_EDGE_ID must be empty or a 32-letter Edge Add-ons ID',
+    );
 });

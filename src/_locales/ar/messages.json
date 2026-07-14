@@ -27,7 +27,7 @@
     "popup_no_injections": { "message": "لا توجد عمليات حقن" },
     "popup_disable_site": { "message": "تعطيل الحقن في هذا الموقع" },
     "popup_enable_site": { "message": "تفعيل الحقن في هذا الموقع" },
-    "popup_report_issue_title": { "message": "الإبلاغ عن مشكلة على GitLab" },
+    "popup_report_issue_title": { "message": "الإبلاغ عن مشكلة على GitHub" },
     "popup_report_issue": { "message": "الإبلاغ عن مشكلة" },
     "native_host_required_title": { "message": "Kode Injector Native Host is required", "description": "Warning title shown when the native helper is unavailable." },
     "native_host_explanation": { "message": "Local injection files are read through a separate native helper shared by Firefox, Chrome, and Edge.", "description": "Explains why the native helper is required." },

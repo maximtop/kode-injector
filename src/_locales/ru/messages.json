@@ -27,7 +27,7 @@
     "popup_no_injections": { "message": "Нет инъекций" },
     "popup_disable_site": { "message": "Отключить инъекции на этом сайте" },
     "popup_enable_site": { "message": "Включить инъекции на этом сайте" },
-    "popup_report_issue_title": { "message": "Сообщить о проблеме на GitLab" },
+    "popup_report_issue_title": { "message": "Сообщить о проблеме на GitHub" },
     "popup_report_issue": { "message": "Сообщить о проблеме" },
     "native_host_required_title": { "message": "Kode Injector Native Host is required", "description": "Warning title shown when the native helper is unavailable." },
     "native_host_explanation": { "message": "Local injection files are read through a separate native helper shared by Firefox, Chrome, and Edge.", "description": "Explains why the native helper is required." },

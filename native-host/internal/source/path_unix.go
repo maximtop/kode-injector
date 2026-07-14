@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"gitlab.com/maximtop/kode-injector/native-host/internal/protocol"
+	"github.com/maximtop/kode-injector/native-host/internal/protocol"
 )
 
 func fileURLToPath(rawURL string) (string, protocol.ErrorCode) {

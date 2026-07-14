@@ -1,4 +1,4 @@
-module gitlab.com/maximtop/kode-injector/native-host
+module github.com/maximtop/kode-injector/native-host
 
 go 1.26
 
