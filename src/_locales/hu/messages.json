@@ -27,7 +27,7 @@
     "popup_no_injections": { "message": "Nincsenek injekciók" },
     "popup_disable_site": { "message": "Injekciók kikapcsolása ezen a webhelyen" },
     "popup_enable_site": { "message": "Injekciók bekapcsolása ezen a webhelyen" },
-    "popup_report_issue_title": { "message": "Hiba bejelentése a GitLab" },
+    "popup_report_issue_title": { "message": "Hiba bejelentése a GitHub" },
     "popup_report_issue": { "message": "Hiba bejelentése" },
     "native_host_required_title": { "message": "Kode Injector Native Host is required", "description": "Warning title shown when the native helper is unavailable." },
     "native_host_explanation": { "message": "Local injection files are read through a separate native helper shared by Firefox, Chrome, and Edge.", "description": "Explains why the native helper is required." },

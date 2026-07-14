@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"unicode/utf8"
 
-	"gitlab.com/maximtop/kode-injector/native-host/internal/protocol"
+	"github.com/maximtop/kode-injector/native-host/internal/protocol"
 )
 
 type Reader struct{}

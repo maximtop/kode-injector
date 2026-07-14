@@ -12,7 +12,7 @@ extension, and contribute to the project.
 ## Getting started
 
 ```sh
-git clone https://gitlab.com/maximtop/kode-injector.git
+git clone https://github.com/maximtop/kode-injector.git
 cd kode-injector
 make install
 ```
@@ -33,7 +33,7 @@ Convenience targets are defined in the `Makefile` and map to `pnpm` scripts:
 | `make test` | Run build and localization tests |
 | `make validate` | Run tests, catalog validation, lint, and typecheck |
 | `make native_test` | Run native-host tests with the race detector |
-| `make native_package` | Build native release packages (requires the Edge store ID) |
+| `make native_package` | Build native release packages (the Edge store ID is optional) |
 
 Equivalent `pnpm` scripts:
 
@@ -147,10 +147,10 @@ src/
 scripts/
   constants.ts            # Build-channel constants
   build/
-    archive-plugin.ts     # Production ZIP archive plugin
+    archive-plugin.ts     # Browser ZIP archive plugin
     helpers.ts            # Manifest & locale transforms
 rspack.config.ts          # Typed Rspack and SWC configuration
-build/                    # Build output (dev/ and prod/)
+build/                    # Build output (dev/ and release/)
 ```
 
 ## Linting
@@ -227,26 +227,65 @@ Per-user manifests are installed in each browser's documented
 Microsoft Edge HKCU registry keys. macOS and Linux use browser-specific manifest
 directories. Every manifest points to the same executable.
 
-`pnpm native:package` requires `KODE_INJECTOR_EDGE_ID` and produces a universal
-macOS DMG, Linux x86-64/ARM64 tarballs, Windows x86-64/ARM64 ZIPs, and
-`SHA256SUMS` under `build/native/<version>/`. Configure
-`KODE_INJECTOR_EDGE_ID`, `APPLE_DEVELOPER_ID`, and `APPLE_NOTARY_PROFILE` as
-protected and masked GitLab CI/CD variables. Never print these values. Windows
-artifacts remain unsigned until a signing certificate is configured.
+`pnpm native:package` produces a universal macOS DMG, Linux x86-64/ARM64
+tarballs, Windows x86-64/ARM64 ZIPs, and `SHA256SUMS` under
+`build/native/<version>/`. The production Chrome origin is always the Chrome
+Web Store ID `fgdehkdkmaiedleekbjpfoicpmodbicg`. `KODE_INJECTOR_EDGE_ID` is
+optional: when it is unset, production Chromium manifests contain only the
+Chrome origin. An unpacked Edge build remains available through the explicit
+development-registration flow described above; no wildcard origin is added.
 
-To publish a native-host release:
+### GitHub Actions validation
 
-1. Set `package.json` to the intended semantic version and push a matching tag,
-   such as `v0.9.0`.
-2. Wait for the tag pipeline to validate the extension and native host, package
-   every platform, and run the `native-sign` signing/notarization job.
-3. Download the `native-sign` job artifact and inspect the platform archives,
-   notarized DMG, and `SHA256SUMS` under `build/native/<version>/`.
-4. If the candidate is correct, start the manual `publish-release` job in the
-   tag pipeline.
+The `CI` workflow runs for pushes to `master` and pull requests. It validates
+the extension with Node.js 24 and pnpm, builds every browser release artifact,
+and runs the Go 1.26 native-host suite with the race detector. CI has read-only
+repository permissions and never publishes a release.
 
-`publish-release` consumes the retained `native-sign` artifact; it does not
-rebuild anything. It verifies the tag against `package.json`, validates every
-checksum, uploads the files to the GitLab Generic Package Registry, and creates
-the public [GitLab Release](https://gitlab.com/maximtop/kode-injector/-/releases).
-Re-running it cannot silently replace an existing release.
+The `Native host release` workflow uses a GitHub-hosted macOS runner. Configure
+these sensitive repository secrets:
+
+- `APPLE_CERTIFICATE_P12_BASE64`
+- `APPLE_CERTIFICATE_PASSWORD`
+- `APPLE_NOTARY_KEY_P8_BASE64`
+
+Configure these repository variables:
+
+- `APPLE_DEVELOPER_ID`
+- `APPLE_NOTARY_KEY_ID`
+- `APPLE_NOTARY_ISSUER_ID`
+- `KODE_INJECTOR_EDGE_ID` (optional, after the extension is published in Edge
+  Add-ons)
+
+The workflow imports the Developer ID certificate into a temporary keychain
+and decodes the App Store Connect API key only for the job. It removes both even
+when a step fails. Never print these values. For local notarization,
+set `APPLE_NOTARY_KEY_PATH`, `APPLE_NOTARY_KEY_ID`, and
+`APPLE_NOTARY_ISSUER_ID` together for direct API-key authentication, or set
+`APPLE_NOTARY_PROFILE` as the keychain-profile alternative. Do not combine the
+two modes. Windows artifacts remain unsigned until a signing certificate is
+configured.
+
+Before creating a tag, run the signing preflight:
+
+1. Open **Actions** → **Native host release** and choose **Run workflow**.
+2. Wait for validation, packaging, signing, notarization, stapling, and checksum
+   verification to complete.
+3. Download and inspect the retained
+   `kode-injector-native-<version>` workflow artifact. It expires after 30 days.
+   A manual run does not create a GitHub Release.
+
+To prepare a native-host release:
+
+1. Set `package.json` to the intended semantic version and merge the change to
+   `master`.
+2. Create a matching tag, such as `v0.9.0`, on that `master` commit and push it.
+3. Wait for the workflow to verify the tag, rebuild and sign the packages, and
+   create an unpublished [GitHub Draft Release](https://github.com/maximtop/kode-injector/releases).
+4. Download the draft assets and inspect the platform archives, notarized DMG,
+   and `SHA256SUMS`.
+5. If the candidate is correct, click **Publish release** in the GitHub UI.
+
+The workflow refuses a tag that does not match `package.json`, does not point to
+a `master` commit, or already has a GitHub Release. It never silently replaces
+existing release assets.

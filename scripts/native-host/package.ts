@@ -27,7 +27,7 @@ export const NATIVE_TARGETS: NativeTarget[] = [
     { os: 'windows', arch: 'arm64' },
 ];
 
-const CHROME_EXTENSION_ID = 'cikgoagbggecambahlmphhdgmahgeepl';
+export const PRODUCTION_CHROME_EXTENSION_ID = 'fgdehkdkmaiedleekbjpfoicpmodbicg';
 const VALIDATION_EDGE_ID = 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb';
 const CHROMIUM_ID_PATTERN = /^[a-p]{32}$/u;
 const HOST_COMMAND = './cmd/kode-injector-native';
@@ -40,6 +40,23 @@ export const getNativeArtifactNames = (version: string): string[] => [
     `kode-injector-native-${version}-windows-amd64.zip`,
     `kode-injector-native-${version}-windows-arm64.zip`,
 ];
+
+export const getInstallerLdflags = (edgeID?: string): string => {
+    if (edgeID && !CHROMIUM_ID_PATTERN.test(edgeID)) {
+        throw new Error(
+            'KODE_INJECTOR_EDGE_ID must be empty or a 32-letter Edge Add-ons ID',
+        );
+    }
+    const flags = [
+        '-s',
+        '-w',
+        `-X=main.defaultChromeID=${PRODUCTION_CHROME_EXTENSION_ID}`,
+    ];
+    if (edgeID) {
+        flags.push(`-X=main.defaultEdgeID=${edgeID}`);
+    }
+    return flags.join(' ');
+};
 
 const readVersion = (rootPath: string): string => {
     const packageJson = JSON.parse(
@@ -84,20 +101,12 @@ export const packageNativeHost = (
 ): string => {
     const version = readVersion(rootPath);
     const edgeID = validation ? VALIDATION_EDGE_ID : process.env.KODE_INJECTOR_EDGE_ID;
-    if (!edgeID || !CHROMIUM_ID_PATTERN.test(edgeID)) {
-        throw new Error('KODE_INJECTOR_EDGE_ID must be the 32-letter Edge Add-ons ID');
-    }
     const nativeRoot = path.join(rootPath, 'native-host');
     const outputPath = path.join(rootPath, 'build', 'native', version);
     const workPath = fs.mkdtempSync(path.join(os.tmpdir(), 'kode-injector-native-'));
     fs.rmSync(outputPath, { recursive: true, force: true });
     fs.mkdirSync(outputPath, { recursive: true });
-    const installerFlags = [
-        '-s',
-        '-w',
-        `-X=main.defaultChromeID=${CHROME_EXTENSION_ID}`,
-        `-X=main.defaultEdgeID=${edgeID}`,
-    ].join(' ');
+    const installerFlags = getInstallerLdflags(edgeID);
     const hostFlags = `-s -w -X=main.hostVersion=${version}`;
 
     try {

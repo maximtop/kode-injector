@@ -27,7 +27,7 @@
     "popup_no_injections": { "message": "Tidak ada injeksi" },
     "popup_disable_site": { "message": "Nonaktifkan injeksi di situs ini" },
     "popup_enable_site": { "message": "Aktifkan injeksi di situs ini" },
-    "popup_report_issue_title": { "message": "Laporkan masalah di GitLab" },
+    "popup_report_issue_title": { "message": "Laporkan masalah di GitHub" },
     "popup_report_issue": { "message": "Laporkan masalah" },
     "native_host_required_title": { "message": "Kode Injector Native Host is required", "description": "Warning title shown when the native helper is unavailable." },
     "native_host_explanation": { "message": "Local injection files are read through a separate native helper shared by Firefox, Chrome, and Edge.", "description": "Explains why the native helper is required." },

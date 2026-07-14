@@ -3,6 +3,6 @@
 - [x] Add more locales
 - [x] Switch from js to ts
 - [ ] Handle popup open on the service pages
-- [ ] Add possibility to deploy from the gitlab like with github actions
+- [x] Create draft releases from version tags with GitHub Actions
 - [ ] Import/export injections
 - [x] Switch to vitest

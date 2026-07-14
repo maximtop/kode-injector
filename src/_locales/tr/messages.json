@@ -27,7 +27,7 @@
     "popup_no_injections": { "message": "Enjeksiyon yok" },
     "popup_disable_site": { "message": "Bu sitede enjeksiyonu kapat" },
     "popup_enable_site": { "message": "Bu sitede enjeksiyonu aç" },
-    "popup_report_issue_title": { "message": "GitLab'da sorun bildir" },
+    "popup_report_issue_title": { "message": "GitHub'da sorun bildir" },
     "popup_report_issue": { "message": "Sorun bildir" },
     "native_host_required_title": { "message": "Kode Injector Native Host is required", "description": "Warning title shown when the native helper is unavailable." },
     "native_host_explanation": { "message": "Local injection files are read through a separate native helper shared by Firefox, Chrome, and Edge.", "description": "Explains why the native helper is required." },

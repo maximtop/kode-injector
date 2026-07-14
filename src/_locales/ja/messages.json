@@ -27,7 +27,7 @@
     "popup_no_injections": { "message": "インジェクションはありません" },
     "popup_disable_site": { "message": "このサイトでインジェクションを無効化" },
     "popup_enable_site": { "message": "このサイトでインジェクションを有効化" },
-    "popup_report_issue_title": { "message": "GitLab で問題を報告" },
+    "popup_report_issue_title": { "message": "GitHub で問題を報告" },
     "popup_report_issue": { "message": "問題を報告" },
     "native_host_required_title": { "message": "Kode Injector Native Host is required", "description": "Warning title shown when the native helper is unavailable." },
     "native_host_explanation": { "message": "Local injection files are read through a separate native helper shared by Firefox, Chrome, and Edge.", "description": "Explains why the native helper is required." },

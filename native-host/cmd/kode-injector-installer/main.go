@@ -7,11 +7,12 @@ import (
 	"os"
 	"path/filepath"
 
-	"gitlab.com/maximtop/kode-injector/native-host/internal/install"
+	"github.com/maximtop/kode-injector/native-host/internal/install"
 )
 
 var (
-	defaultChromeID = "cikgoagbggecambahlmphhdgmahgeepl"
+	// Production defaults are injected by scripts/native-host/package.ts.
+	defaultChromeID = ""
 	defaultEdgeID   = ""
 )
 

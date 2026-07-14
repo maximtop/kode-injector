@@ -6,6 +6,7 @@ import React from 'react';
 import { Layout, Row } from 'antd';
 import { observer } from 'mobx-react';
 
+import { PROJECT_REPOSITORY_URL } from '../../../common/constants';
 import { translator } from '../../../common/translator';
 
 /**
@@ -23,7 +24,7 @@ export const Footer = observer(() => {
                 </div>
                 <div className="links">
                     <a
-                        href="https://gitlab.com/maximtop/kode-injector"
+                        href={PROJECT_REPOSITORY_URL}
                         className="github"
                         title={translator.getMessage('source_code_title')}
                     >

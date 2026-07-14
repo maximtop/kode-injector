@@ -27,7 +27,7 @@
     "popup_no_injections": { "message": "Nema injekcija" },
     "popup_disable_site": { "message": "Onemogući injekcije na ovoj web-stranici" },
     "popup_enable_site": { "message": "Omogući injekcije na ovoj web-stranici" },
-    "popup_report_issue_title": { "message": "Prijavite problem na GitLab" },
+    "popup_report_issue_title": { "message": "Prijavite problem na GitHub" },
     "popup_report_issue": { "message": "Prijavi problem" },
     "native_host_required_title": { "message": "Kode Injector Native Host is required", "description": "Warning title shown when the native helper is unavailable." },
     "native_host_explanation": { "message": "Local injection files are read through a separate native helper shared by Firefox, Chrome, and Edge.", "description": "Explains why the native helper is required." },

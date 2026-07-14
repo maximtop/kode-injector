@@ -27,7 +27,7 @@
     "popup_no_injections": { "message": "Ei injektioita" },
     "popup_disable_site": { "message": "Poista tämän sivuston injektiot käytöstä" },
     "popup_enable_site": { "message": "Ota tämän sivuston injektiot käyttöön" },
-    "popup_report_issue_title": { "message": "Ilmoita ongelmasta GitLab" },
+    "popup_report_issue_title": { "message": "Ilmoita ongelmasta GitHub" },
     "popup_report_issue": { "message": "Ilmoita ongelmasta" },
     "native_host_required_title": { "message": "Kode Injector Native Host is required", "description": "Warning title shown when the native helper is unavailable." },
     "native_host_explanation": { "message": "Local injection files are read through a separate native helper shared by Firefox, Chrome, and Edge.", "description": "Explains why the native helper is required." },

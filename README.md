@@ -42,9 +42,10 @@ and CSS — every time, without manual steps.
 
 Install Kode Injector from the Chrome Web Store. Local-file injection in
 Firefox, Chrome, and Edge also requires the separately installed
-[Kode Injector Native Host](https://gitlab.com/maximtop/kode-injector/-/releases).
+[Kode Injector Native Host](https://github.com/maximtop/kode-injector/releases).
 The same small read-only helper serves all three browsers. Platform packages
-appear on that page after the maintainer verifies and publishes a tagged release.
+appear on that page after the tagged workflow creates a draft, the maintainer
+verifies its assets, and the draft is published as a normal release.
 
 ### Install from source
 
@@ -65,6 +66,9 @@ and Edge builds, copy their displayed extension IDs into
 `native-host/dev-extension-ids.json` using the committed example, then run the
 packaged installer's explicit development-registration flow. Review the printed
 origins before confirming them. Production installation ignores this local file.
+Until an Edge Add-ons ID is configured for a release, production registration
+contains the Chrome Store origin only; unpacked Edge remains supported through
+the explicit development-registration flow.
 
 See [DEVELOPMENT.md](DEVELOPMENT.md) for full setup details.
 
@@ -161,7 +165,7 @@ files up to 5 MiB. It cannot write files, execute programs, list directories, or
 access the network. Browser file-URL permission toggles do not replace the host.
 
 Native-host updates are manual. Download the current package from the
-[GitLab Releases page](https://gitlab.com/maximtop/kode-injector/-/releases)
+[GitHub Releases page](https://github.com/maximtop/kode-injector/releases)
 and run its installer again. The packaged uninstaller removes the executable
 and Kode Injector browser registrations without touching extension rules or
 settings.
@@ -177,3 +181,4 @@ one type, point the other field at an empty file.
 
 - [Development](DEVELOPMENT.md) — how to set up and contribute
 - [LLM agent rules](AGENTS.md) — AI-assisted development guidelines
+- [Report an issue](https://github.com/maximtop/kode-injector/issues/new)

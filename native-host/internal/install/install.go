@@ -73,8 +73,10 @@ func BuildManifests(
 	if err := validateID(production.Chrome); err != nil {
 		return nil, nil, fmt.Errorf("Chrome production ID: %w", err)
 	}
-	if err := validateID(production.Edge); err != nil {
-		return nil, nil, fmt.Errorf("Edge production ID: %w", err)
+	if production.Edge != "" {
+		if err := validateID(production.Edge); err != nil {
+			return nil, nil, fmt.Errorf("Edge production ID: %w", err)
+		}
 	}
 	if err := validateDevelopmentIDs(development); err != nil {
 		return nil, nil, err
@@ -89,7 +91,10 @@ func BuildManifests(
 	if err != nil {
 		return nil, nil, err
 	}
-	ids := []string{production.Chrome, production.Edge}
+	ids := []string{production.Chrome}
+	if production.Edge != "" {
+		ids = append(ids, production.Edge)
+	}
 	ids = append(ids, development.Chrome...)
 	ids = append(ids, development.Edge...)
 	origins := make([]string, 0, len(ids))

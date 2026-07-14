@@ -4,14 +4,22 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"reflect"
 	"testing"
+)
+
+const (
+	testChromeID            = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+	testEdgeID              = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+	testChromeDevelopmentID = "cccccccccccccccccccccccccccccccc"
+	testEdgeDevelopmentID   = "dddddddddddddddddddddddddddddddd"
 )
 
 func TestBuildManifests(t *testing.T) {
 	path := "/absolute/per-user/path/kode-injector-native"
 	firefox, chromium, err := BuildManifests(path, ProductionIDs{
-		Chrome: "cikgoagbggecambahlmphhdgmahgeepl",
-		Edge:   "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+		Chrome: testChromeID,
+		Edge:   testEdgeID,
 	}, DevelopmentIDs{})
 	if err != nil {
 		t.Fatalf("build manifests: %v", err)
@@ -31,6 +39,42 @@ func TestBuildManifests(t *testing.T) {
 	allowedOrigins := chromiumJSON["allowed_origins"].([]any)
 	if len(allowedOrigins) != 2 {
 		t.Fatalf("unexpected Chromium allowlist: %v", allowedOrigins)
+	}
+}
+
+func TestBuildManifestsAllowsMissingProductionEdgeID(t *testing.T) {
+	path := "/absolute/per-user/path/kode-injector-native"
+	_, chromium, err := BuildManifests(path, ProductionIDs{
+		Chrome: testChromeID,
+	}, DevelopmentIDs{
+		Chrome: []string{testChromeDevelopmentID},
+		Edge:   []string{testEdgeDevelopmentID},
+	})
+	if err != nil {
+		t.Fatalf("build manifests: %v", err)
+	}
+	var manifest chromiumManifest
+	if err := json.Unmarshal(chromium, &manifest); err != nil {
+		t.Fatalf("decode Chromium manifest: %v", err)
+	}
+	expected := []string{
+		"chrome-extension://" + testChromeID + "/",
+		"chrome-extension://" + testChromeDevelopmentID + "/",
+		"chrome-extension://" + testEdgeDevelopmentID + "/",
+	}
+	if !reflect.DeepEqual(manifest.AllowedOrigins, expected) {
+		t.Fatalf("unexpected explicit Chromium allowlist: %v", manifest.AllowedOrigins)
+	}
+}
+
+func TestBuildManifestsRejectsInvalidNonEmptyProductionEdgeID(t *testing.T) {
+	_, _, err := BuildManifests(
+		"/absolute/per-user/path/kode-injector-native",
+		ProductionIDs{Chrome: testChromeID, Edge: "*"},
+		DevelopmentIDs{},
+	)
+	if err == nil {
+		t.Fatal("invalid production Edge ID was accepted")
 	}
 }
 
@@ -72,8 +116,7 @@ func TestInstallAndUninstallLifecycle(t *testing.T) {
 		Paths:      paths,
 		HostSource: source,
 		ProductionIDs: ProductionIDs{
-			Chrome: "cikgoagbggecambahlmphhdgmahgeepl",
-			Edge:   "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+			Chrome: testChromeID,
 		},
 	}
 	if err := Install(config); err != nil {

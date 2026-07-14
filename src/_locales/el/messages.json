@@ -27,7 +27,7 @@
     "popup_no_injections": { "message": "Δεν υπάρχουν εγχύσεις" },
     "popup_disable_site": { "message": "Απενεργοποίηση εγχύσεων σε αυτόν τον ιστότοπο" },
     "popup_enable_site": { "message": "Ενεργοποίηση εγχύσεων σε αυτόν τον ιστότοπο" },
-    "popup_report_issue_title": { "message": "Αναφορά προβλήματος στο GitLab" },
+    "popup_report_issue_title": { "message": "Αναφορά προβλήματος στο GitHub" },
     "popup_report_issue": { "message": "Αναφορά προβλήματος" },
     "native_host_required_title": { "message": "Kode Injector Native Host is required", "description": "Warning title shown when the native helper is unavailable." },
     "native_host_explanation": { "message": "Local injection files are read through a separate native helper shared by Firefox, Chrome, and Edge.", "description": "Explains why the native helper is required." },

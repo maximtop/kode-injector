@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"gitlab.com/maximtop/kode-injector/native-host/internal/protocol"
-	"gitlab.com/maximtop/kode-injector/native-host/internal/source"
+	"github.com/maximtop/kode-injector/native-host/internal/protocol"
+	"github.com/maximtop/kode-injector/native-host/internal/source"
 )
 
 var hostVersion = "0.0.0-dev"

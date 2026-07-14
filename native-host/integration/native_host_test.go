@@ -11,7 +11,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"gitlab.com/maximtop/kode-injector/native-host/internal/protocol"
+	"github.com/maximtop/kode-injector/native-host/internal/protocol"
 )
 
 func TestNativeHostSubprocessPingAndRead(t *testing.T) {

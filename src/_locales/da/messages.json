@@ -27,7 +27,7 @@
     "popup_no_injections": { "message": "Ingen injektioner" },
     "popup_disable_site": { "message": "Deaktivér injektioner på dette websted" },
     "popup_enable_site": { "message": "Aktivér injektioner på dette websted" },
-    "popup_report_issue_title": { "message": "Rapportér et problem på GitLab" },
+    "popup_report_issue_title": { "message": "Rapportér et problem på GitHub" },
     "popup_report_issue": { "message": "Rapportér et problem" },
     "native_host_required_title": { "message": "Kode Injector Native Host is required", "description": "Warning title shown when the native helper is unavailable." },
     "native_host_explanation": { "message": "Local injection files are read through a separate native helper shared by Firefox, Chrome, and Edge.", "description": "Explains why the native helper is required." },

@@ -17,7 +17,7 @@ test('catalog glossary keeps protected product, platform, and technical tokens',
         const catalog = JSON.parse(fs.readFileSync(filePath, 'utf8')) as Record<string, { message: string }>;
 
         expect(catalog.name.message, locale).toBe('Kode Injector');
-        expect(catalog.popup_report_issue_title.message, locale).toMatch(/GitLab/u);
+        expect(catalog.popup_report_issue_title.message, locale).toMatch(/GitHub/u);
         expect(catalog.description.message, locale).toMatch(/JavaScript/u);
         expect(catalog.description.message, locale).toMatch(/CSS/u);
         expect(catalog.form_js_path_required.message, locale).toMatch(/JavaScript/u);

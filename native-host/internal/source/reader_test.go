@@ -7,7 +7,7 @@ import (
 	"runtime"
 	"testing"
 
-	"gitlab.com/maximtop/kode-injector/native-host/internal/protocol"
+	"github.com/maximtop/kode-injector/native-host/internal/protocol"
 )
 
 func TestReaderRejectsUnsafeSources(t *testing.T) {

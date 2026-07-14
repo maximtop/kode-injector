@@ -112,7 +112,7 @@
         "description": "Tooltip for enabling injection rules on the current site."
     },
     "popup_report_issue_title": {
-        "message": "Report an issue on GitLab",
+        "message": "Report an issue on GitHub",
         "description": "Tooltip for the issue reporting action."
     },
     "popup_report_issue": {

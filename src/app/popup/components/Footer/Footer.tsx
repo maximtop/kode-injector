@@ -12,6 +12,7 @@ import {
 import { DislikeOutlined } from '@ant-design/icons';
 import { observer } from 'mobx-react';
 
+import { PROJECT_NEW_ISSUE_URL } from '../../../common/constants';
 import { messenger } from '../../../common/messenger';
 import { translator } from '../../../common/translator';
 
@@ -25,7 +26,7 @@ export const Footer = observer((): JSX.Element => {
      * Opens the issue reporting page.
      */
     const handleReportClick = (): void => {
-        messenger.openTab('https://gitlab.com/maximtop/kode-injector/issues/new');
+        messenger.openTab(PROJECT_NEW_ISSUE_URL);
     };
 
     return (
