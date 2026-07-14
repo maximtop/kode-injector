@@ -9,11 +9,13 @@ import {
     fallback,
     object,
     parse,
+    picklist,
     safeParse,
     strictObject,
     type InferOutput,
 } from 'valibot';
 
+import { BrowserTarget } from './browser-target';
 import { InjectionField, MESSAGE_TYPES, SETTINGS } from './constants';
 import {
     localePreferenceSchema,
@@ -23,7 +25,11 @@ import {
 import type { LanguageChangedMessage } from './language-channel';
 import { NativeHostStatus, type NativeErrorCode } from './native-host-protocol';
 
-export enum LocalSourceAccessKind {
+/**
+ * User-selected method for reading local injection sources.
+ */
+export enum LocalSourceAccessMethod {
+    Browser = 'browser',
     NativeHost = 'nativeHost',
 }
 
@@ -33,10 +39,27 @@ export interface NativeHostState {
     errorCode?: NativeErrorCode;
 }
 
-export interface LocalSourceAccessState {
-    kind: LocalSourceAccessKind.NativeHost;
+/**
+ * Browser-owned file URL permission state.
+ */
+export interface BrowserFileAccessState {
+    kind: LocalSourceAccessMethod.Browser;
+    allowed: boolean;
+}
+
+/**
+ * Native-host readiness state.
+ */
+export interface NativeHostAccessState {
+    kind: LocalSourceAccessMethod.NativeHost;
+    permissionGranted: boolean;
     host: NativeHostState;
 }
+
+/**
+ * Readiness of the active local-source access method.
+ */
+export type LocalSourceAccessState = BrowserFileAccessState | NativeHostAccessState;
 
 /**
  * User-provided values for a new injection rule.
@@ -100,6 +123,9 @@ export type OptionsDataResponse = {
     /** Native-host state for local source reads. */
     localSourceAccess: LocalSourceAccessState;
 
+    /** Selected method, independent of an asynchronous readiness probe. */
+    localSourceAccessMethod: LocalSourceAccessMethod;
+
     /**
      * Persisted interface language preference.
      */
@@ -111,6 +137,10 @@ export type OptionsDataResponse = {
  */
 export const appSettingsSchema = strictObject({
     [SETTINGS.APP_ENABLED]: boolean(),
+    [SETTINGS.LOCAL_SOURCE_ACCESS_METHOD]: picklist([
+        LocalSourceAccessMethod.Browser,
+        LocalSourceAccessMethod.NativeHost,
+    ]),
     [SETTINGS.SELECTED_LANGUAGE]: localePreferenceValueSchema,
 });
 
@@ -122,21 +152,67 @@ export type AppSettings = InferOutput<typeof appSettingsSchema>;
 /**
  * Default application settings used during field-level recovery.
  */
-const DEFAULT_APP_SETTINGS: AppSettings = {
-    [SETTINGS.APP_ENABLED]: true,
-    [SETTINGS.SELECTED_LANGUAGE]: 'auto',
+export const getDefaultLocalSourceAccessMethod = (
+    browserTarget: BrowserTarget,
+): LocalSourceAccessMethod => {
+    return browserTarget === BrowserTarget.Firefox
+        ? LocalSourceAccessMethod.NativeHost
+        : LocalSourceAccessMethod.Browser;
+};
+
+/**
+ * Applies browser capabilities to a requested local-source access method.
+ *
+ * @param method Requested access method.
+ * @param browserTarget Browser hosting the extension.
+ *
+ * @returns Access method supported by the target browser.
+ */
+export const getSupportedLocalSourceAccessMethod = (
+    method: LocalSourceAccessMethod,
+    browserTarget: BrowserTarget,
+): LocalSourceAccessMethod => {
+    return browserTarget === BrowserTarget.Firefox
+        ? LocalSourceAccessMethod.NativeHost
+        : method;
+};
+
+/**
+ * Creates default application settings for a browser target.
+ *
+ * @param browserTarget Browser hosting the extension.
+ *
+ * @returns Target-aware default settings.
+ */
+const getDefaultAppSettings = (browserTarget: BrowserTarget): AppSettings => {
+    return {
+        [SETTINGS.APP_ENABLED]: true,
+        [SETTINGS.LOCAL_SOURCE_ACCESS_METHOD]: getDefaultLocalSourceAccessMethod(browserTarget),
+        [SETTINGS.SELECTED_LANGUAGE]: 'auto',
+    };
 };
 
 /**
  * Schema that normalizes invalid settings fields independently.
  */
-const normalizedAppSettingsSchema = fallback(
-    object({
-        [SETTINGS.APP_ENABLED]: fallback(boolean(), true),
-        [SETTINGS.SELECTED_LANGUAGE]: localePreferenceSchema,
-    }),
-    () => ({ ...DEFAULT_APP_SETTINGS }),
-);
+const getNormalizedAppSettingsSchema = (browserTarget: BrowserTarget) => {
+    const defaultSettings = getDefaultAppSettings(browserTarget);
+
+    return fallback(
+        object({
+            [SETTINGS.APP_ENABLED]: fallback(boolean(), true),
+            [SETTINGS.LOCAL_SOURCE_ACCESS_METHOD]: fallback(
+                picklist([
+                    LocalSourceAccessMethod.Browser,
+                    LocalSourceAccessMethod.NativeHost,
+                ]),
+                defaultSettings[SETTINGS.LOCAL_SOURCE_ACCESS_METHOD],
+            ),
+            [SETTINGS.SELECTED_LANGUAGE]: localePreferenceSchema,
+        }),
+        () => ({ ...defaultSettings }),
+    );
+};
 
 /**
  * Normalized settings and whether persistence needs repair.
@@ -235,6 +311,10 @@ export type ExecuteScriptPayload = {
 export type RuntimeMessage =
     | { type: typeof MESSAGE_TYPES.GET_OPTIONS_DATA; data?: undefined }
     | { type: typeof MESSAGE_TYPES.GET_LOCAL_SOURCE_ACCESS_STATUS; data?: undefined }
+    | {
+        type: typeof MESSAGE_TYPES.SET_LOCAL_SOURCE_ACCESS_METHOD;
+        data: { method: LocalSourceAccessMethod };
+    }
     | { type: typeof MESSAGE_TYPES.ADD_INJECTION; data: { injectionData: NewInjectionData } }
     | { type: typeof MESSAGE_TYPES.REMOVE_INJECTION; data: { id: string } }
     | { type: typeof MESSAGE_TYPES.ENABLE_INJECTION; data: { id: string } }
@@ -304,17 +384,37 @@ export const isInjectionRule = (value: unknown): value is InjectionRule => {
  *
  * @returns Valid settings and whether persisted storage needs repair.
  */
-export const normalizeAppSettingsWithRepair = (value: unknown): AppSettingsNormalization => {
+export const normalizeAppSettingsWithRepair = (
+    value: unknown,
+    browserTarget: BrowserTarget = BrowserTarget.Chrome,
+): AppSettingsNormalization => {
     const strictResult = safeParse(appSettingsSchema, value);
     if (strictResult.success) {
+        const supportedMethod = getSupportedLocalSourceAccessMethod(
+            strictResult.output[SETTINGS.LOCAL_SOURCE_ACCESS_METHOD],
+            browserTarget,
+        );
+
         return {
-            settings: strictResult.output,
-            shouldRepair: false,
+            settings: {
+                ...strictResult.output,
+                [SETTINGS.LOCAL_SOURCE_ACCESS_METHOD]: supportedMethod,
+            },
+            shouldRepair: supportedMethod
+                !== strictResult.output[SETTINGS.LOCAL_SOURCE_ACCESS_METHOD],
         };
     }
 
+    const normalizedSettings = parse(getNormalizedAppSettingsSchema(browserTarget), value);
+
     return {
-        settings: parse(normalizedAppSettingsSchema, value),
+        settings: {
+            ...normalizedSettings,
+            [SETTINGS.LOCAL_SOURCE_ACCESS_METHOD]: getSupportedLocalSourceAccessMethod(
+                normalizedSettings[SETTINGS.LOCAL_SOURCE_ACCESS_METHOD],
+                browserTarget,
+            ),
+        },
         shouldRepair: true,
     };
 };
@@ -326,8 +426,11 @@ export const normalizeAppSettingsWithRepair = (value: unknown): AppSettingsNorma
  *
  * @returns Valid application settings with defaults applied.
  */
-export const normalizeAppSettings = (value: unknown): AppSettings => {
-    return normalizeAppSettingsWithRepair(value).settings;
+export const normalizeAppSettings = (
+    value: unknown,
+    browserTarget: BrowserTarget = BrowserTarget.Chrome,
+): AppSettings => {
+    return normalizeAppSettingsWithRepair(value, browserTarget).settings;
 };
 
 /**

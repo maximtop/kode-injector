@@ -10,11 +10,10 @@ import {
 } from 'mobx';
 
 import {
-    LocalSourceAccessKind,
+    LocalSourceAccessMethod,
     type LocalSourceAccessState,
     type PopupTab,
 } from '../../common/contracts';
-import { NativeHostStatus } from '../../common/native-host-protocol';
 import { messenger } from '../../common/messenger';
 import { log } from '../../common/log';
 import { tabs } from '../../common/tabs';
@@ -59,8 +58,8 @@ export class SettingsStore {
      */
     @observable
     localSourceAccess: LocalSourceAccessState = {
-        kind: LocalSourceAccessKind.NativeHost,
-        host: { status: NativeHostStatus.Checking },
+        kind: LocalSourceAccessMethod.Browser,
+        allowed: true,
     };
 
     /**

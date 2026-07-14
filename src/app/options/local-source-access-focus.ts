@@ -1,5 +1,5 @@
 /**
- * @file Options focus refresh for native-host state.
+ * @file Options focus refresh for the active local-source access state.
  */
 
 /* eslint-disable jsdoc/require-jsdoc */

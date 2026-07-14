@@ -10,15 +10,15 @@ import {
 import find from 'lodash/find';
 
 import {
-    LocalSourceAccessKind,
     type InjectionRule,
+    LocalSourceAccessMethod,
     type LocalSourceAccessState,
     type NewInjectionData,
 } from '../../common/contracts';
-import { NativeHostStatus } from '../../common/native-host-protocol';
 import { messenger } from '../../common/messenger';
 import { log } from '../../common/log';
 import { i18n } from '../../common/i18n';
+import { NativeHostStatus } from '../../common/native-host-protocol';
 import type { RootStoreType } from './RootStore';
 
 /**
@@ -57,8 +57,50 @@ export class InjectionsStore {
      */
     @observable
     localSourceAccess: LocalSourceAccessState = {
-        kind: LocalSourceAccessKind.NativeHost,
-        host: { status: NativeHostStatus.Checking },
+        kind: LocalSourceAccessMethod.Browser,
+        allowed: true,
+    };
+
+    /**
+     * Authoritative persisted method, independent of readiness probes.
+     */
+    @observable
+    localSourceAccessMethod = LocalSourceAccessMethod.Browser;
+
+    /**
+     * Whether a method transition is waiting for background persistence.
+     */
+    @observable
+    localSourceAccessMethodPending = false;
+
+    /**
+     * Monotonic generation used to discard stale readiness responses.
+     */
+    private localSourceAccessRequest = 0;
+
+    /**
+     * Starts an outer local-source method transition unless one is active.
+     *
+     * @returns Whether the caller acquired the transition guard.
+     */
+    beginLocalSourceAccessMethodTransition = (): boolean => {
+        if (this.localSourceAccessMethodPending) {
+            return false;
+        }
+
+        runInAction(() => {
+            this.localSourceAccessMethodPending = true;
+        });
+        return true;
+    };
+
+    /**
+     * Releases the local-source method transition guard.
+     */
+    endLocalSourceAccessMethodTransition = (): void => {
+        runInAction(() => {
+            this.localSourceAccessMethodPending = false;
+        });
     };
 
     /**
@@ -67,12 +109,14 @@ export class InjectionsStore {
     getOptionsData = async (): Promise<void> => {
         const {
             localSourceAccess,
+            localSourceAccessMethod,
             injections,
             selectedLanguage,
         } = await messenger.getOptionsData();
         await i18n.init(selectedLanguage);
         runInAction(() => {
             this.localSourceAccess = localSourceAccess;
+            this.localSourceAccessMethod = localSourceAccessMethod;
             this.injections = injections;
             this.optionsDataReady = true;
         });
@@ -82,13 +126,44 @@ export class InjectionsStore {
      * Refreshes browser-owned local-file permission state.
      */
     refreshLocalSourceAccess = async (): Promise<void> => {
+        this.localSourceAccessRequest += 1;
+        const request = this.localSourceAccessRequest;
         try {
             const localSourceAccess = await messenger.getLocalSourceAccessStatus();
             runInAction(() => {
-                this.localSourceAccess = localSourceAccess;
+                if (request === this.localSourceAccessRequest
+                    && localSourceAccess.kind === this.localSourceAccessMethod) {
+                    this.localSourceAccess = localSourceAccess;
+                }
             });
         } catch (error) {
             log.error(error instanceof Error ? error.message : error);
+        }
+    };
+
+    /**
+     * Persists and activates a local-source access method.
+     *
+     * @param method Selected method.
+     */
+    setLocalSourceAccessMethod = async (
+        method: LocalSourceAccessMethod,
+    ): Promise<void> => {
+        const ownsTransition = this.beginLocalSourceAccessMethodTransition();
+        this.localSourceAccessRequest += 1;
+
+        try {
+            const selectedMethod = await messenger.setLocalSourceAccessMethod(method);
+            this.localSourceAccessRequest += 1;
+            runInAction(() => {
+                this.localSourceAccessMethod = selectedMethod;
+                this.localSourceAccess = getCheckingAccessState(selectedMethod);
+            });
+            await this.refreshLocalSourceAccess();
+        } finally {
+            if (ownsTransition) {
+                this.endLocalSourceAccessMethodTransition();
+            }
         }
     };
 
@@ -148,3 +223,27 @@ export class InjectionsStore {
         }
     }
 }
+
+/**
+ * Creates the immediate status shown while the selected method is probed.
+ *
+ * @param method Selected local-source method.
+ *
+ * @returns Method-specific checking state.
+ */
+const getCheckingAccessState = (
+    method: LocalSourceAccessMethod,
+): LocalSourceAccessState => {
+    if (method === LocalSourceAccessMethod.Browser) {
+        return {
+            kind: LocalSourceAccessMethod.Browser,
+            allowed: true,
+        };
+    }
+
+    return {
+        kind: LocalSourceAccessMethod.NativeHost,
+        permissionGranted: true,
+        host: { status: NativeHostStatus.Checking },
+    };
+};

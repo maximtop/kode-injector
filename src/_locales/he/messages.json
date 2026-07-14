@@ -41,5 +41,19 @@
     "native_host_download": { "message": "Download native host", "description": "Button opening native helper installation instructions." },
     "native_host_install_instructions": { "message": "Download and install the package for your operating system, then return here and check again.", "description": "Native helper installation guidance." },
     "native_host_check_again": { "message": "Check again", "description": "Button rechecking native helper status." },
-    "popup_native_host_unavailable": { "message": "Local file injection needs the Kode Injector Native Host. Open settings for installation or recovery instructions.", "description": "Compact popup warning when the native helper is unavailable." }
+    "popup_native_host_unavailable": { "message": "Local file injection needs the Kode Injector Native Host. Open settings for installation or recovery instructions.", "description": "Compact popup warning when the native helper is unavailable." },
+    "file_access_disabled": { "message": "הגישה לקבצים מקומיים מושבתת" },
+    "file_access_instructions": { "message": "פתחו את הגדרות ההרחבה Kode Injector בדפדפן, אפשרו גישה לקבצים מקומיים ולאחר מכן בדקו שוב." },
+    "file_access_open_extension_settings": { "message": "פתיחת הגדרות התוסף" },
+    "file_access_check_again": { "message": "בדיקה חוזרת" },
+    "popup_file_access_disabled": { "message": "הגישה לקבצים מקומיים מושבתת. פתחו את ההגדרות לקבלת הוראות." },
+    "local_source_method": { "message": "שיטת גישה לקבצים מקומיים" },
+    "local_source_method_browser": { "message": "גישה לקבצים דרך הדפדפן" },
+    "local_source_method_browser_description": { "message": "קורא קבצים מקומיים ישירות דרך הדפדפן ודורש שהגישה שלו לכתובות URL של קבצים תהיה מופעלת." },
+    "local_source_method_native_host": { "message": "Native Host" },
+    "native_host_permission_denied": { "message": "ההרשאה ל-Native Host לא ניתנה. שיטת הגישה הנוכחית לא השתנתה." },
+    "local_source_method_native_host_description": { "message": "משתמש במסייע לקריאה בלבד שמותקן בנפרד ואינו דורש גישת דפדפן לכתובות URL של קבצים. בחירתו מבקשת מהדפדפן את הרשאת Native Host האופציונלית." },
+    "local_source_method_change_failed": { "message": "לא ניתן לשנות את שיטת הגישה לקבצים מקומיים. נסו שוב." },
+    "native_host_permission_required": { "message": "Native Host נבחר, אך ההרשאה שלו בדפדפן אינה מופעלת." },
+    "native_host_enable_permission": { "message": "הפעלת הרשאה" }
 }

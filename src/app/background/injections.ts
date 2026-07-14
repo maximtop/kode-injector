@@ -20,6 +20,7 @@ import { urlUtils } from '../common/url-utils';
 import { app } from './app';
 import { executeScript } from './execute-script';
 import { sourceReader } from './native-host';
+import { SourceReadErrorCode } from './source-reader';
 import { localSourceAccess } from './local-source-access';
 
 const FILE_URL_PREFIX = 'file://';
@@ -186,7 +187,8 @@ class Injections {
             const result = await sourceReader.read(jsPath);
             if (result.ok) {
                 await executeScript(result.content, tabId, jsPath);
-            } else if (jsPath.startsWith(FILE_URL_PREFIX)) {
+            } else if (jsPath.startsWith(FILE_URL_PREFIX)
+                && result.errorCode !== SourceReadErrorCode.FetchFailed) {
                 localSourceAccess.markReadFailed();
             }
         });
@@ -213,7 +215,8 @@ class Injections {
                 const { cssPath } = injection;
                 const result = await sourceReader.read(cssPath);
                 if (!result.ok) {
-                    if (cssPath.startsWith(FILE_URL_PREFIX)) {
+                    if (cssPath.startsWith(FILE_URL_PREFIX)
+                        && result.errorCode !== SourceReadErrorCode.FetchFailed) {
                         localSourceAccess.markReadFailed();
                     }
                     return null;

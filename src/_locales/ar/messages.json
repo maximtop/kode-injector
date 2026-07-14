@@ -41,5 +41,19 @@
     "native_host_download": { "message": "Download native host", "description": "Button opening native helper installation instructions." },
     "native_host_install_instructions": { "message": "Download and install the package for your operating system, then return here and check again.", "description": "Native helper installation guidance." },
     "native_host_check_again": { "message": "Check again", "description": "Button rechecking native helper status." },
-    "popup_native_host_unavailable": { "message": "Local file injection needs the Kode Injector Native Host. Open settings for installation or recovery instructions.", "description": "Compact popup warning when the native helper is unavailable." }
+    "popup_native_host_unavailable": { "message": "Local file injection needs the Kode Injector Native Host. Open settings for installation or recovery instructions.", "description": "Compact popup warning when the native helper is unavailable." },
+    "file_access_disabled": { "message": "تم تعطيل الوصول إلى الملفات المحلية" },
+    "file_access_instructions": { "message": "افتح إعدادات إضافة Kode Injector في متصفحك وفعّل الوصول إلى الملفات المحلية على جهازك أو السماح بالوصول إلى عناوين URL للملفات، ثم تحقق مرة أخرى." },
+    "file_access_open_extension_settings": { "message": "فتح إعدادات الإضافة" },
+    "file_access_check_again": { "message": "تحقق مرة أخرى" },
+    "popup_file_access_disabled": { "message": "تم تعطيل الوصول إلى الملفات المحلية. افتح الإعدادات للحصول على التعليمات." },
+    "local_source_method": { "message": "طريقة الوصول إلى الملفات المحلية" },
+    "local_source_method_browser": { "message": "وصول المتصفح إلى الملفات" },
+    "local_source_method_browser_description": { "message": "يقرأ الملفات المحلية مباشرةً عبر المتصفح ويتطلب تفعيل وصول المتصفح إلى عناوين URL للملفات." },
+    "local_source_method_native_host": { "message": "Native Host" },
+    "native_host_permission_denied": { "message": "لم يتم منح إذن Native Host. لم تتغير طريقة الوصول الحالية." },
+    "local_source_method_native_host_description": { "message": "يستخدم مساعدًا منفصلًا للقراءة فقط ولا يحتاج إلى وصول المتصفح إلى عناوين URL للملفات. يؤدي تحديده إلى طلب إذن Native Host الاختياري من المتصفح." },
+    "local_source_method_change_failed": { "message": "تعذّر تغيير طريقة الوصول إلى الملفات المحلية. حاول مرة أخرى." },
+    "native_host_permission_required": { "message": "تم تحديد Native Host، لكن إذنه في المتصفح غير مفعّل." },
+    "native_host_enable_permission": { "message": "تفعيل الإذن" }
 }

@@ -5,6 +5,7 @@
 /* eslint-disable jsdoc/require-jsdoc, no-useless-constructor, no-empty-function */
 
 import { log } from '../common/log';
+import { LocalSourceAccessMethod } from '../common/contracts';
 import { NativeErrorCode } from '../common/native-host-protocol';
 
 const FILE_URL_PREFIX = 'file://';
@@ -28,14 +29,18 @@ interface NativeFileReader {
 
 type FetchSource = (url: string) => Promise<{ text(): Promise<string> }>;
 
+type GetLocalSourceAccessMethod = () => LocalSourceAccessMethod;
+
 export class SourceReader {
     public constructor(
         private readonly native: NativeFileReader,
         private readonly fetchSource: FetchSource,
+        private readonly getLocalSourceAccessMethod: GetLocalSourceAccessMethod,
     ) {}
 
     public read = async (url: string): Promise<SourceReadResult> => {
-        if (url.startsWith(FILE_URL_PREFIX)) {
+        if (url.startsWith(FILE_URL_PREFIX)
+            && this.getLocalSourceAccessMethod() === LocalSourceAccessMethod.NativeHost) {
             return this.readNative(url);
         }
         return this.readNetwork(url);

@@ -170,5 +170,61 @@
     "popup_native_host_unavailable": {
         "message": "Local file injection needs the Kode Injector Native Host. Open settings for installation or recovery instructions.",
         "description": "Compact popup warning when the native helper is unavailable."
+    },
+    "file_access_disabled": {
+        "message": "Local file access is disabled",
+        "description": "Warning title shown when the browser denies access to local file URLs."
+    },
+    "file_access_instructions": {
+        "message": "Open your browser's extension settings for Kode Injector and enable Access local files on your computer or Allow access to file URLs, then check again.",
+        "description": "Instructions for enabling browser permission to read local injection files."
+    },
+    "file_access_open_extension_settings": {
+        "message": "Open extension settings",
+        "description": "Button that opens the browser-managed settings for Kode Injector."
+    },
+    "file_access_check_again": {
+        "message": "Check again",
+        "description": "Button that rechecks browser local-file permission."
+    },
+    "popup_file_access_disabled": {
+        "message": "Local file access is disabled. Open settings for instructions.",
+        "description": "Compact popup warning when local injection files cannot be read."
+    },
+    "local_source_method": {
+        "message": "Local file access method",
+        "description": "Label for choosing how local injection files are read."
+    },
+    "local_source_method_browser": {
+        "message": "Browser file access",
+        "description": "Option that reads local files through browser file-URL access."
+    },
+    "local_source_method_browser_description": {
+        "message": "Reads local files directly through the browser and requires its file-URL access toggle to be enabled.",
+        "description": "Explains the browser-managed local-file access method."
+    },
+    "local_source_method_native_host": {
+        "message": "Native Host",
+        "description": "Option that reads local files through the separately installed native helper."
+    },
+    "native_host_permission_denied": {
+        "message": "Native Host permission was not granted. The current file access method was not changed.",
+        "description": "Shown when a Chromium nativeMessaging permission request is declined."
+    },
+    "local_source_method_native_host_description": {
+        "message": "Uses a separately installed read-only helper and avoids the browser's file-URL access toggle. Selecting it requests the optional Native Host permission from the browser.",
+        "description": "Explains the optional Native Host method, its advantage, and its permission request."
+    },
+    "local_source_method_change_failed": {
+        "message": "Could not change the local file access method. Try again.",
+        "description": "Shown when saving a local-file access method fails."
+    },
+    "native_host_permission_required": {
+        "message": "Native Host is selected, but its browser permission is not enabled.",
+        "description": "Warning shown when Native Host is selected without its browser permission."
+    },
+    "native_host_enable_permission": {
+        "message": "Enable permission",
+        "description": "Button requesting the optional Chromium nativeMessaging permission."
     }
 }

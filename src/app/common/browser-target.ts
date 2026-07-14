@@ -48,7 +48,10 @@ export const detectBrowserTarget = (
  * @returns Supported browser target.
  */
 export const getCurrentBrowserTarget = (): BrowserTarget => {
-    return detectBrowserTarget(globalThis.location.protocol, globalThis.navigator.userAgent);
+    return detectBrowserTarget(
+        globalThis.location?.protocol || '',
+        globalThis.navigator?.userAgent || '',
+    );
 };
 
 /**

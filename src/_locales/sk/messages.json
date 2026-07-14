@@ -41,5 +41,19 @@
     "native_host_download": { "message": "Download native host", "description": "Button opening native helper installation instructions." },
     "native_host_install_instructions": { "message": "Download and install the package for your operating system, then return here and check again.", "description": "Native helper installation guidance." },
     "native_host_check_again": { "message": "Check again", "description": "Button rechecking native helper status." },
-    "popup_native_host_unavailable": { "message": "Local file injection needs the Kode Injector Native Host. Open settings for installation or recovery instructions.", "description": "Compact popup warning when the native helper is unavailable." }
+    "popup_native_host_unavailable": { "message": "Local file injection needs the Kode Injector Native Host. Open settings for installation or recovery instructions.", "description": "Compact popup warning when the native helper is unavailable." },
+    "file_access_disabled": { "message": "Prístup k miestnym súborom je zakázaný" },
+    "file_access_instructions": { "message": "Otvorte nastavenia rozšírenia Kode Injector, povoľte prístup k miestnym súborom a potom kontrolu zopakujte." },
+    "file_access_open_extension_settings": { "message": "Otvoriť nastavenia rozšírenia" },
+    "file_access_check_again": { "message": "Skontrolovať znova" },
+    "popup_file_access_disabled": { "message": "Prístup k miestnym súborom je zakázaný. Pokyny nájdete v nastaveniach." },
+    "local_source_method": { "message": "Spôsob prístupu k lokálnym súborom" },
+    "local_source_method_browser": { "message": "Prístup k súborom cez prehliadač" },
+    "local_source_method_browser_description": { "message": "Číta lokálne súbory priamo cez prehliadač a vyžaduje zapnutie prístupu k súborovým URL." },
+    "local_source_method_native_host": { "message": "Native Host" },
+    "native_host_permission_denied": { "message": "Povolenie pre Native Host nebolo udelené. Aktuálny spôsob prístupu sa nezmenil." },
+    "local_source_method_native_host_description": { "message": "Používa samostatne nainštalovaného pomocníka iba na čítanie a nevyžaduje prístup prehliadača k súborovým URL. Jeho výber vyžiada od prehliadača voliteľné povolenie Native Host." },
+    "local_source_method_change_failed": { "message": "Spôsob prístupu k lokálnym súborom sa nepodarilo zmeniť. Skúste to znova." },
+    "native_host_permission_required": { "message": "Je vybraný Native Host, ale jeho povolenie v prehliadači nie je zapnuté." },
+    "native_host_enable_permission": { "message": "Zapnúť povolenie" }
 }

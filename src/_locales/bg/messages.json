@@ -41,5 +41,19 @@
     "native_host_download": { "message": "Download native host", "description": "Button opening native helper installation instructions." },
     "native_host_install_instructions": { "message": "Download and install the package for your operating system, then return here and check again.", "description": "Native helper installation guidance." },
     "native_host_check_again": { "message": "Check again", "description": "Button rechecking native helper status." },
-    "popup_native_host_unavailable": { "message": "Local file injection needs the Kode Injector Native Host. Open settings for installation or recovery instructions.", "description": "Compact popup warning when the native helper is unavailable." }
+    "popup_native_host_unavailable": { "message": "Local file injection needs the Kode Injector Native Host. Open settings for installation or recovery instructions.", "description": "Compact popup warning when the native helper is unavailable." },
+    "file_access_disabled": { "message": "Достъпът до локални файлове е изключен" },
+    "file_access_instructions": { "message": "Отворете настройките на разширението Kode Injector в браузъра и включете достъпа до локални файлове, след което проверете отново." },
+    "file_access_open_extension_settings": { "message": "Отваряне на настройките на разширението" },
+    "file_access_check_again": { "message": "Проверете отново" },
+    "popup_file_access_disabled": { "message": "Достъпът до локални файлове е изключен. Отворете настройките за инструкции." },
+    "local_source_method": { "message": "Метод за достъп до локални файлове" },
+    "local_source_method_browser": { "message": "Достъп до файлове чрез браузъра" },
+    "local_source_method_browser_description": { "message": "Чете локални файлове директно чрез браузъра и изисква да е включен достъпът му до файлови URL адреси." },
+    "local_source_method_native_host": { "message": "Native Host" },
+    "native_host_permission_denied": { "message": "Разрешението за Native Host не беше предоставено. Текущият метод за достъп не е променен." },
+    "local_source_method_native_host_description": { "message": "Използва отделно инсталиран помощник само за четене и не изисква достъп на браузъра до файлови URL адреси. Избирането му изисква незадължителното разрешение за Native Host от браузъра." },
+    "local_source_method_change_failed": { "message": "Методът за достъп до локални файлове не можа да бъде променен. Опитайте отново." },
+    "native_host_permission_required": { "message": "Native Host е избран, но разрешението му в браузъра не е активирано." },
+    "native_host_enable_permission": { "message": "Активиране на разрешението" }
 }

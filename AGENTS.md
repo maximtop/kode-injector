@@ -134,9 +134,11 @@ one target. Outputs are `build/<channel>/<browser>/` and
 `build/<channel>/<browser>.zip`. Load the Chrome dev build via
 `chrome://extensions/` → **Load unpacked** → `build/dev/chrome/`.
 
-Firefox, Chrome, and Edge route local source reads through the same separately
-installed native host. Browser file-URL permission toggles are not a substitute
-for native-host readiness.
+Chrome and Edge default to browser-managed file-URL access. Their Native Host
+mode is opt-in and its `nativeMessaging` permission must remain optional;
+request it only from an explicit Options-page user action. Firefox is Native
+Host-only and declares `nativeMessaging` as required. Never silently fall back
+between the selected methods.
 
 ## Native Host Safety
 

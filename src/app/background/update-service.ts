@@ -96,9 +96,9 @@ class UpdateService {
         const isEnabled = storedData?.isActivated?.isActivated;
         if (!isNil(isEnabled)) {
             if (isEnabled) {
-                app.enable();
+                await app.enable();
             } else {
-                app.disable();
+                await app.disable();
             }
         }
 

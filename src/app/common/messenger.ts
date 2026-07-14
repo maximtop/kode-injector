@@ -7,6 +7,7 @@ import browser from 'webextension-polyfill';
 import type {
     InjectionRule,
     InjectionsCodeResponse,
+    LocalSourceAccessMethod,
     LocalSourceAccessState,
     NewInjectionData,
     OptionsDataResponse,
@@ -81,6 +82,15 @@ class Messenger {
      */
     getLocalSourceAccessStatus = (): Promise<LocalSourceAccessState> => {
         return this.sendMessage(MESSAGE_TYPES.GET_LOCAL_SOURCE_ACCESS_STATUS);
+    }
+
+    /**
+     * Persists the selected local-source method and returns its fresh status.
+     */
+    setLocalSourceAccessMethod = (
+        method: LocalSourceAccessMethod,
+    ): Promise<LocalSourceAccessMethod> => {
+        return this.sendMessage(MESSAGE_TYPES.SET_LOCAL_SOURCE_ACCESS_METHOD, { method });
     }
 
     /**

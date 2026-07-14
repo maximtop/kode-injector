@@ -41,5 +41,19 @@
     "native_host_download": { "message": "Download native host", "description": "Button opening native helper installation instructions." },
     "native_host_install_instructions": { "message": "Download and install the package for your operating system, then return here and check again.", "description": "Native helper installation guidance." },
     "native_host_check_again": { "message": "Check again", "description": "Button rechecking native helper status." },
-    "popup_native_host_unavailable": { "message": "Local file injection needs the Kode Injector Native Host. Open settings for installation or recovery instructions.", "description": "Compact popup warning when the native helper is unavailable." }
+    "popup_native_host_unavailable": { "message": "Local file injection needs the Kode Injector Native Host. Open settings for installation or recovery instructions.", "description": "Compact popup warning when the native helper is unavailable." },
+    "file_access_disabled": { "message": "Quyền truy cập tệp cục bộ đã bị tắt" },
+    "file_access_instructions": { "message": "Mở phần cài đặt tiện ích Kode Injector trong trình duyệt, bật quyền truy cập tệp cục bộ rồi kiểm tra lại." },
+    "file_access_open_extension_settings": { "message": "Mở cài đặt tiện ích" },
+    "file_access_check_again": { "message": "Kiểm tra lại" },
+    "popup_file_access_disabled": { "message": "Quyền truy cập tệp cục bộ đã bị tắt. Mở phần cài đặt để xem hướng dẫn." },
+    "local_source_method": { "message": "Phương thức truy cập tệp cục bộ" },
+    "local_source_method_browser": { "message": "Truy cập tệp qua trình duyệt" },
+    "local_source_method_browser_description": { "message": "Đọc tệp cục bộ trực tiếp qua trình duyệt và yêu cầu bật quyền truy cập URL tệp của trình duyệt." },
+    "local_source_method_native_host": { "message": "Native Host" },
+    "native_host_permission_denied": { "message": "Quyền Native Host chưa được cấp. Phương thức truy cập hiện tại không thay đổi." },
+    "local_source_method_native_host_description": { "message": "Sử dụng trình trợ giúp chỉ đọc được cài đặt riêng và không cần quyền truy cập URL tệp của trình duyệt. Khi chọn, trình duyệt sẽ yêu cầu quyền Native Host không bắt buộc." },
+    "local_source_method_change_failed": { "message": "Không thể thay đổi phương thức truy cập tệp cục bộ. Hãy thử lại." },
+    "native_host_permission_required": { "message": "Native Host đã được chọn nhưng quyền của nó trong trình duyệt chưa được bật." },
+    "native_host_enable_permission": { "message": "Bật quyền" }
 }

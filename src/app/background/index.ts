@@ -20,8 +20,10 @@ export const backgroundPage = (): Promise<void> => {
      * Initializes stores that require asynchronous storage access.
      */
     const asyncInit = async (): Promise<void> => {
-        await injections.init();
-        await settings.init();
+        await Promise.all([
+            injections.init(),
+            settings.init(),
+        ]);
         await localSourceAccess.getState();
     };
 

@@ -41,5 +41,19 @@
     "native_host_download": { "message": "Download native host", "description": "Button opening native helper installation instructions." },
     "native_host_install_instructions": { "message": "Download and install the package for your operating system, then return here and check again.", "description": "Native helper installation guidance." },
     "native_host_check_again": { "message": "Check again", "description": "Button rechecking native helper status." },
-    "popup_native_host_unavailable": { "message": "Local file injection needs the Kode Injector Native Host. Open settings for installation or recovery instructions.", "description": "Compact popup warning when the native helper is unavailable." }
+    "popup_native_host_unavailable": { "message": "Local file injection needs the Kode Injector Native Host. Open settings for installation or recovery instructions.", "description": "Compact popup warning when the native helper is unavailable." },
+    "file_access_disabled": { "message": "Adgang til lokale filer er deaktiveret" },
+    "file_access_instructions": { "message": "Åbn browserens udvidelsesindstillinger for Kode Injector, aktivér adgang til lokale filer, og kontrollér derefter igen." },
+    "file_access_open_extension_settings": { "message": "Åbn udvidelsesindstillinger" },
+    "file_access_check_again": { "message": "Kontrollér igen" },
+    "popup_file_access_disabled": { "message": "Adgang til lokale filer er deaktiveret. Åbn indstillingerne for vejledning." },
+    "local_source_method": { "message": "Metode til adgang til lokale filer" },
+    "local_source_method_browser": { "message": "Browserens filadgang" },
+    "local_source_method_browser_description": { "message": "Læser lokale filer direkte gennem browseren og kræver, at browserens adgang til fil-URL’er er slået til." },
+    "local_source_method_native_host": { "message": "Native Host" },
+    "native_host_permission_denied": { "message": "Tilladelse til Native Host blev ikke givet. Den aktuelle adgangsmetode er uændret." },
+    "local_source_method_native_host_description": { "message": "Bruger en separat installeret skrivebeskyttet hjælper og kræver ikke browserens adgang til fil-URL’er. Når metoden vælges, anmoder browseren om den valgfrie Native Host-tilladelse." },
+    "local_source_method_change_failed": { "message": "Metoden til adgang til lokale filer kunne ikke ændres. Prøv igen." },
+    "native_host_permission_required": { "message": "Native Host er valgt, men browserens tilladelse er ikke aktiveret." },
+    "native_host_enable_permission": { "message": "Aktivér tilladelse" }
 }

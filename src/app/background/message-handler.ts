@@ -12,6 +12,7 @@ import type {
     PopupDataResponse,
     RuntimeMessage,
 } from '../common/contracts';
+import { LocalSourceAccessMethod } from '../common/contracts';
 import { MESSAGE_TYPES } from '../common/constants';
 import { toLocalePreference, type LocalePreference } from '../common/locale';
 import { browserLanguageChannel } from '../common/browser-language-channel';
@@ -33,6 +34,7 @@ type MessageResponse =
     | InjectionsCodeResponse
     | browser.Tabs.Tab
     | LocalePreference
+    | LocalSourceAccessMethod
     | LocalSourceAccessState
     | null
     | void;
@@ -54,13 +56,24 @@ class MessageHandler {
             case MESSAGE_TYPES.GET_OPTIONS_DATA: {
                 const injectionsData = injections.getInjections();
                 return {
-                    localSourceAccess: localSourceAccess.currentState,
+                    localSourceAccess: await localSourceAccess.getState(),
+                    localSourceAccessMethod: settings.getLocalSourceAccessMethod(),
                     injections: injectionsData,
                     selectedLanguage: settings.getSelectedLanguage(),
                 };
             }
             case MESSAGE_TYPES.GET_LOCAL_SOURCE_ACCESS_STATUS: {
                 return localSourceAccess.getState();
+            }
+            case MESSAGE_TYPES.SET_LOCAL_SOURCE_ACCESS_METHOD: {
+                const { method } = data;
+                if (!Object.values(LocalSourceAccessMethod).includes(method)) {
+                    throw new Error(`Unknown local source access method ${method}`);
+                }
+                await settings.setLocalSourceAccessMethod(method);
+                const selectedMethod = settings.getLocalSourceAccessMethod();
+                localSourceAccess.methodChanged(selectedMethod);
+                return selectedMethod;
             }
             case MESSAGE_TYPES.ADD_INJECTION: {
                 const { injectionData } = data;
@@ -80,7 +93,7 @@ class MessageHandler {
                 const { tab } = data;
                 const tabUrl = tab.url || '';
                 const popupData: PopupDataResponse = {
-                    localSourceAccess: localSourceAccess.currentState,
+                    localSourceAccess: await localSourceAccess.getState(),
                     settings: settings.getSettings(),
                     siteHasEnabledInjections: injections.hasSiteEnabledInjections(tabUrl),
                     siteIsBlacklisted: injections.isSiteBlacklisted(tabUrl),

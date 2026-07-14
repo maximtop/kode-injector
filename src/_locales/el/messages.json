@@ -41,5 +41,19 @@
     "native_host_download": { "message": "Download native host", "description": "Button opening native helper installation instructions." },
     "native_host_install_instructions": { "message": "Download and install the package for your operating system, then return here and check again.", "description": "Native helper installation guidance." },
     "native_host_check_again": { "message": "Check again", "description": "Button rechecking native helper status." },
-    "popup_native_host_unavailable": { "message": "Local file injection needs the Kode Injector Native Host. Open settings for installation or recovery instructions.", "description": "Compact popup warning when the native helper is unavailable." }
+    "popup_native_host_unavailable": { "message": "Local file injection needs the Kode Injector Native Host. Open settings for installation or recovery instructions.", "description": "Compact popup warning when the native helper is unavailable." },
+    "file_access_disabled": { "message": "Η πρόσβαση σε τοπικά αρχεία είναι απενεργοποιημένη" },
+    "file_access_instructions": { "message": "Ανοίξτε τις ρυθμίσεις επέκτασης του Kode Injector, ενεργοποιήστε την πρόσβαση σε τοπικά αρχεία και έπειτα ελέγξτε ξανά." },
+    "file_access_open_extension_settings": { "message": "Άνοιγμα ρυθμίσεων επέκτασης" },
+    "file_access_check_again": { "message": "Έλεγχος ξανά" },
+    "popup_file_access_disabled": { "message": "Η πρόσβαση σε τοπικά αρχεία είναι απενεργοποιημένη. Ανοίξτε τις ρυθμίσεις για οδηγίες." },
+    "local_source_method": { "message": "Μέθοδος πρόσβασης σε τοπικά αρχεία" },
+    "local_source_method_browser": { "message": "Πρόσβαση αρχείων μέσω προγράμματος περιήγησης" },
+    "local_source_method_browser_description": { "message": "Διαβάζει τοπικά αρχεία απευθείας μέσω του προγράμματος περιήγησης και απαιτεί ενεργοποιημένη πρόσβαση σε URL αρχείων." },
+    "local_source_method_native_host": { "message": "Native Host" },
+    "native_host_permission_denied": { "message": "Δεν παραχωρήθηκε η άδεια Native Host. Η τρέχουσα μέθοδος πρόσβασης δεν άλλαξε." },
+    "local_source_method_native_host_description": { "message": "Χρησιμοποιεί έναν ξεχωριστά εγκατεστημένο βοηθό μόνο για ανάγνωση και δεν απαιτεί πρόσβαση του προγράμματος περιήγησης σε URL αρχείων. Η επιλογή του ζητά την προαιρετική άδεια Native Host από το πρόγραμμα περιήγησης." },
+    "local_source_method_change_failed": { "message": "Δεν ήταν δυνατή η αλλαγή της μεθόδου πρόσβασης σε τοπικά αρχεία. Δοκιμάστε ξανά." },
+    "native_host_permission_required": { "message": "Έχει επιλεγεί το Native Host, αλλά η άδειά του στο πρόγραμμα περιήγησης δεν είναι ενεργοποιημένη." },
+    "native_host_enable_permission": { "message": "Ενεργοποίηση άδειας" }
 }

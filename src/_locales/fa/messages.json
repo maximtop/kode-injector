@@ -41,5 +41,19 @@
     "native_host_download": { "message": "Download native host", "description": "Button opening native helper installation instructions." },
     "native_host_install_instructions": { "message": "Download and install the package for your operating system, then return here and check again.", "description": "Native helper installation guidance." },
     "native_host_check_again": { "message": "Check again", "description": "Button rechecking native helper status." },
-    "popup_native_host_unavailable": { "message": "Local file injection needs the Kode Injector Native Host. Open settings for installation or recovery instructions.", "description": "Compact popup warning when the native helper is unavailable." }
+    "popup_native_host_unavailable": { "message": "Local file injection needs the Kode Injector Native Host. Open settings for installation or recovery instructions.", "description": "Compact popup warning when the native helper is unavailable." },
+    "file_access_disabled": { "message": "دسترسی به فایل‌های محلی غیرفعال است" },
+    "file_access_instructions": { "message": "تنظیمات افزونه Kode Injector را در مرورگر باز کنید، دسترسی به فایل‌های محلی را فعال کنید و سپس دوباره بررسی کنید." },
+    "file_access_open_extension_settings": { "message": "باز کردن تنظیمات افزونه" },
+    "file_access_check_again": { "message": "بررسی دوباره" },
+    "popup_file_access_disabled": { "message": "دسترسی به فایل‌های محلی غیرفعال است. برای راهنما تنظیمات را باز کنید." },
+    "local_source_method": { "message": "روش دسترسی به فایل‌های محلی" },
+    "local_source_method_browser": { "message": "دسترسی مرورگر به فایل‌ها" },
+    "local_source_method_browser_description": { "message": "فایل‌های محلی را مستقیماً از طریق مرورگر می‌خواند و نیاز دارد دسترسی مرورگر به نشانی‌های فایل فعال باشد." },
+    "local_source_method_native_host": { "message": "Native Host" },
+    "native_host_permission_denied": { "message": "مجوز Native Host داده نشد. روش دسترسی فعلی تغییر نکرد." },
+    "local_source_method_native_host_description": { "message": "از یک ابزار کمکی فقط‌خواندنی که جداگانه نصب می‌شود استفاده می‌کند و به دسترسی مرورگر به نشانی‌های فایل نیاز ندارد. با انتخاب آن، مجوز اختیاری Native Host از مرورگر درخواست می‌شود." },
+    "local_source_method_change_failed": { "message": "روش دسترسی به فایل‌های محلی تغییر نکرد. دوباره تلاش کنید." },
+    "native_host_permission_required": { "message": "Native Host انتخاب شده است، اما مجوز آن در مرورگر فعال نیست." },
+    "native_host_enable_permission": { "message": "فعال کردن مجوز" }
 }
