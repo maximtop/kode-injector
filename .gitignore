@@ -3,3 +3,4 @@
 deploy.sh
 .env
 .sdd/
+/native-host/dev-extension-ids.json

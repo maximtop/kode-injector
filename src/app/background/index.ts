@@ -6,6 +6,7 @@ import { messageHandler } from './message-handler';
 import { injections } from './injections';
 import { settings } from './settings';
 import { updateService } from './update-service';
+import { localSourceAccess } from './local-source-access';
 
 /**
  * Initializes background services and persistent stores.
@@ -21,6 +22,7 @@ export const backgroundPage = (): Promise<void> => {
     const asyncInit = async (): Promise<void> => {
         await injections.init();
         await settings.init();
+        await localSourceAccess.getState();
     };
 
     const backgroundReady = asyncInit();

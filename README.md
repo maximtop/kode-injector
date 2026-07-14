@@ -40,24 +40,31 @@ and CSS — every time, without manual steps.
   https://chrome.google.com/webstore/detail/kode-injector/fgdehkdkmaiedleekbjpfoicpmodbicg
 )
 
-Install Kode Injector from the Chrome Web Store.
+Install Kode Injector from the Chrome Web Store. Local-file injection in
+Firefox, Chrome, and Edge also requires the separately installed
+[Kode Injector Native Host](https://gitlab.com/maximtop/kode-injector/-/releases).
+The same small read-only helper serves all three browsers. Platform packages
+appear on that page after the maintainer verifies and publishes a tagged release.
 
 ### Install from source
 
 To run the latest development build from source:
 
 1. Clone the repository.
-2. Run `make build` to create release builds for Chrome, Edge, and Firefox.
+2. Run `pnpm dev` to create development builds for Chrome, Edge, and Firefox.
 3. In Chrome or Edge, open the browser's extensions page and enable
    **Developer mode**.
-4. Click **Load unpacked** and select `build/release/chrome/` for Chrome or
-   `build/release/edge/` for Edge.
+4. Click **Load unpacked** and select `build/dev/chrome/` for Chrome or
+   `build/dev/edge/` for Edge.
 
 For Firefox, open `about:debugging`, select **This Firefox**, click
-**Load Temporary Add-on**, and select `build/release/firefox/manifest.json`.
-Firefox 153 or newer is required. In the extension's settings, open
-**Permissions** and enable **Access local files on your computer** before using
-local injection paths.
+**Load Temporary Add-on**, and select `build/dev/firefox/manifest.json`.
+
+Install the native host package for your operating system. For unpacked Chrome
+and Edge builds, copy their displayed extension IDs into
+`native-host/dev-extension-ids.json` using the committed example, then run the
+packaged installer's explicit development-registration flow. Review the printed
+origins before confirming them. Production installation ignores this local file.
 
 See [DEVELOPMENT.md](DEVELOPMENT.md) for full setup details.
 
@@ -126,6 +133,7 @@ interface only.
 | `storage` | Save injection rules, settings, and the per-site blocklist |
 | `scripting` | Inject JavaScript and CSS into web pages |
 | `activeTab` | Read the current tab's URL to match injection rules |
+| `nativeMessaging` | Ask the separately installed read-only helper to read configured local files |
 | `<all_urls>` (host permission) | Run the content script and apply injections on any website |
 
 ---
@@ -147,11 +155,16 @@ add a rule for this site.
 **The extension can't read my local file.**
 
 Ensure the path is a valid `file:///` URL and that the file exists at that
-location. The extension reads local files over `fetch()`, so the path must be
-directly accessible by the browser. In Chrome or Edge, enable **Allow access to
-file URLs** for Kode Injector. In Firefox 153 or newer, enable **Access local
-files on your computer** from the extension's permissions. Kode Injector shows
-a warning while this browser permission is disabled.
+location. Install or update the Kode Injector Native Host, then use **Check
+again** in Options. The helper only reads explicitly requested local regular
+files up to 5 MiB. It cannot write files, execute programs, list directories, or
+access the network. Browser file-URL permission toggles do not replace the host.
+
+Native-host updates are manual. Download the current package from the
+[GitLab Releases page](https://gitlab.com/maximtop/kode-injector/-/releases)
+and run its installer again. The packaged uninstaller removes the executable
+and Kode Injector browser registrations without touching extension rules or
+settings.
 
 **How do I inject only JavaScript or only CSS?**
 

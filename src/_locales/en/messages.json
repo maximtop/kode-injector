@@ -1,37 +1,174 @@
 {
-    "name": { "message": "Kode Injector", "description": "Product name. Do not translate Kode Injector." },
-    "description": { "message": "Inject JavaScript and CSS from local files into websites", "description": "Short browser extension description." },
-    "options_title": { "message": "Kode Injector settings", "description": "Options page document title." },
-    "popup_title": { "message": "Kode Injector popup", "description": "Toolbar popup document title." },
-    "language_label": { "message": "Interface language", "description": "Label for the interface language selector." },
-    "language_browser": { "message": "Browser language", "description": "Use the browser UI language automatically." },
-    "source_code": { "message": "Source code", "description": "Link label for the project source repository." },
-    "source_code_title": { "message": "Report an issue or view the source code", "description": "Tooltip for the project source link." },
-    "form_site_placeholder": { "message": "Site", "description": "Placeholder for the website hostname matched by an injection rule." },
-    "form_site_required": { "message": "Enter a site", "description": "Validation message when the site hostname is empty." },
-    "form_js_path_required": { "message": "Enter the path to a JavaScript file", "description": "Validation message when the local JavaScript file path is empty." },
-    "form_css_path_required": { "message": "Enter the path to a CSS file", "description": "Validation message when the local CSS file path is empty." },
-    "form_add_injection": { "message": "Add injection", "description": "Button that creates an injection rule." },
-    "table_site": { "message": "Site", "description": "Injection table column for the matched website." },
-    "table_js_path": { "message": "JavaScript file path", "description": "Injection table column for a local JavaScript file." },
-    "table_css_path": { "message": "CSS file path", "description": "Injection table column for a local CSS file." },
-    "table_actions": { "message": "Actions", "description": "Injection table column containing controls." },
-    "table_empty": { "message": "No injections added", "description": "Empty state shown when no injection rules exist." },
-    "injection_disable": { "message": "Turn off injection", "description": "Tooltip for disabling one injection rule." },
-    "injection_enable": { "message": "Turn on injection", "description": "Tooltip for enabling one injection rule." },
-    "injection_remove": { "message": "Remove injection", "description": "Tooltip for deleting one injection rule." },
-    "injection_remove_confirm": { "message": "This injection will be removed permanently. Are you sure?", "description": "Confirmation before permanently deleting an injection rule." },
-    "popup_pause_all": { "message": "Pause injecting on all sites", "description": "Tooltip for globally pausing Kode Injector." },
-    "popup_enable_all": { "message": "Enable injecting on all sites", "description": "Tooltip for globally enabling Kode Injector." },
-    "popup_open_settings": { "message": "Open settings", "description": "Tooltip for opening the options page." },
-    "popup_no_injections": { "message": "No injections", "description": "Popup state when the current site has no enabled injection rules." },
-    "popup_disable_site": { "message": "Disable injecting on this site", "description": "Tooltip for disabling all injection rules on the current site." },
-    "popup_enable_site": { "message": "Enable injecting on this site", "description": "Tooltip for enabling injection rules on the current site." },
-    "popup_report_issue_title": { "message": "Report an issue on GitLab", "description": "Tooltip for the issue reporting action." },
-    "popup_report_issue": { "message": "Report an issue", "description": "Button label for reporting a problem." },
-    "file_access_disabled": { "message": "Local file access is disabled", "description": "Warning title shown when the browser denies access to local file URLs." },
-    "file_access_instructions": { "message": "Open your browser's extension settings for Kode Injector and enable Access local files on your computer or Allow access to file URLs, then check again.", "description": "Instructions for enabling browser permission to read local injection files." },
-    "file_access_open_extension_settings": { "message": "Open extension settings", "description": "Button that opens the browser-managed settings for Kode Injector." },
-    "file_access_check_again": { "message": "Check again", "description": "Button that rechecks browser local-file permission." },
-    "popup_file_access_disabled": { "message": "Local file access is disabled. Open settings for instructions.", "description": "Compact popup warning when local injection files cannot be read." }
+    "name": {
+        "message": "Kode Injector",
+        "description": "Product name. Do not translate Kode Injector."
+    },
+    "description": {
+        "message": "Inject JavaScript and CSS from local files into websites",
+        "description": "Short browser extension description."
+    },
+    "options_title": {
+        "message": "Kode Injector settings",
+        "description": "Options page document title."
+    },
+    "popup_title": {
+        "message": "Kode Injector popup",
+        "description": "Toolbar popup document title."
+    },
+    "language_label": {
+        "message": "Interface language",
+        "description": "Label for the interface language selector."
+    },
+    "language_browser": {
+        "message": "Browser language",
+        "description": "Use the browser UI language automatically."
+    },
+    "source_code": {
+        "message": "Source code",
+        "description": "Link label for the project source repository."
+    },
+    "source_code_title": {
+        "message": "Report an issue or view the source code",
+        "description": "Tooltip for the project source link."
+    },
+    "form_site_placeholder": {
+        "message": "Site",
+        "description": "Placeholder for the website hostname matched by an injection rule."
+    },
+    "form_site_required": {
+        "message": "Enter a site",
+        "description": "Validation message when the site hostname is empty."
+    },
+    "form_js_path_required": {
+        "message": "Enter the path to a JavaScript file",
+        "description": "Validation message when the local JavaScript file path is empty."
+    },
+    "form_css_path_required": {
+        "message": "Enter the path to a CSS file",
+        "description": "Validation message when the local CSS file path is empty."
+    },
+    "form_add_injection": {
+        "message": "Add injection",
+        "description": "Button that creates an injection rule."
+    },
+    "table_site": {
+        "message": "Site",
+        "description": "Injection table column for the matched website."
+    },
+    "table_js_path": {
+        "message": "JavaScript file path",
+        "description": "Injection table column for a local JavaScript file."
+    },
+    "table_css_path": {
+        "message": "CSS file path",
+        "description": "Injection table column for a local CSS file."
+    },
+    "table_actions": {
+        "message": "Actions",
+        "description": "Injection table column containing controls."
+    },
+    "table_empty": {
+        "message": "No injections added",
+        "description": "Empty state shown when no injection rules exist."
+    },
+    "injection_disable": {
+        "message": "Turn off injection",
+        "description": "Tooltip for disabling one injection rule."
+    },
+    "injection_enable": {
+        "message": "Turn on injection",
+        "description": "Tooltip for enabling one injection rule."
+    },
+    "injection_remove": {
+        "message": "Remove injection",
+        "description": "Tooltip for deleting one injection rule."
+    },
+    "injection_remove_confirm": {
+        "message": "This injection will be removed permanently. Are you sure?",
+        "description": "Confirmation before permanently deleting an injection rule."
+    },
+    "popup_pause_all": {
+        "message": "Pause injecting on all sites",
+        "description": "Tooltip for globally pausing Kode Injector."
+    },
+    "popup_enable_all": {
+        "message": "Enable injecting on all sites",
+        "description": "Tooltip for globally enabling Kode Injector."
+    },
+    "popup_open_settings": {
+        "message": "Open settings",
+        "description": "Tooltip for opening the options page."
+    },
+    "popup_no_injections": {
+        "message": "No injections",
+        "description": "Popup state when the current site has no enabled injection rules."
+    },
+    "popup_disable_site": {
+        "message": "Disable injecting on this site",
+        "description": "Tooltip for disabling all injection rules on the current site."
+    },
+    "popup_enable_site": {
+        "message": "Enable injecting on this site",
+        "description": "Tooltip for enabling injection rules on the current site."
+    },
+    "popup_report_issue_title": {
+        "message": "Report an issue on GitLab",
+        "description": "Tooltip for the issue reporting action."
+    },
+    "popup_report_issue": {
+        "message": "Report an issue",
+        "description": "Button label for reporting a problem."
+    },
+    "native_host_required_title": {
+        "message": "Kode Injector Native Host is required",
+        "description": "Warning title shown when the native helper is unavailable."
+    },
+    "native_host_explanation": {
+        "message": "Local injection files are read through a separate native helper shared by Firefox, Chrome, and Edge.",
+        "description": "Explains why the native helper is required."
+    },
+    "native_host_read_only": {
+        "message": "The helper is read-only: it cannot write files, execute programs, list directories, or access the network.",
+        "description": "Explains the native helper security boundary."
+    },
+    "native_host_status_checking": {
+        "message": "Checking the native helper…",
+        "description": "Native helper checking status."
+    },
+    "native_host_status_not_installed": {
+        "message": "The native helper is not installed or is not registered for this browser.",
+        "description": "Native helper missing status."
+    },
+    "native_host_status_update_required": {
+        "message": "The native helper must be updated.",
+        "description": "Native helper incompatible version status."
+    },
+    "native_host_status_ready": {
+        "message": "The native helper is ready.",
+        "description": "Native helper ready status."
+    },
+    "native_host_status_disconnected": {
+        "message": "The native helper disconnected. Check again to reconnect.",
+        "description": "Native helper disconnected status."
+    },
+    "native_host_status_read_failed": {
+        "message": "The native helper could not read a configured file.",
+        "description": "Native helper read failure status."
+    },
+    "native_host_download": {
+        "message": "Download native host",
+        "description": "Button opening native helper installation instructions."
+    },
+    "native_host_install_instructions": {
+        "message": "Download and install the package for your operating system, then return here and check again.",
+        "description": "Native helper installation guidance."
+    },
+    "native_host_check_again": {
+        "message": "Check again",
+        "description": "Button rechecking native helper status."
+    },
+    "popup_native_host_unavailable": {
+        "message": "Local file injection needs the Kode Injector Native Host. Open settings for installation or recovery instructions.",
+        "description": "Compact popup warning when the native helper is unavailable."
+    }
 }

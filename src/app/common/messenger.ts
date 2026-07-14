@@ -7,6 +7,7 @@ import browser from 'webextension-polyfill';
 import type {
     InjectionRule,
     InjectionsCodeResponse,
+    LocalSourceAccessState,
     NewInjectionData,
     OptionsDataResponse,
     PopupDataResponse,
@@ -78,8 +79,8 @@ class Messenger {
     /**
      * Requests the browser-owned local-file permission state.
      */
-    getFileAccessStatus = (): Promise<boolean> => {
-        return this.sendMessage(MESSAGE_TYPES.GET_FILE_ACCESS_STATUS);
+    getLocalSourceAccessStatus = (): Promise<LocalSourceAccessState> => {
+        return this.sendMessage(MESSAGE_TYPES.GET_LOCAL_SOURCE_ACCESS_STATUS);
     }
 
     /**

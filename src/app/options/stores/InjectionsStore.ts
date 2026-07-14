@@ -9,7 +9,13 @@ import {
 } from 'mobx';
 import find from 'lodash/find';
 
-import type { InjectionRule, NewInjectionData } from '../../common/contracts';
+import {
+    LocalSourceAccessKind,
+    type InjectionRule,
+    type LocalSourceAccessState,
+    type NewInjectionData,
+} from '../../common/contracts';
+import { NativeHostStatus } from '../../common/native-host-protocol';
 import { messenger } from '../../common/messenger';
 import { log } from '../../common/log';
 import { i18n } from '../../common/i18n';
@@ -50,20 +56,23 @@ export class InjectionsStore {
      * Whether the browser currently permits local-file access.
      */
     @observable
-    fileAccessAllowed = true;
+    localSourceAccess: LocalSourceAccessState = {
+        kind: LocalSourceAccessKind.NativeHost,
+        host: { status: NativeHostStatus.Checking },
+    };
 
     /**
      * Loads injection data for the options page.
      */
     getOptionsData = async (): Promise<void> => {
         const {
-            fileAccessAllowed,
+            localSourceAccess,
             injections,
             selectedLanguage,
         } = await messenger.getOptionsData();
         await i18n.init(selectedLanguage);
         runInAction(() => {
-            this.fileAccessAllowed = fileAccessAllowed;
+            this.localSourceAccess = localSourceAccess;
             this.injections = injections;
             this.optionsDataReady = true;
         });
@@ -72,11 +81,11 @@ export class InjectionsStore {
     /**
      * Refreshes browser-owned local-file permission state.
      */
-    refreshFileAccess = async (): Promise<void> => {
+    refreshLocalSourceAccess = async (): Promise<void> => {
         try {
-            const fileAccessAllowed = await messenger.getFileAccessStatus();
+            const localSourceAccess = await messenger.getLocalSourceAccessStatus();
             runInAction(() => {
-                this.fileAccessAllowed = fileAccessAllowed;
+                this.localSourceAccess = localSourceAccess;
             });
         } catch (error) {
             log.error(error instanceof Error ? error.message : error);

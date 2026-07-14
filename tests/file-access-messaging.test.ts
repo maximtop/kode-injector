@@ -5,8 +5,10 @@
 import { beforeEach, expect, test, vi } from 'vitest';
 
 import { messageHandler } from '../src/app/background/message-handler';
-import { fileAccess } from '../src/app/background/file-access';
+import { localSourceAccess } from '../src/app/background/local-source-access';
 import { MESSAGE_TYPES } from '../src/app/common/constants';
+import { LocalSourceAccessKind } from '../src/app/common/contracts';
+import { NativeHostStatus } from '../src/app/common/native-host-protocol';
 
 vi.mock('webextension-polyfill', () => ({
     default: {
@@ -16,9 +18,10 @@ vi.mock('webextension-polyfill', () => ({
     },
 }));
 
-vi.mock('../src/app/background/file-access', () => ({
-    fileAccess: {
-        isAllowed: vi.fn(),
+vi.mock('../src/app/background/local-source-access', () => ({
+    localSourceAccess: {
+        getState: vi.fn(),
+        currentState: undefined,
     },
 }));
 
@@ -41,38 +44,42 @@ vi.mock('../src/app/background/settings', () => ({
 }));
 
 beforeEach(() => {
-    vi.mocked(fileAccess.isAllowed).mockReset();
+    vi.mocked(localSourceAccess.getState).mockReset();
+    Object.defineProperty(localSourceAccess, 'currentState', {
+        configurable: true,
+        value: readyState,
+    });
 });
 
-test('options data includes a fresh file-access result', async () => {
-    vi.mocked(fileAccess.isAllowed).mockResolvedValue(false);
+const readyState = {
+    kind: LocalSourceAccessKind.NativeHost,
+    host: { status: NativeHostStatus.Ready, hostVersion: '0.8.3' },
+} as const;
+
+test('options data includes a fresh local-source access result', async () => {
+    vi.mocked(localSourceAccess.getState).mockResolvedValue(readyState);
 
     await expect(messageHandler.messageHandler({
         type: MESSAGE_TYPES.GET_OPTIONS_DATA,
-    }, {})).resolves.toMatchObject({ fileAccessAllowed: false });
-    expect(fileAccess.isAllowed).toHaveBeenCalledOnce();
+    }, {})).resolves.toMatchObject({ localSourceAccess: readyState });
+    expect(localSourceAccess.getState).not.toHaveBeenCalled();
 });
 
-test('popup data includes a fresh file-access result', async () => {
-    vi.mocked(fileAccess.isAllowed).mockResolvedValue(true);
+test('popup data includes a fresh local-source access result', async () => {
+    vi.mocked(localSourceAccess.getState).mockResolvedValue(readyState);
 
     await expect(messageHandler.messageHandler({
         type: MESSAGE_TYPES.GET_POPUP_DATA,
         data: { tab: { id: 7, url: 'https://example.com' } },
-    }, {})).resolves.toMatchObject({ fileAccessAllowed: true });
-    expect(fileAccess.isAllowed).toHaveBeenCalledOnce();
+    }, {})).resolves.toMatchObject({ localSourceAccess: readyState });
+    expect(localSourceAccess.getState).not.toHaveBeenCalled();
 });
 
-test('file-access status message returns a fresh result', async () => {
-    vi.mocked(fileAccess.isAllowed)
-        .mockResolvedValueOnce(false)
-        .mockResolvedValueOnce(true);
+test('local-source status message returns a fresh result', async () => {
+    vi.mocked(localSourceAccess.getState).mockResolvedValue(readyState);
 
     await expect(messageHandler.messageHandler({
-        type: MESSAGE_TYPES.GET_FILE_ACCESS_STATUS,
-    }, {})).resolves.toBe(false);
-    await expect(messageHandler.messageHandler({
-        type: MESSAGE_TYPES.GET_FILE_ACCESS_STATUS,
-    }, {})).resolves.toBe(true);
-    expect(fileAccess.isAllowed).toHaveBeenCalledTimes(2);
+        type: MESSAGE_TYPES.GET_LOCAL_SOURCE_ACCESS_STATUS,
+    }, {})).resolves.toEqual(readyState);
+    expect(localSourceAccess.getState).toHaveBeenCalledOnce();
 });

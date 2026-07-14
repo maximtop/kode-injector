@@ -75,6 +75,7 @@ scripts/
     helpers.ts              # Manifest & locale transforms
 rspack.config.ts            # Typed Rspack and SWC config
 build/                      # Output (build/<channel>/<browser>)
+native-host/                # Shared Go native messaging host and installer
 ```
 
 ## Architecture
@@ -133,9 +134,26 @@ one target. Outputs are `build/<channel>/<browser>/` and
 `build/<channel>/<browser>.zip`. Load the Chrome dev build via
 `chrome://extensions/` → **Load unpacked** → `build/dev/chrome/`.
 
-Firefox builds require Firefox 153 or newer. Users must grant **Access local
-files on your computer** in the extension permissions; the UI reports the
-current browser-owned permission state and must not persist its own copy.
+Firefox, Chrome, and Edge route local source reads through the same separately
+installed native host. Browser file-URL permission toggles are not a substitute
+for native-host readiness.
+
+## Native Host Safety
+
+- The host is read-only. Never add file writes, directory listing, file or
+  subprocess execution, shell access, or network operations.
+- Treat every native message as untrusted. Preserve the 64 KiB request bound,
+  sub-1 MiB response envelopes, 512 KiB raw chunks, and 5 MiB logical limit.
+- Standard output is protocol-only. Send minimal diagnostics to standard error
+  and never log local file contents.
+- Update the JSON Schema, Go structures, and TypeScript validators together.
+- Firefox authorization uses only `kode-injector@maximtop.dev`. Chromium
+  manifests use explicit origins without wildcards. Never infer IDs by scanning
+  browser profiles.
+- Never expose Apple signing identities, notarization profiles, release tokens,
+  or other credentials in source files or logs.
+- Run `(cd native-host && go test -race ./...)`, `pnpm native:validate`, and
+  `pnpm validate` after native-host changes.
 
 ## Testing
 

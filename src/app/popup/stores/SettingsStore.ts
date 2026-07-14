@@ -9,7 +9,12 @@ import {
     runInAction,
 } from 'mobx';
 
-import type { PopupTab } from '../../common/contracts';
+import {
+    LocalSourceAccessKind,
+    type LocalSourceAccessState,
+    type PopupTab,
+} from '../../common/contracts';
+import { NativeHostStatus } from '../../common/native-host-protocol';
 import { messenger } from '../../common/messenger';
 import { log } from '../../common/log';
 import { tabs } from '../../common/tabs';
@@ -53,7 +58,10 @@ export class SettingsStore {
      * Whether the browser currently permits local-file access.
      */
     @observable
-    fileAccessAllowed = true;
+    localSourceAccess: LocalSourceAccessState = {
+        kind: LocalSourceAccessKind.NativeHost,
+        host: { status: NativeHostStatus.Checking },
+    };
 
     /**
      * Active browser tab displayed by the popup.
@@ -86,7 +94,7 @@ export class SettingsStore {
         runInAction(() => {
             this.appEnabled = state.appEnabled;
             this.currentTab = state.currentTab;
-            this.fileAccessAllowed = state.fileAccessAllowed;
+            this.localSourceAccess = state.localSourceAccess;
             this.siteHasEnabledInjections = state.siteHasEnabledInjections;
             this.siteIsBlacklisted = state.siteIsBlacklisted;
             this.popupDataReady = true;

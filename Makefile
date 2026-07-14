@@ -1,4 +1,4 @@
-.PHONY: build dev release chrome edge firefox
+.PHONY: build dev release chrome edge firefox native_test native_package
 
 include .env
 
@@ -35,6 +35,12 @@ test:
 
 validate:
 	pnpm validate
+
+native_test:
+	pnpm native:test
+
+native_package:
+	pnpm native:package
 
 chrome_code:
 	open "https://accounts.google.com/o/oauth2/auth?response_type=code&scope=https://www.googleapis.com/auth/chromewebstore&client_id=${CHROME_CLIENT_ID}&redirect_uri=urn:ietf:wg:oauth:2.0:oob"

@@ -29,9 +29,17 @@
     "popup_enable_site": { "message": "이 사이트에서 인젝션 켜기" },
     "popup_report_issue_title": { "message": "GitLab에서 문제 신고" },
     "popup_report_issue": { "message": "문제 신고" },
-    "file_access_disabled": { "message": "로컬 파일 접근이 비활성화되어 있습니다" },
-    "file_access_instructions": { "message": "브라우저에서 Kode Injector 확장 프로그램 설정을 열고 로컬 파일 접근을 허용한 다음 다시 확인하세요." },
-    "file_access_open_extension_settings": { "message": "확장 프로그램 설정 열기" },
-    "file_access_check_again": { "message": "다시 확인" },
-    "popup_file_access_disabled": { "message": "로컬 파일 접근이 비활성화되어 있습니다. 안내를 보려면 설정을 여세요." }
+    "native_host_required_title": { "message": "Kode Injector Native Host is required", "description": "Warning title shown when the native helper is unavailable." },
+    "native_host_explanation": { "message": "Local injection files are read through a separate native helper shared by Firefox, Chrome, and Edge.", "description": "Explains why the native helper is required." },
+    "native_host_read_only": { "message": "The helper is read-only: it cannot write files, execute programs, list directories, or access the network.", "description": "Explains the native helper security boundary." },
+    "native_host_status_checking": { "message": "Checking the native helper…", "description": "Native helper checking status." },
+    "native_host_status_not_installed": { "message": "The native helper is not installed or is not registered for this browser.", "description": "Native helper missing status." },
+    "native_host_status_update_required": { "message": "The native helper must be updated.", "description": "Native helper incompatible version status." },
+    "native_host_status_ready": { "message": "The native helper is ready.", "description": "Native helper ready status." },
+    "native_host_status_disconnected": { "message": "The native helper disconnected. Check again to reconnect.", "description": "Native helper disconnected status." },
+    "native_host_status_read_failed": { "message": "The native helper could not read a configured file.", "description": "Native helper read failure status." },
+    "native_host_download": { "message": "Download native host", "description": "Button opening native helper installation instructions." },
+    "native_host_install_instructions": { "message": "Download and install the package for your operating system, then return here and check again.", "description": "Native helper installation guidance." },
+    "native_host_check_again": { "message": "Check again", "description": "Button rechecking native helper status." },
+    "popup_native_host_unavailable": { "message": "Local file injection needs the Kode Injector Native Host. Open settings for installation or recovery instructions.", "description": "Compact popup warning when the native helper is unavailable." }
 }

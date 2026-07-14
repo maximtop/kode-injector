@@ -29,9 +29,17 @@
     "popup_enable_site": { "message": "Включить инъекции на этом сайте" },
     "popup_report_issue_title": { "message": "Сообщить о проблеме на GitLab" },
     "popup_report_issue": { "message": "Сообщить о проблеме" },
-    "file_access_disabled": { "message": "Доступ к локальным файлам отключён" },
-    "file_access_instructions": { "message": "Откройте настройки расширения Kode Injector в браузере, включите доступ к локальным файлам и проверьте ещё раз." },
-    "file_access_open_extension_settings": { "message": "Открыть настройки расширения" },
-    "file_access_check_again": { "message": "Проверить ещё раз" },
-    "popup_file_access_disabled": { "message": "Доступ к локальным файлам отключён. Откройте настройки, чтобы посмотреть инструкции." }
+    "native_host_required_title": { "message": "Kode Injector Native Host is required", "description": "Warning title shown when the native helper is unavailable." },
+    "native_host_explanation": { "message": "Local injection files are read through a separate native helper shared by Firefox, Chrome, and Edge.", "description": "Explains why the native helper is required." },
+    "native_host_read_only": { "message": "The helper is read-only: it cannot write files, execute programs, list directories, or access the network.", "description": "Explains the native helper security boundary." },
+    "native_host_status_checking": { "message": "Checking the native helper…", "description": "Native helper checking status." },
+    "native_host_status_not_installed": { "message": "The native helper is not installed or is not registered for this browser.", "description": "Native helper missing status." },
+    "native_host_status_update_required": { "message": "The native helper must be updated.", "description": "Native helper incompatible version status." },
+    "native_host_status_ready": { "message": "The native helper is ready.", "description": "Native helper ready status." },
+    "native_host_status_disconnected": { "message": "The native helper disconnected. Check again to reconnect.", "description": "Native helper disconnected status." },
+    "native_host_status_read_failed": { "message": "The native helper could not read a configured file.", "description": "Native helper read failure status." },
+    "native_host_download": { "message": "Download native host", "description": "Button opening native helper installation instructions." },
+    "native_host_install_instructions": { "message": "Download and install the package for your operating system, then return here and check again.", "description": "Native helper installation guidance." },
+    "native_host_check_again": { "message": "Check again", "description": "Button rechecking native helper status." },
+    "popup_native_host_unavailable": { "message": "Local file injection needs the Kode Injector Native Host. Open settings for installation or recovery instructions.", "description": "Compact popup warning when the native helper is unavailable." }
 }

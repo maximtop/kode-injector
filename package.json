@@ -24,6 +24,9 @@
         "test:build": "vitest run scripts/build",
         "test:locales": "vitest run tests",
         "locales:validate": "tsx scripts/locales/validate.ts",
+        "native:test": "cd native-host && go test -race ./...",
+        "native:package": "tsx scripts/native-host/package.ts",
+        "native:validate": "pnpm native:test && vitest run scripts/native-host/package.test.ts && tsx scripts/native-host/package.ts --validation",
         "validate": "pnpm test && pnpm locales:validate && pnpm lint && pnpm typecheck",
         "lint": "eslint --ext .js,.jsx,.ts,.tsx src scripts tests rspack.config.ts",
         "typecheck": "tsc --noEmit"

@@ -4,7 +4,7 @@
 
 import { expect, test, vi } from 'vitest';
 
-import { subscribeFileAccessRefreshOnFocus } from '../src/app/options/file-access-focus';
+import { subscribeLocalSourceAccessRefreshOnFocus } from '../src/app/options/local-source-access-focus';
 
 test('options refreshes file access on focus and removes its listener', () => {
     let focusListener: (() => void) | undefined;
@@ -16,7 +16,7 @@ test('options refreshes file access on focus and removes its listener', () => {
     };
     const refresh = vi.fn();
 
-    const unsubscribe = subscribeFileAccessRefreshOnFocus(target, refresh);
+    const unsubscribe = subscribeLocalSourceAccessRefreshOnFocus(target, refresh);
     focusListener?.();
 
     expect(refresh).toHaveBeenCalledOnce();

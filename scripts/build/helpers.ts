@@ -11,6 +11,7 @@ import {
 } from '../constants';
 
 const { capitalize } = lodash;
+const NATIVE_MESSAGING_PERMISSION = 'nativeMessaging';
 
 /**
  * Source content accepted by build transforms.
@@ -69,7 +70,6 @@ export const updateManifest = (
         ? {
             gecko: {
                 id: 'kode-injector@maximtop.dev',
-                strict_min_version: '153.0',
                 data_collection_permissions: {
                     required: ['none'],
                 },
@@ -79,6 +79,10 @@ export const updateManifest = (
 
     manifest.background = background;
     manifest.version = options.version;
+    const permissions = Array.isArray(manifest.permissions)
+        ? manifest.permissions.filter((value): value is string => typeof value === 'string')
+        : [];
+    manifest.permissions = [...new Set([...permissions, NATIVE_MESSAGING_PERMISSION])];
 
     if (browserSpecificSettings) {
         manifest.browser_specific_settings = browserSpecificSettings;

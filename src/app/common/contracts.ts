@@ -2,6 +2,8 @@
  * @file
  */
 
+/* eslint-disable jsdoc/require-jsdoc, jsdoc/multiline-blocks */
+
 import {
     boolean,
     fallback,
@@ -19,6 +21,22 @@ import {
     type LocalePreference,
 } from './locale';
 import type { LanguageChangedMessage } from './language-channel';
+import { NativeHostStatus, type NativeErrorCode } from './native-host-protocol';
+
+export enum LocalSourceAccessKind {
+    NativeHost = 'nativeHost',
+}
+
+export interface NativeHostState {
+    status: NativeHostStatus;
+    hostVersion?: string;
+    errorCode?: NativeErrorCode;
+}
+
+export interface LocalSourceAccessState {
+    kind: LocalSourceAccessKind.NativeHost;
+    host: NativeHostState;
+}
 
 /**
  * User-provided values for a new injection rule.
@@ -79,10 +97,8 @@ export type OptionsDataResponse = {
      */
     injections: InjectionRule[];
 
-    /**
-     * Whether the browser currently permits local-file access.
-     */
-    fileAccessAllowed: boolean;
+    /** Native-host state for local source reads. */
+    localSourceAccess: LocalSourceAccessState;
 
     /**
      * Persisted interface language preference.
@@ -156,10 +172,8 @@ export interface PopupTab {
  * Extension state returned to the popup.
  */
 export type PopupDataResponse = {
-    /**
-     * Whether the browser currently permits local-file access.
-     */
-    fileAccessAllowed: boolean;
+    /** Native-host state for local source reads. */
+    localSourceAccess: LocalSourceAccessState;
 
     /**
      * Current global application settings.
@@ -220,7 +234,7 @@ export type ExecuteScriptPayload = {
  */
 export type RuntimeMessage =
     | { type: typeof MESSAGE_TYPES.GET_OPTIONS_DATA; data?: undefined }
-    | { type: typeof MESSAGE_TYPES.GET_FILE_ACCESS_STATUS; data?: undefined }
+    | { type: typeof MESSAGE_TYPES.GET_LOCAL_SOURCE_ACCESS_STATUS; data?: undefined }
     | { type: typeof MESSAGE_TYPES.ADD_INJECTION; data: { injectionData: NewInjectionData } }
     | { type: typeof MESSAGE_TYPES.REMOVE_INJECTION; data: { id: string } }
     | { type: typeof MESSAGE_TYPES.ENABLE_INJECTION; data: { id: string } }

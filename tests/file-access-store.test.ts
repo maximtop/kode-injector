@@ -6,11 +6,13 @@ import { beforeEach, expect, test, vi } from 'vitest';
 
 import { InjectionsStore } from '../src/app/options/stores/InjectionsStore';
 import { messenger } from '../src/app/common/messenger';
+import { LocalSourceAccessKind } from '../src/app/common/contracts';
+import { NativeHostStatus } from '../src/app/common/native-host-protocol';
 
 vi.mock('../src/app/common/messenger', () => ({
     messenger: {
         getOptionsData: vi.fn(),
-        getFileAccessStatus: vi.fn(),
+        getLocalSourceAccessStatus: vi.fn(),
     },
 }));
 
@@ -24,9 +26,19 @@ beforeEach(() => {
     vi.clearAllMocks();
 });
 
-test('options initialization stores file-access state', async () => {
+const unavailableState = {
+    kind: LocalSourceAccessKind.NativeHost,
+    host: { status: NativeHostStatus.NotInstalled },
+} as const;
+
+const readyState = {
+    kind: LocalSourceAccessKind.NativeHost,
+    host: { status: NativeHostStatus.Ready, hostVersion: '0.8.3' },
+} as const;
+
+test('options initialization stores local-source access state', async () => {
     vi.mocked(messenger.getOptionsData).mockResolvedValue({
-        fileAccessAllowed: false,
+        localSourceAccess: unavailableState,
         injections: [],
         selectedLanguage: 'auto',
     });
@@ -34,17 +46,17 @@ test('options initialization stores file-access state', async () => {
 
     await store.getOptionsData();
 
-    expect(store.fileAccessAllowed).toBe(false);
+    expect(store.localSourceAccess).toEqual(unavailableState);
     expect(store.optionsDataReady).toBe(true);
 });
 
-test('options can refresh file-access state without reloading its data', async () => {
-    vi.mocked(messenger.getFileAccessStatus).mockResolvedValue(true);
+test('options can refresh local-source access state without reloading its data', async () => {
+    vi.mocked(messenger.getLocalSourceAccessStatus).mockResolvedValue(readyState);
     const store = new InjectionsStore({} as never);
-    store.fileAccessAllowed = false;
+    store.localSourceAccess = unavailableState;
 
-    await store.refreshFileAccess();
+    await store.refreshLocalSourceAccess();
 
-    expect(store.fileAccessAllowed).toBe(true);
+    expect(store.localSourceAccess).toEqual(readyState);
     expect(messenger.getOptionsData).not.toHaveBeenCalled();
 });

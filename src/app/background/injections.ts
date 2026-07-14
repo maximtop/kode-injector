@@ -19,6 +19,10 @@ import { log } from '../common/log';
 import { urlUtils } from '../common/url-utils';
 import { app } from './app';
 import { executeScript } from './execute-script';
+import { sourceReader } from './native-host';
+import { localSourceAccess } from './local-source-access';
+
+const FILE_URL_PREFIX = 'file://';
 
 /**
  * Manages injection rules, site blocklisting, and code retrieval.
@@ -153,21 +157,6 @@ class Injections {
     };
 
     /**
-     * Reads injection source from a local file URL.
-     */
-    readFile = async (url: string): Promise<string> => {
-        try {
-            const response = await fetch(url);
-            const data = await response.text();
-            return data;
-        } catch (e) {
-            const message = e instanceof Error ? e.message : e;
-            log.error(`Failed to get url: ${url}, due to: ${message}`);
-            return '';
-        }
-    }
-
-    /**
      * Returns enabled injection rules allowed for a URL.
      */
     getAllowedInjectionsByUrl = (url: string): InjectionRule[] | null => {
@@ -194,8 +183,12 @@ class Injections {
         const enabledInjections = injections.filter((injection) => injection.enabled);
         const promises = enabledInjections.map(async (injection) => {
             const { jsPath } = injection;
-            const jsCode = await this.readFile(jsPath);
-            await executeScript(jsCode, tabId, jsPath);
+            const result = await sourceReader.read(jsPath);
+            if (result.ok) {
+                await executeScript(result.content, tabId, jsPath);
+            } else if (jsPath.startsWith(FILE_URL_PREFIX)) {
+                localSourceAccess.markReadFailed();
+            }
         });
 
         await Promise.all(promises);
@@ -214,16 +207,23 @@ class Injections {
             return null;
         }
 
-        const promises: Promise<CssInjectionCode>[] = injections
+        const promises: Promise<CssInjectionCode | null>[] = injections
             .filter((injection) => injection.enabled)
             .map(async (injection) => {
                 const { cssPath } = injection;
-                const cssCode = await this.readFile(cssPath);
+                const result = await sourceReader.read(cssPath);
+                if (!result.ok) {
+                    if (cssPath.startsWith(FILE_URL_PREFIX)) {
+                        localSourceAccess.markReadFailed();
+                    }
+                    return null;
+                }
                 return {
-                    css: { filename: cssPath, code: cssCode },
+                    css: { filename: cssPath, code: result.content },
                 };
             });
-        return Promise.all(promises);
+        const results = await Promise.all(promises);
+        return results.filter((result): result is CssInjectionCode => result !== null);
     };
 
     /**

@@ -22,6 +22,7 @@ test('updateManifest applies the package version', () => {
     expect(result).toEqual({
         background: { service_worker: 'background.js' },
         name: 'Kode Injector',
+        permissions: ['nativeMessaging'],
         version: '1.2.3',
     });
 });
@@ -39,6 +40,18 @@ test.each([BROWSER_TARGETS.CHROME, BROWSER_TARGETS.EDGE])(
     },
 );
 
+test.each(Object.values(BROWSER_TARGETS))(
+    'updateManifest adds native messaging permission for %s',
+    (browser) => {
+        const result = JSON.parse(updateManifest(
+            '{"permissions":["storage","activeTab"]}',
+            { browser, version: '1.2.3' },
+        ));
+
+        expect(result.permissions).toEqual(['storage', 'activeTab', 'nativeMessaging']);
+    },
+);
+
 test('updateManifest creates the Firefox background and signing metadata', () => {
     const result = JSON.parse(updateManifest(
         '{"background":{"service_worker":"background.js"}}',
@@ -52,7 +65,6 @@ test('updateManifest creates the Firefox background and signing metadata', () =>
     expect(result.browser_specific_settings).toEqual({
         gecko: {
             id: 'kode-injector@maximtop.dev',
-            strict_min_version: '153.0',
             data_collection_permissions: {
                 required: ['none'],
             },

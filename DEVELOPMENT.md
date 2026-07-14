@@ -7,6 +7,7 @@ extension, and contribute to the project.
 
 - [Node.js 24 LTS](https://nodejs.org/)
 - [pnpm](https://pnpm.io/) package manager
+- [Go 1.26](https://go.dev/) for the native host
 
 ## Getting started
 
@@ -31,6 +32,8 @@ Convenience targets are defined in the `Makefile` and map to `pnpm` scripts:
 | `make typecheck` | Run TypeScript validation without emitting files |
 | `make test` | Run build and localization tests |
 | `make validate` | Run tests, catalog validation, lint, and typecheck |
+| `make native_test` | Run native-host tests with the race detector |
+| `make native_package` | Build native release packages (requires the Edge store ID) |
 
 Equivalent `pnpm` scripts:
 
@@ -44,6 +47,8 @@ pnpm typecheck # validate TypeScript and TSX without emitting files
 pnpm test      # run build-helper and localization tests
 pnpm locales:validate # validate all locale catalogs and UI usage
 pnpm validate  # run the complete local quality gate
+pnpm native:test # run Go unit and subprocess tests with race detection
+pnpm native:validate # cross-compile and inspect all native packages
 ```
 
 ## Build channels and browser targets
@@ -87,6 +92,33 @@ CSS. The manifest version is injected from `package.json` during the build.
 The extension reloads automatically when source files change. Use the reload
 button on the extension card in `chrome://extensions/` after content-script
 or background changes.
+
+### Testing unpacked builds with the native host
+
+Build every unpacked target:
+
+```sh
+pnpm dev
+```
+
+- Load `build/dev/chrome/` from `chrome://extensions`.
+- Load `build/dev/edge/` from `edge://extensions`.
+- Load `build/dev/firefox/manifest.json` from `about:debugging` → **This
+  Firefox** → **Load Temporary Add-on**.
+
+Firefox Native Messaging uses the stable Gecko ID
+`kode-injector@maximtop.dev`; the changing `moz-extension://` UUID is not an
+authorization ID. Use separate Firefox profiles if development and release
+builds must coexist.
+
+Chrome and Edge show their unpacked IDs on their extension-management pages.
+Copy `native-host/dev-extension-ids.example.json` to the gitignored
+`native-host/dev-extension-ids.json`, enter those IDs, and open the packaged
+native installer application in development mode. It prints the exact
+`chrome-extension://<id>/` origins and requires confirmation before updating
+the development registrations. If an unpacked ID changes, update the local file
+and repeat that native-app flow. There are intentionally no Makefile install or
+verification shortcuts.
 
 ## Tech stack
 
@@ -183,10 +215,38 @@ The `Makefile` exposes additional targets:
    `build/release/`.
 3. Run `make chrome_update` to publish to the Chrome Web Store.
 
-## Firefox local-file permission
+## Native host development and releases
 
-Firefox uses a Manifest V3 background page because it does not support
-extension service workers. The generated manifest requires Firefox 153 or newer.
-Users must open the Kode Injector extension permissions and enable **Access
-local files on your computer** before local injection paths can be read. The
-options page and popup display guidance while access is disabled.
+The native host lives in `native-host/` and uses protocol v1 from
+`.sdd/.current/contracts/native-messaging.schema.json`. Requests and responses
+are 32-bit little-endian length-prefixed JSON. Host responses stay below 1 MiB;
+logical UTF-8 files are limited to 5 MiB and use 512 KiB raw chunks.
+
+Per-user manifests are installed in each browser's documented
+`NativeMessagingHosts` location. Windows uses the Mozilla, Google Chrome, and
+Microsoft Edge HKCU registry keys. macOS and Linux use browser-specific manifest
+directories. Every manifest points to the same executable.
+
+`pnpm native:package` requires `KODE_INJECTOR_EDGE_ID` and produces a universal
+macOS DMG, Linux x86-64/ARM64 tarballs, Windows x86-64/ARM64 ZIPs, and
+`SHA256SUMS` under `build/native/<version>/`. Configure
+`KODE_INJECTOR_EDGE_ID`, `APPLE_DEVELOPER_ID`, and `APPLE_NOTARY_PROFILE` as
+protected and masked GitLab CI/CD variables. Never print these values. Windows
+artifacts remain unsigned until a signing certificate is configured.
+
+To publish a native-host release:
+
+1. Set `package.json` to the intended semantic version and push a matching tag,
+   such as `v0.9.0`.
+2. Wait for the tag pipeline to validate the extension and native host, package
+   every platform, and run the `native-sign` signing/notarization job.
+3. Download the `native-sign` job artifact and inspect the platform archives,
+   notarized DMG, and `SHA256SUMS` under `build/native/<version>/`.
+4. If the candidate is correct, start the manual `publish-release` job in the
+   tag pipeline.
+
+`publish-release` consumes the retained `native-sign` artifact; it does not
+rebuild anything. It verifies the tag against `package.json`, validates every
+checksum, uploads the files to the GitLab Generic Package Registry, and creates
+the public [GitLab Release](https://gitlab.com/maximtop/kode-injector/-/releases).
+Re-running it cannot silently replace an existing release.

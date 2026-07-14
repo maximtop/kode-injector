@@ -4,6 +4,7 @@
 
 import { SETTINGS } from '../../common/constants';
 import type {
+    LocalSourceAccessState,
     PopupDataResponse,
     PopupTab,
 } from '../../common/contracts';
@@ -21,7 +22,7 @@ export interface PopupPresentationState {
     /**
      * Whether the browser currently permits local-file access.
      */
-    fileAccessAllowed: boolean;
+    localSourceAccess: LocalSourceAccessState;
 
     /**
      * Active browser tab.
@@ -58,7 +59,7 @@ export const preparePopupState = async (
     return {
         appEnabled: popupData.settings[SETTINGS.APP_ENABLED],
         currentTab,
-        fileAccessAllowed: popupData.fileAccessAllowed,
+        localSourceAccess: popupData.localSourceAccess,
         siteHasEnabledInjections: popupData.siteHasEnabledInjections,
         siteIsBlacklisted: popupData.siteIsBlacklisted,
     };

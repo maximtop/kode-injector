@@ -9,7 +9,7 @@ export const MESSAGE_TYPES = {
     DISABLE_INJECTION: 'disable.injection',
     GET_OPTIONS_DATA: 'get.options.data',
     GET_POPUP_DATA: 'get.popup.data',
-    GET_FILE_ACCESS_STATUS: 'get.file.access.status',
+    GET_LOCAL_SOURCE_ACCESS_STATUS: 'get.local.source.access.status',
     DISABLE_APP: 'disable.app',
     ENABLE_APP: 'enable.app',
     OPEN_SETTINGS: 'open.settings',
@@ -20,6 +20,8 @@ export const MESSAGE_TYPES = {
     SET_INTERFACE_LANGUAGE: 'set.interface.language',
     LANGUAGE_CHANGED: 'language.changed',
 } as const;
+
+export const NATIVE_HOST_INSTALLATION_URL = 'https://gitlab.com/maximtop/kode-injector/-/releases';
 
 export const STORAGE_KEYS = {
     SETTINGS: 'settings',

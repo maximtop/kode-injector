@@ -14,8 +14,7 @@ import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
 
 import { rootStore } from '../../stores/RootStore';
 import { translator } from '../../../common/translator';
-import { FileAccessWarning } from '../../../common/FileAccessWarning';
-import { getCurrentBrowserTarget } from '../../../common/browser-target';
+import { LocalSourceAccessWarning } from '../../../common/LocalSourceAccessWarning';
 
 export const Main = observer(() => {
     const { settingsStore } = useContext(rootStore);
@@ -62,12 +61,11 @@ export const Main = observer(() => {
 
     return (
         <Layout.Content className="popup-main">
-            <FileAccessWarning
-                allowed={settingsStore.fileAccessAllowed}
-                browserTarget={getCurrentBrowserTarget()}
+            <LocalSourceAccessWarning
+                state={settingsStore.localSourceAccess}
                 compact
                 onCheckAgain={undefined}
-                onOpenSettings={undefined}
+                onDownload={undefined}
             />
             <Row className="popup-main-controls" align="middle" justify="center">
                 <Col span={20} style={{ overflow: 'hidden' }}>
