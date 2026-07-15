@@ -50,7 +50,10 @@ Firefox reads local files through the separately installed
 Chrome and Edge can use the same read-only helper as an optional alternative;
 select **Native Host** in Kode Injector settings to request the browser
 permission and switch methods. Platform packages appear on the releases page
-after the maintainer verifies and publishes a draft release.
+after the maintainer verifies and publishes a draft release. Apple Silicon Mac
+users download `darwin-arm64.dmg`; Intel Mac users download
+`darwin-amd64.dmg`. Each operating-system and architecture package is a
+separate release asset, so users do not need to download the other builds.
 
 ### Install from source
 

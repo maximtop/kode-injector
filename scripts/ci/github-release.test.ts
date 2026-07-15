@@ -120,6 +120,9 @@ test('release candidates use isolated Apple credentials and are retained', () =>
     expect(job).toContain('security import');
     expect(job).toContain('pnpm native:package');
     expect(job).toContain('scripts/native-host/notarize.sh');
+    expect(job).toContain('for arch in amd64 arm64; do');
+    expect(job).toContain('darwin-$arch.dmg');
+    expect(job).not.toContain('darwin-universal');
     expect(job).toContain('shasum -a 256 kode-injector-native-* > SHA256SUMS');
     expect(job).toContain('shasum -a 256 -c SHA256SUMS');
     expect(job).toContain(

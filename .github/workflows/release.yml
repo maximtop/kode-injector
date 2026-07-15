@@ -132,12 +132,16 @@ jobs:
           echo "APPLE_NOTARY_KEY_PATH=$NOTARY_KEY_PATH" >> "$GITHUB_ENV"
       - name: Build native packages
         run: pnpm native:package
-      - name: Sign and notarize macOS package
+      - name: Sign and notarize macOS packages
+        shell: bash
         env:
           PACKAGE_VERSION: ${{ needs.validate-release.outputs.version }}
-        run: >-
-          scripts/native-host/notarize.sh
-          "build/native/$PACKAGE_VERSION/kode-injector-native-$PACKAGE_VERSION-darwin-universal.dmg"
+        run: |
+          set -euo pipefail
+          for arch in amd64 arm64; do
+            scripts/native-host/notarize.sh \
+              "build/native/$PACKAGE_VERSION/kode-injector-native-$PACKAGE_VERSION-darwin-$arch.dmg"
+          done
       - name: Refresh and verify checksums
         shell: bash
         env:

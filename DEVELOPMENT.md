@@ -247,12 +247,15 @@ declare it in `optional_permissions`; existing Chromium users remain on browser
 file access unless they explicitly choose Native Host in Options. This avoids a
 new required-permission prompt or upgrade disablement for those users.
 
-`pnpm native:package` produces a universal macOS DMG, Linux x86-64/ARM64
-tarballs, Windows x86-64/ARM64 ZIPs, and `SHA256SUMS` under
-`build/native/<version>/`. The production Chrome origin is always the Chrome
-Web Store ID `fgdehkdkmaiedleekbjpfoicpmodbicg`. `KODE_INJECTOR_EDGE_ID` is
-optional: when it is unset, production Chromium manifests contain only the
-Chrome origin. An unpacked Edge build remains available through the explicit
+`pnpm native:package` produces separate `darwin-amd64.dmg` and
+`darwin-arm64.dmg` packages for Intel and Apple Silicon Macs, Linux
+x86-64/ARM64 tarballs, Windows x86-64/ARM64 ZIPs, and `SHA256SUMS` under
+`build/native/<version>/`. Each macOS DMG contains only its matching
+architecture and is signed and notarized independently. The production Chrome
+origin is always the Chrome Web Store ID
+`fgdehkdkmaiedleekbjpfoicpmodbicg`. `KODE_INJECTOR_EDGE_ID` is optional: when
+it is unset, production Chromium manifests contain only the Chrome origin. An
+unpacked Edge build remains available through the explicit
 development-registration flow described above; no wildcard origin is added.
 
 ### GitHub Actions validation
@@ -302,8 +305,8 @@ To prepare a native-host release:
 2. Create a matching tag, such as `v0.9.0`, on that `master` commit and push it.
 3. Wait for the workflow to verify the tag, rebuild and sign the packages, and
    create an unpublished [GitHub Draft Release](https://github.com/maximtop/kode-injector/releases).
-4. Download the draft assets and inspect the platform archives, notarized DMG,
-   and `SHA256SUMS`.
+4. Download the draft assets and inspect the platform archives, both notarized
+   macOS DMGs, and `SHA256SUMS`.
 5. If the candidate is correct, click **Publish release** in the GitHub UI.
 
 The workflow refuses a tag that does not match `package.json`, does not point to
