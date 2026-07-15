@@ -72,14 +72,37 @@ test('every setup-go action caches the native-host dependencies', () => {
 
 test('continuous integration validates extensions, Go, and the macOS helper', () => {
     const workflow = readWorkflow('ci.yml');
+    const nativeChangesJob = getJob(workflow, 'native-changes');
     const extensionJob = getJob(workflow, 'extension');
     const nativeJob = getJob(workflow, 'native');
     const macOSHelperJob = getJob(workflow, 'macos-helper');
+    const nativePaths = [
+        '.github/workflows/ci.yml',
+        '.github/workflows/release.yml',
+        'native-host/',
+        'scripts/native-host/',
+        'src/app/common/native-host-artifacts.ts',
+        'src/app/common/native-host-protocol.ts',
+        'package.json',
+        'pnpm-lock.yaml',
+        'pnpm-workspace.yaml',
+        'tsconfig.json',
+    ];
 
     expect(workflow).toContain('push:');
     expect(workflow).toContain('branches: [master]');
     expect(workflow).toContain('pull_request:');
     expect(workflow).toContain('contents: read');
+    expect(nativeChangesJob).toContain('name: Detect native changes');
+    expect(nativeChangesJob).toContain('fetch-depth: 0');
+    expect(nativeChangesJob).toContain('github.event.pull_request.base.sha');
+    expect(nativeChangesJob).toContain('github.event.pull_request.head.sha');
+    expect(nativeChangesJob).toContain('"$BASE_SHA...$HEAD_SHA"');
+    expect(nativeChangesJob).toContain('"$BASE_SHA..$HEAD_SHA"');
+    nativePaths.forEach((nativePath) => {
+        expect(nativeChangesJob).toContain(nativePath);
+    });
+    expect(extensionJob).not.toContain('needs: native-changes');
     expect(extensionJob).toContain(
         'actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0',
     );
@@ -91,11 +114,17 @@ test('continuous integration validates extensions, Go, and the macOS helper', ()
     expect(extensionJob).toContain('pnpm install --frozen-lockfile');
     expect(extensionJob).toContain('pnpm validate');
     expect(extensionJob).toContain('pnpm release');
+    expect(nativeJob).toContain('needs: native-changes');
+    expect(nativeJob).toContain("if: needs.native-changes.outputs.changed == 'true'");
     expect(nativeJob).toContain(
         'actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6.5.0',
     );
     expect(nativeJob).toContain("go-version: '1.26.x'");
     expect(nativeJob).toContain('go test -race ./...');
+    expect(macOSHelperJob).toContain('needs: native-changes');
+    expect(macOSHelperJob).toContain(
+        "if: needs.native-changes.outputs.changed == 'true'",
+    );
     expect(macOSHelperJob).toContain('name: Test macOS helper');
     expect(macOSHelperJob).toContain('runs-on: macos-latest');
     expect(macOSHelperJob).toContain('contents: read');
@@ -113,6 +142,7 @@ test('release validation accepts preflights and validates version tags', () => {
 
     expect(workflow).toContain('workflow_dispatch:');
     expect(workflow).toContain("tags: ['v*.*.*']");
+    expect(workflow).not.toContain('pull_request:');
     expect(job).toContain('fetch-depth: 0');
     expect(job).toContain('^v[0-9]+\\.[0-9]+\\.[0-9]+$');
     expect(job).toContain('PACKAGE_VERSION');
