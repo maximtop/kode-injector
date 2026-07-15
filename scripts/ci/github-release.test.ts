@@ -194,17 +194,43 @@ test('release candidates use isolated Apple credentials and are retained', () =>
     expect(job).not.toContain('APPLE_NOTARY_PROFILE');
 });
 
+test('release candidates retain store-ready extension archives', () => {
+    const workflow = readWorkflow('release.yml');
+    const job = getJob(workflow, 'build-extensions');
+
+    expect(job).toContain('needs: validate-release');
+    expect(job).toContain('runs-on: ubuntu-latest');
+    expect(job).toContain('contents: read');
+    expect(job).toContain('KODE_INJECTOR_EDGE_ID: ${{ vars.KODE_INJECTOR_EDGE_ID }}');
+    expect(job).toContain("node-version: '24'");
+    expect(job).toContain('corepack enable');
+    expect(job).toContain('pnpm install --frozen-lockfile');
+    expect(job).toContain('pnpm release');
+    expect(job).toContain(
+        'actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1',
+    );
+    expect(job).toContain('name: kode-injector-extensions-${{ needs.validate-release.outputs.version }}');
+    expect(job).toContain('build/release/chrome.zip');
+    expect(job).toContain('build/release/edge.zip');
+    expect(job).toContain('build/release/firefox.zip');
+    expect(job).toContain('if-no-files-found: error');
+    expect(job).toContain('retention-days: 30');
+});
+
 test('tag builds create a new draft release from the signed candidate', () => {
     const workflow = readWorkflow('release.yml');
     const job = getJob(workflow, 'draft-release');
 
     expect(job).toContain("if: github.event_name == 'push'");
     expect(job).toContain('build-and-sign');
+    expect(job).toContain('build-extensions');
     expect(job).toContain('contents: write');
     expect(job).toContain(
         'actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1',
     );
     expect(job).toContain('sha256sum -c SHA256SUMS');
+    expect(job).toContain('kode-injector-extensions-${{ needs.validate-release.outputs.version }}');
+    expect(job).toContain('sha256sum chrome.zip edge.zip firefox.zip >> SHA256SUMS');
     expect(job).toContain('gh release view "$RELEASE_TAG"');
     expect(job).toContain('gh release create "$RELEASE_TAG"');
     expect(job).toContain('--draft');
