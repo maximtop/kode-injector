@@ -13,18 +13,29 @@ import { execFileSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
 import AdmZip from 'adm-zip';
 
+export enum NativeOS {
+    Darwin = 'darwin',
+    Linux = 'linux',
+    Windows = 'windows',
+}
+
+export enum NativeArch {
+    Amd64 = 'amd64',
+    Arm64 = 'arm64',
+}
+
 export interface NativeTarget {
-    os: 'darwin' | 'linux' | 'windows';
-    arch: 'amd64' | 'arm64';
+    os: NativeOS;
+    arch: NativeArch;
 }
 
 export const NATIVE_TARGETS: NativeTarget[] = [
-    { os: 'darwin', arch: 'amd64' },
-    { os: 'darwin', arch: 'arm64' },
-    { os: 'linux', arch: 'amd64' },
-    { os: 'linux', arch: 'arm64' },
-    { os: 'windows', arch: 'amd64' },
-    { os: 'windows', arch: 'arm64' },
+    { os: NativeOS.Darwin, arch: NativeArch.Amd64 },
+    { os: NativeOS.Darwin, arch: NativeArch.Arm64 },
+    { os: NativeOS.Linux, arch: NativeArch.Amd64 },
+    { os: NativeOS.Linux, arch: NativeArch.Arm64 },
+    { os: NativeOS.Windows, arch: NativeArch.Amd64 },
+    { os: NativeOS.Windows, arch: NativeArch.Arm64 },
 ];
 
 export const PRODUCTION_CHROME_EXTENSION_ID = 'fgdehkdkmaiedleekbjpfoicpmodbicg';
@@ -33,13 +44,27 @@ const CHROMIUM_ID_PATTERN = /^[a-p]{32}$/u;
 const HOST_COMMAND = './cmd/kode-injector-native';
 const INSTALLER_COMMAND = './cmd/kode-injector-installer';
 
-export const getNativeArtifactNames = (version: string): string[] => [
-    `kode-injector-native-${version}-darwin-universal.dmg`,
-    `kode-injector-native-${version}-linux-amd64.tar.gz`,
-    `kode-injector-native-${version}-linux-arm64.tar.gz`,
-    `kode-injector-native-${version}-windows-amd64.zip`,
-    `kode-injector-native-${version}-windows-arm64.zip`,
-];
+const getNativeArtifactExtension = (targetOS: NativeOS): string => {
+    switch (targetOS) {
+        case NativeOS.Darwin:
+            return 'dmg';
+        case NativeOS.Linux:
+            return 'tar.gz';
+        case NativeOS.Windows:
+            return 'zip';
+        default:
+            throw new Error(`Unsupported native target OS: ${targetOS}`);
+    }
+};
+
+const getNativeArtifactName = (version: string, target: NativeTarget): string => {
+    const extension = getNativeArtifactExtension(target.os);
+    return `kode-injector-native-${version}-${target.os}-${target.arch}.${extension}`;
+};
+
+export const getNativeArtifactNames = (version: string): string[] => {
+    return NATIVE_TARGETS.map((target) => getNativeArtifactName(version, target));
+};
 
 export const getInstallerLdflags = (edgeID?: string): string => {
     if (edgeID && !CHROMIUM_ID_PATTERN.test(edgeID)) {
@@ -111,7 +136,7 @@ export const packageNativeHost = (
 
     try {
         for (const target of NATIVE_TARGETS) {
-            const suffix = target.os === 'windows' ? '.exe' : '';
+            const suffix = target.os === NativeOS.Windows ? '.exe' : '';
             const targetPath = path.join(workPath, `${target.os}-${target.arch}`);
             fs.mkdirSync(targetPath, { recursive: true });
             buildBinary(
@@ -134,36 +159,34 @@ export const packageNativeHost = (
             );
         }
 
-        const darwinStage = path.join(workPath, 'darwin-universal');
-        fs.mkdirSync(darwinStage);
-        for (const name of ['kode-injector-native', 'kode-injector-installer']) {
-            run('lipo', [
-                '-create',
-                path.join(workPath, 'darwin-amd64', name),
-                path.join(workPath, 'darwin-arm64', name),
-                '-output',
-                path.join(darwinStage, name),
-            ], rootPath);
-        }
-        fs.copyFileSync(
-            path.join(nativeRoot, 'packaging', 'README.txt'),
-            path.join(darwinStage, 'README.txt'),
-        );
-        run('hdiutil', [
-            'create', '-quiet', '-ov', '-format', 'UDZO',
-            '-srcfolder', darwinStage,
-            path.join(outputPath, getNativeArtifactNames(version)[0]),
-        ], rootPath);
-
-        for (const target of NATIVE_TARGETS.filter(({ os: targetOS }) => targetOS === 'linux')) {
-            const artifact = `kode-injector-native-${version}-linux-${target.arch}.tar.gz`;
-            run('tar', ['-czf', path.join(outputPath, artifact), '-C', path.join(workPath, `linux-${target.arch}`), '.'], rootPath);
-        }
-        for (const target of NATIVE_TARGETS.filter(({ os: targetOS }) => targetOS === 'windows')) {
-            const artifact = `kode-injector-native-${version}-windows-${target.arch}.zip`;
-            const archive = new AdmZip();
-            archive.addLocalFolder(path.join(workPath, `windows-${target.arch}`));
-            archive.writeZip(path.join(outputPath, artifact));
+        for (const target of NATIVE_TARGETS) {
+            const targetPath = path.join(workPath, `${target.os}-${target.arch}`);
+            const artifactPath = path.join(
+                outputPath,
+                getNativeArtifactName(version, target),
+            );
+            switch (target.os) {
+                case NativeOS.Darwin:
+                    run('hdiutil', [
+                        'create', '-quiet', '-ov', '-format', 'UDZO',
+                        '-srcfolder', targetPath,
+                        artifactPath,
+                    ], rootPath);
+                    break;
+                case NativeOS.Linux:
+                    run('tar', [
+                        '-czf', artifactPath, '-C', targetPath, '.',
+                    ], rootPath);
+                    break;
+                case NativeOS.Windows: {
+                    const archive = new AdmZip();
+                    archive.addLocalFolder(targetPath);
+                    archive.writeZip(artifactPath);
+                    break;
+                }
+                default:
+                    throw new Error(`Unsupported native target OS: ${target.os}`);
+            }
         }
         createChecksums(outputPath, getNativeArtifactNames(version));
         return outputPath;
