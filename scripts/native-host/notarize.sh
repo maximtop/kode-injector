@@ -154,9 +154,13 @@ submit_and_require_accepted() {
     [ -n "$submission_id" ] || fail "$artifact_label notarization returned an empty submission identifier"
     [ -n "$submission_status" ] || fail "$artifact_label notarization returned an empty status"
     notarytool_log "$submission_id" "$log_path"
-    plutil -lint "$log_path" >/dev/null || {
-        fail "$artifact_label notarization log is not valid JSON"
+    log_status=$(plutil -extract status raw -o - "$log_path") || {
+        fail "cannot read $artifact_label notarization log status"
     }
+    [ -n "$log_status" ] || fail "$artifact_label notarization log returned an empty status"
+    if [ "$log_status" != "$submission_status" ]; then
+        fail "$artifact_label notarization result and log statuses do not match"
+    fi
     if [ "$submission_status" != "$NOTARY_ACCEPTED_STATUS" ]; then
         fail "$artifact_label notarization status is $submission_status"
     fi

@@ -26,7 +26,9 @@ const APPLE_ENVIRONMENT_KEYS = [
 ];
 const MOCK_ENVIRONMENT_KEYS = [
     'MOCK_APP_NOTARY_STATUS',
+    'MOCK_APP_NOTARY_LOG_STATUS',
     'MOCK_DMG_NOTARY_STATUS',
+    'MOCK_DMG_NOTARY_LOG_STATUS',
     'MOCK_MAIN_ARCHITECTURE',
     'MOCK_HOST_ARCHITECTURE',
     'MOCK_INSTALLER_ARCHITECTURE',
@@ -179,7 +181,16 @@ if [ "$1" = "notarytool" ] && [ "$2" = "submit" ]; then
             ;;
     esac
 elif [ "$1" = "notarytool" ] && [ "$2" = "log" ]; then
-    printf '{"issues":[]}\\n'
+    case "$3" in
+        app-submission)
+            printf '{"status":"%s","issues":[]}\\n' \\
+                "\${MOCK_APP_NOTARY_LOG_STATUS:-\${MOCK_APP_NOTARY_STATUS:-Accepted}}"
+            ;;
+        dmg-submission)
+            printf '{"status":"%s","issues":[]}\\n' \\
+                "\${MOCK_DMG_NOTARY_LOG_STATUS:-\${MOCK_DMG_NOTARY_STATUS:-Accepted}}"
+            ;;
+    esac
 fi
 `);
 });
@@ -287,6 +298,18 @@ test('uses direct API credentials for both notarization submissions', () => {
         );
         expect(submission).toContain('--wait --output-format json');
     });
+});
+
+test('rejects a notarization log whose status disagrees with the result', () => {
+    const result = runNotarize({
+        APPLE_NOTARY_PROFILE: 'kode-injector',
+        MOCK_APP_NOTARY_LOG_STATUS: 'Rejected',
+    });
+
+    expect(result.status).not.toBe(0);
+    expect(result.stderr).toContain(
+        'app notarization result and log statuses do not match',
+    );
 });
 
 test('stops before rebuilding the disk image when app notarization is rejected', () => {
