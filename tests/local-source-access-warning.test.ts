@@ -7,6 +7,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { expect, test, vi } from 'vitest';
 
 import { LocalSourceAccessWarning } from '../src/app/common/LocalSourceAccessWarning';
+import { BrowserTarget } from '../src/app/common/browser-target';
 import { LocalSourceAccessMethod } from '../src/app/common/contracts';
 import {
     NativeHostDownloadKind,
@@ -94,6 +95,54 @@ test('compact warning keeps actions out of the popup', () => {
     expect(html).toContain('popup_native_host_unavailable');
     expect(html).not.toContain('native_host_download');
     expect(html).not.toContain('native_host_check_again');
+});
+
+test.each([BrowserTarget.Chrome, BrowserTarget.Edge])(
+    '%s compact warning offers an explicit return to browser access',
+    (browserTarget) => {
+        const html = renderToStaticMarkup(React.createElement(LocalSourceAccessWarning, {
+            state: {
+                kind: LocalSourceAccessMethod.NativeHost,
+                permissionGranted: true,
+                host: { status: NativeHostStatus.NotInstalled },
+            },
+            browserTarget,
+            compact: true,
+            disabled: false,
+            download: undefined,
+            onCheckAgain: undefined,
+            onDownload: undefined,
+            onRequestPermission: undefined,
+            onUseBrowserAccess: vi.fn(),
+            onViewAllDownloads: undefined,
+        }));
+
+        expect(html).toContain('popup_native_host_optional_unavailable');
+        expect(html).toContain('local_source_method_use_browser');
+        expect(html).not.toContain('popup_native_host_unavailable');
+    },
+);
+
+test('Firefox compact warning does not offer browser access', () => {
+    const html = renderToStaticMarkup(React.createElement(LocalSourceAccessWarning, {
+        state: {
+            kind: LocalSourceAccessMethod.NativeHost,
+            permissionGranted: true,
+            host: { status: NativeHostStatus.NotInstalled },
+        },
+        browserTarget: BrowserTarget.Firefox,
+        compact: true,
+        disabled: false,
+        download: undefined,
+        onCheckAgain: undefined,
+        onDownload: undefined,
+        onRequestPermission: undefined,
+        onUseBrowserAccess: undefined,
+        onViewAllDownloads: undefined,
+    }));
+
+    expect(html).toContain('popup_native_host_unavailable');
+    expect(html).not.toContain('local_source_method_use_browser');
 });
 
 test.each([false, true])(

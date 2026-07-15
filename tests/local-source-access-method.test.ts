@@ -5,7 +5,7 @@
 import { expect, test, vi } from 'vitest';
 
 import { LocalSourceAccessMethod } from '../src/app/common/contracts';
-import { applyLocalSourceAccessMethod } from '../src/app/options/local-source-access-method';
+import { applyLocalSourceAccessMethod } from '../src/app/common/local-source-access-method';
 
 const createActions = () => ({
     permission: {

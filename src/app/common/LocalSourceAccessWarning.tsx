@@ -7,6 +7,7 @@
 import React from 'react';
 import { Alert, Button } from 'antd';
 
+import { BrowserTarget } from './browser-target';
 import type { NativeHostAccessState } from './contracts';
 import type { NativeHostDownload } from './native-host-download';
 import { NativeHostStatus } from './native-host-protocol';
@@ -15,23 +16,27 @@ import { translator } from './translator';
 
 interface LocalSourceAccessWarningProps {
     state: NativeHostAccessState;
+    browserTarget?: BrowserTarget;
     compact: boolean;
     disabled: boolean;
     download: NativeHostDownload | undefined;
     onCheckAgain: (() => void | Promise<void>) | undefined;
     onDownload: (() => void | Promise<void>) | undefined;
     onRequestPermission: (() => void | Promise<void>) | undefined;
+    onUseBrowserAccess?: (() => void | Promise<void>) | undefined;
     onViewAllDownloads: (() => void | Promise<void>) | undefined;
 }
 
 export const LocalSourceAccessWarning = ({
     state,
+    browserTarget = BrowserTarget.Firefox,
     compact,
     disabled,
     download,
     onCheckAgain,
     onDownload,
     onRequestPermission,
+    onUseBrowserAccess,
     onViewAllDownloads,
 }: LocalSourceAccessWarningProps): JSX.Element | null => {
     const statusMessages: Record<NativeHostStatus, string> = {
@@ -68,12 +73,32 @@ export const LocalSourceAccessWarning = ({
         );
     }
     if (compact) {
+        const canUseBrowserAccess = browserTarget !== BrowserTarget.Firefox
+            && Boolean(onUseBrowserAccess);
+        const compactMessage = canUseBrowserAccess
+            ? translator.getMessage('popup_native_host_optional_unavailable')
+            : translator.getMessage('popup_native_host_unavailable');
         return (
             <Alert
                 className="local-source-access-warning local-source-access-warning-compact"
                 type="warning"
                 showIcon
-                message={translator.getMessage('popup_native_host_unavailable')}
+                message={(
+                    <div className="local-source-access-warning-compact-content">
+                        <span>
+                            {compactMessage}
+                        </span>
+                        {canUseBrowserAccess && (
+                            <Button
+                                size="small"
+                                disabled={disabled}
+                                onClick={() => { onUseBrowserAccess?.(); }}
+                            >
+                                {translator.getMessage('local_source_method_use_browser')}
+                            </Button>
+                        )}
+                    </div>
+                )}
             />
         );
     }
@@ -142,4 +167,9 @@ export const LocalSourceAccessWarning = ({
             )}
         />
     );
+};
+
+LocalSourceAccessWarning.defaultProps = {
+    browserTarget: BrowserTarget.Firefox,
+    onUseBrowserAccess: undefined,
 };

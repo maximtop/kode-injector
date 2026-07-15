@@ -19,6 +19,8 @@ import { log } from '../../common/log';
 import { tabs } from '../../common/tabs';
 import { urlUtils } from '../../common/url-utils';
 import { i18n } from '../../common/i18n';
+import { applyLocalSourceAccessMethod } from '../../common/local-source-access-method';
+import { nativeMessagingPermission } from '../../common/native-messaging-permission';
 import type { RootStoreType } from './RootStore';
 import { preparePopupState } from './popup-initialization';
 
@@ -63,6 +65,12 @@ export class SettingsStore {
     };
 
     /**
+     * Whether an explicit method transition is in progress.
+     */
+    @observable
+    localSourceAccessMethodPending = false;
+
+    /**
      * Active browser tab displayed by the popup.
      */
     @observable
@@ -99,6 +107,67 @@ export class SettingsStore {
             this.popupDataReady = true;
         });
     }
+
+    /**
+     * Explicitly returns Chromium to browser-managed local-file access.
+     */
+    useBrowserFileAccess = async (): Promise<void> => {
+        if (this.localSourceAccessMethodPending) {
+            return;
+        }
+
+        runInAction(() => {
+            this.localSourceAccessMethodPending = true;
+        });
+
+        try {
+            await applyLocalSourceAccessMethod(LocalSourceAccessMethod.Browser, {
+                permission: nativeMessagingPermission,
+
+                /**
+                 * Persists browser access and rejects target coercion.
+                 */
+                setMethod: async (method) => {
+                    const selectedMethod = await messenger.setLocalSourceAccessMethod(method);
+                    if (selectedMethod !== LocalSourceAccessMethod.Browser) {
+                        throw new Error('BROWSER_FILE_ACCESS_NOT_SELECTED');
+                    }
+                },
+
+                /**
+                 * Browser access never requests permission.
+                 */
+                showPermissionDenied: () => undefined,
+
+                /**
+                 * Records cleanup failures without undoing the saved method.
+                 */
+                logPermissionError: (error) => {
+                    log.error('Native messaging permission operation failed', error);
+                },
+            });
+
+            runInAction(() => {
+                this.localSourceAccess = {
+                    kind: LocalSourceAccessMethod.Browser,
+                    allowed: true,
+                };
+            });
+
+            const localSourceAccess = await messenger.getLocalSourceAccessStatus();
+            if (localSourceAccess.kind === LocalSourceAccessMethod.Browser) {
+                runInAction(() => {
+                    this.localSourceAccess = localSourceAccess;
+                });
+            }
+        } catch (error) {
+            log.error('Failed to use browser file access', error);
+        } finally {
+            runInAction(() => {
+                this.localSourceAccessMethodPending = false;
+            });
+        }
+    };
 
     /**
      * Disables the extension globally.

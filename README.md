@@ -46,8 +46,9 @@ separate application. Open the extension's details in the browser and enable
 
 Firefox reads local files through the separately installed **Kode Injector
 Helper**. Chrome and Edge can use the same read-only helper as an optional
-alternative; select **Native Host** in Kode Injector settings to request the
-browser permission and switch methods.
+advanced alternative. Expand **Advanced** under the local-file access method in
+Kode Injector settings and choose **Use Native Host** to request the browser
+permission and switch methods.
 
 Options automatically links to the package for the installed extension version
 and the current operating system and architecture. **View all downloads** opens
@@ -155,9 +156,11 @@ Matching rules are applied automatically whenever you visit the site.
 Chrome and Edge initially read configured `file:///` URLs through the browser.
 This preserves the extension's established behavior and requires only the
 browser-managed **Allow access to file URLs** toggle. The separately installed
-Native Host is optional in these browsers. Choosing it in Options requests the
-optional `nativeMessaging` permission; declining the request leaves browser
-file access selected.
+Native Host is optional and kept under **Advanced** in these browsers. Choosing
+**Use Native Host** requests the optional `nativeMessaging` permission;
+declining the request leaves browser file access selected. If the selected
+Helper later becomes unavailable, the popup offers **Use browser file access**
+instead of implying that Helper is mandatory.
 
 Firefox always uses Kode Injector Helper because extension pages cannot
 directly load arbitrary local files. The host is read-only and uses the same configured
@@ -246,8 +249,10 @@ without touching extension rules or settings.
 Browser file access is the simplest default and does not require another
 application or the `nativeMessaging` permission. Native Host avoids depending
 on the browser's file-URL toggle and provides the same file-size limits and
-diagnostics as Firefox. It is an interoperability choice, not a performance
-optimization.
+diagnostics as Firefox. It is an advanced interoperability choice, not a
+performance optimization. Expand **Advanced** in Options only when you want to
+opt in; the popup can explicitly return an unavailable Native Host selection to
+browser access.
 
 **How do I inject only JavaScript or only CSS?**
 

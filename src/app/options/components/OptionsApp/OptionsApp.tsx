@@ -32,7 +32,7 @@ import {
 } from '../../../common/browser-target';
 import { LocalSourceAccessMethod } from '../../../common/contracts';
 import { nativeMessagingPermission } from '../../../common/native-messaging-permission';
-import { applyLocalSourceAccessMethod } from '../../local-source-access-method';
+import { applyLocalSourceAccessMethod } from '../../../common/local-source-access-method';
 import { LocalSourceAccessMethodSetting } from '../LocalSourceAccessMethodSetting';
 import {
     NativeHostDownload,
@@ -192,6 +192,7 @@ export const OptionsApp = observer(() => {
                         ) : (
                             <LocalSourceAccessWarning
                                 state={injectionsStore.localSourceAccess}
+                                browserTarget={browserTarget}
                                 compact={false}
                                 disabled={injectionsStore.localSourceAccessMethodPending}
                                 download={nativeHostDownload}
@@ -202,6 +203,7 @@ export const OptionsApp = observer(() => {
                                         LocalSourceAccessMethod.NativeHost,
                                     );
                                 }}
+                                onUseBrowserAccess={undefined}
                                 onViewAllDownloads={openAllNativeHostDownloads}
                             />
                         )}
