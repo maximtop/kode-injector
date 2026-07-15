@@ -16,7 +16,10 @@ import { rootStore } from '../../stores/RootStore';
 import { translator } from '../../../common/translator';
 import { LocalSourceAccessWarning } from '../../../common/LocalSourceAccessWarning';
 import { FileAccessWarning } from '../../../common/FileAccessWarning';
-import { getCurrentBrowserTarget } from '../../../common/browser-target';
+import {
+    BrowserTarget,
+    getCurrentBrowserTarget,
+} from '../../../common/browser-target';
 import { LocalSourceAccessMethod } from '../../../common/contracts';
 
 export const Main = observer(() => {
@@ -76,12 +79,16 @@ export const Main = observer(() => {
             ) : (
                 <LocalSourceAccessWarning
                     state={settingsStore.localSourceAccess}
+                    browserTarget={browserTarget}
                     compact
-                    disabled={false}
+                    disabled={settingsStore.localSourceAccessMethodPending}
                     download={undefined}
                     onCheckAgain={undefined}
                     onDownload={undefined}
                     onRequestPermission={undefined}
+                    onUseBrowserAccess={browserTarget === BrowserTarget.Firefox
+                        ? undefined
+                        : settingsStore.useBrowserFileAccess}
                     onViewAllDownloads={undefined}
                 />
             )}

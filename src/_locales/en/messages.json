@@ -167,6 +167,10 @@
         "message": "Local file injection needs Kode Injector Helper. Open settings for installation or recovery instructions.",
         "description": "Compact popup warning when the native helper is unavailable."
     },
+    "popup_native_host_optional_unavailable": {
+        "message": "Native Host is selected, but Kode Injector Helper is unavailable. You can switch back to browser file access.",
+        "description": "Compact Chromium warning when the optional Native Host method is unavailable."
+    },
     "native_helper_download_or_update": {
         "message": "Download or update Kode Injector Helper",
         "description": "Action that downloads the matching Kode Injector Helper package."
@@ -227,6 +231,10 @@
         "message": "Local file access method",
         "description": "Label for choosing how local injection files are read."
     },
+    "local_source_method_advanced": {
+        "message": "Advanced",
+        "description": "Expandable section containing the optional Chromium Native Host method."
+    },
     "local_source_method_browser": {
         "message": "Browser file access",
         "description": "Option that reads local files through browser file-URL access."
@@ -244,8 +252,16 @@
         "description": "Shown when a Chromium nativeMessaging permission request is declined."
     },
     "local_source_method_native_host_description": {
-        "message": "Uses a separately installed read-only helper and avoids the browser's file-URL access toggle. Selecting it requests the optional Native Host permission from the browser.",
-        "description": "Explains the optional Native Host method, its advantage, and its permission request."
+        "message": "Use Native Host instead of enabling “Allow access to file URLs”. This keeps the extension's browser-managed file:// access disabled; the separately installed read-only Helper reads the files configured in your injection rules. It also provides the same access method across browsers, but requires installing Helper and granting the optional Native Host permission.",
+        "description": "Explains that Native Host replaces browser file-URL access, its security and consistency benefits, and its installation and permission tradeoffs."
+    },
+    "local_source_method_use_browser": {
+        "message": "Use browser file access",
+        "description": "Action that switches Chromium back to browser-managed local-file access."
+    },
+    "local_source_method_use_native_host": {
+        "message": "Use Native Host",
+        "description": "Action that explicitly selects the optional Chromium Native Host method."
     },
     "local_source_method_change_failed": {
         "message": "Could not change the local file access method. Try again.",

@@ -135,10 +135,12 @@ one target. Outputs are `build/<channel>/<browser>/` and
 `chrome://extensions/` → **Load unpacked** → `build/dev/chrome/`.
 
 Chrome and Edge default to browser-managed file-URL access. Their Native Host
-mode is opt-in and its `nativeMessaging` permission must remain optional;
-request it only from an explicit Options-page user action. Firefox is Native
-Host-only and declares `nativeMessaging` as required. Never silently fall back
-between the selected methods.
+mode is an Advanced opt-in and its `nativeMessaging` permission must remain
+optional; request it only from an explicit Advanced Options action. Firefox is
+Native Host-only and declares `nativeMessaging` as required. Never silently
+fall back between the selected methods. Chromium may offer an explicit popup
+action to return an unavailable Native Host selection to browser access; that
+action must persist the method before removing the unused optional permission.
 
 ## Native Host Safety
 

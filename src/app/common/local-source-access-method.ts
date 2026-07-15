@@ -2,7 +2,7 @@
  * @file Applies user-selected local-source access methods.
  */
 
-import { LocalSourceAccessMethod } from '../common/contracts';
+import { LocalSourceAccessMethod } from './contracts';
 
 /**
  * Optional native-messaging permission operations.
@@ -27,7 +27,7 @@ interface OptionalNativeMessagingPermission {
 /**
  * Collaborators required to apply an access method.
  */
-interface LocalSourceAccessMethodActions {
+export interface LocalSourceAccessMethodActions {
     /**
      * Optional native-messaging permission service.
      */

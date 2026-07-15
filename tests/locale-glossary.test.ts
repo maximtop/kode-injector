@@ -22,6 +22,14 @@ test('catalog glossary keeps protected product, platform, and technical tokens',
         expect(catalog.description.message, locale).toMatch(/CSS/u);
         expect(catalog.form_js_path_required.message, locale).toMatch(/JavaScript/u);
         expect(catalog.form_css_path_required.message, locale).toMatch(/CSS/u);
+        expect(catalog.local_source_method_native_host_description.message, locale)
+            .toMatch(/Allow access to file URLs/u);
+        expect(catalog.local_source_method_native_host_description.message, locale)
+            .toMatch(/file:\/\//u);
+        expect(catalog.local_source_method_native_host_description.message, locale)
+            .toMatch(/Helper/u);
+        expect(catalog.local_source_method_native_host_description.message, locale)
+            .toMatch(/Native Host/u);
 
         Object.entries(catalog).forEach(([key, entry]) => {
             expect(entry.message, `${locale}/${key}`).not.toMatch(BIDI_CONTROL_PATTERN);

@@ -3,7 +3,7 @@
  */
 
 import React from 'react';
-import { Radio } from 'antd';
+import { Button } from 'antd';
 
 import { BrowserTarget } from '../../common/browser-target';
 import { LocalSourceAccessMethod } from '../../common/contracts';
@@ -52,7 +52,8 @@ interface LocalSourceAccessMethodSettingProps {
 }
 
 /**
- * Renders a Chromium choice or Firefox's fixed native-host method.
+ * Renders Chromium's primary browser access with an advanced Native Host opt-in,
+ * or Firefox's fixed native-host method.
  *
  * @param props Setting state and action.
  *
@@ -93,32 +94,50 @@ export const LocalSourceAccessMethodSetting = ({
         );
     }
 
+    const usingNativeHost = method === LocalSourceAccessMethod.NativeHost;
+    const methodName = usingNativeHost
+        ? translator.getMessage('local_source_method_native_host')
+        : translator.getMessage('local_source_method_browser');
+    const methodDescription = usingNativeHost
+        ? translator.getMessage('local_source_method_native_host_description')
+        : translator.getMessage('local_source_method_browser_description');
+    const methodAction = usingNativeHost
+        ? translator.getMessage('local_source_method_use_browser')
+        : translator.getMessage('local_source_method_use_native_host');
+
     return (
         <section className="local-source-method-setting" aria-label={title}>
             <div className="local-source-method-setting-control">
                 <strong>{title}</strong>
-                <Radio.Group
-                    aria-label={title}
-                    disabled={disabled}
-                    value={method}
-                    onChange={(event) => {
-                        onChange(event.target.value as LocalSourceAccessMethod);
-                    }}
-                >
-                    <Radio value={LocalSourceAccessMethod.Browser}>
-                        {translator.getMessage('local_source_method_browser')}
-                    </Radio>
-                    <Radio value={LocalSourceAccessMethod.NativeHost}>
-                        {translator.getMessage('local_source_method_native_host')}
-                    </Radio>
-                </Radio.Group>
+                <span>{methodName}</span>
             </div>
             <div className="local-source-method-setting-description">
-                {method === LocalSourceAccessMethod.Browser
-                    ? translator.getMessage('local_source_method_browser_description')
-                    : translator.getMessage('local_source_method_native_host_description')}
+                {methodDescription}
             </div>
-            {method === LocalSourceAccessMethod.NativeHost && downloadActions}
+            <details
+                className="local-source-method-setting-advanced"
+                open={usingNativeHost}
+            >
+                <summary>{translator.getMessage('local_source_method_advanced')}</summary>
+                <div className="local-source-method-setting-advanced-content">
+                    <strong>{translator.getMessage('local_source_method_native_host')}</strong>
+                    <div className="local-source-method-setting-description">
+                        {translator.getMessage('local_source_method_native_host_description')}
+                    </div>
+                    <Button
+                        size="small"
+                        disabled={disabled}
+                        onClick={() => {
+                            onChange(usingNativeHost
+                                ? LocalSourceAccessMethod.Browser
+                                : LocalSourceAccessMethod.NativeHost);
+                        }}
+                    >
+                        {methodAction}
+                    </Button>
+                    {usingNativeHost && downloadActions}
+                </div>
+            </details>
         </section>
     );
 };

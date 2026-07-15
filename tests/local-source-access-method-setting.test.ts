@@ -45,7 +45,7 @@ const renderMethodSetting = (
 ));
 
 test.each([BrowserTarget.Chrome, BrowserTarget.Edge])(
-    '%s renders browser and native-host choices with the browser description',
+    '%s keeps browser access primary and hides Native Host in Advanced',
     (browserTarget) => {
         const html = renderToStaticMarkup(React.createElement(
             LocalSourceAccessMethodSetting,
@@ -62,16 +62,19 @@ test.each([BrowserTarget.Chrome, BrowserTarget.Edge])(
 
         expect(html).toContain('local_source_method');
         expect(html).toContain('local_source_method_browser');
-        expect(html).toContain('local_source_method_native_host');
         expect(html).toContain('local_source_method_browser_description');
-        expect(html).not.toContain('local_source_method_native_host_description');
-        expect(html).toContain('ant-radio-group');
+        expect(html).toContain('local_source_method_advanced');
+        expect(html).toContain('local_source_method_native_host_description');
+        expect(html).toContain('local_source_method_use_native_host');
+        expect(html).toMatch(/<details[^>]*class="local-source-method-setting-advanced"/u);
+        expect(html).not.toMatch(/<details[^>]*open=""/u);
+        expect(html).not.toContain('ant-radio-group');
         expect(html).toContain('aria-label="local_source_method"');
     },
 );
 
 test.each([BrowserTarget.Chrome, BrowserTarget.Edge])(
-    '%s renders the native-host description when Native Host is selected',
+    '%s expands Advanced and offers browser access when Native Host is selected',
     (browserTarget) => {
         const html = renderToStaticMarkup(React.createElement(
             LocalSourceAccessMethodSetting,
@@ -88,6 +91,8 @@ test.each([BrowserTarget.Chrome, BrowserTarget.Edge])(
 
         expect(html).toContain('local_source_method_native_host_description');
         expect(html).not.toContain('local_source_method_browser_description');
+        expect(html).toContain('local_source_method_use_browser');
+        expect(html).toMatch(/<details[^>]*class="local-source-method-setting-advanced"[^>]*open=""/u);
     },
 );
 
@@ -109,6 +114,7 @@ test('Firefox renders native-host mode without a selector', () => {
     expect(html).toContain('native_host_explanation');
     expect(html).not.toContain('local_source_method_native_host_description');
     expect(html).not.toContain('local_source_method_browser');
+    expect(html).not.toContain('local_source_method_advanced');
     expect(html).not.toContain('ant-radio-group');
 });
 

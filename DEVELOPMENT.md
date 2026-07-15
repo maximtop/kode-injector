@@ -121,9 +121,9 @@ file URLs** on the unpacked extension's details page and confirm that Options
 dismisses its warning after **Check again**. This path does not require the
 Native Host or `nativeMessaging`.
 
-To test Native Host as an optional Chromium method, choose **Native Host** in
-Options and accept the browser's permission request. Chrome and Edge show their
-unpacked IDs on their extension-management pages. Copy
+To test Native Host as an optional Chromium method, expand **Advanced** in
+Options, choose **Use Native Host**, and accept the browser's permission request.
+Chrome and Edge show their unpacked IDs on their extension-management pages. Copy
 `native-host/dev-extension-ids.example.json` to the gitignored
 `native-host/dev-extension-ids.json`, enter those IDs, and run the packaged
 installer's contributor-only command. On macOS, after copying the app to
@@ -144,10 +144,11 @@ and repeat the command. This copy-based development path is intentionally
 separate from the end-user app lifecycle; there are no end-user changing-ID
 controls, profile scanning, wildcard origins, or Makefile install shortcuts.
 
-Switching back to **Browser file access** removes the optional Chromium
-`nativeMessaging` permission. Permission requests must originate from the
-Options user action; background code must never request it automatically or
-silently fall back between methods.
+Switching back with **Use browser file access**, either in Advanced Options or
+from the compact popup warning shown when Helper is unavailable, removes the
+optional Chromium `nativeMessaging` permission. Permission requests must
+originate from the Advanced Options user action; background code must never
+request it automatically or silently fall back between methods.
 
 ## Tech stack
 
@@ -262,8 +263,10 @@ contributor flow.
 
 Firefox declares `nativeMessaging` as a required permission. Chrome and Edge
 declare it in `optional_permissions`; existing Chromium users remain on browser
-file access unless they explicitly choose Native Host in Options. This avoids a
-new required-permission prompt or upgrade disablement for those users.
+file access unless they explicitly choose Native Host under **Advanced** in
+Options. This avoids a new required-permission prompt or upgrade disablement for
+those users. A missing selected Helper produces an explicit popup action that
+returns to browser access; it never changes the method without a user click.
 
 `pnpm native:package` produces these stable, separate release assets under
 `build/native/<version>/`:
