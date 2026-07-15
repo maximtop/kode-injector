@@ -2,7 +2,12 @@
  * @file
  */
 
-import React, { useContext, useEffect, useLayoutEffect } from 'react';
+import React, {
+    useContext,
+    useEffect,
+    useLayoutEffect,
+    useState,
+} from 'react';
 import { ConfigProvider, Layout, message } from 'antd';
 import { observer } from 'mobx-react';
 
@@ -20,7 +25,7 @@ import { FileAccessWarning } from '../../../common/FileAccessWarning';
 import { log } from '../../../common/log';
 import { tabs } from '../../../common/tabs';
 import { subscribeLocalSourceAccessRefreshOnFocus } from '../../local-source-access-focus';
-import { NATIVE_HOST_INSTALLATION_URL } from '../../../common/constants';
+import { NATIVE_HOST_ALL_DOWNLOADS_URL } from '../../../common/constants';
 import {
     BrowserTarget,
     getCurrentBrowserTarget,
@@ -29,6 +34,11 @@ import { LocalSourceAccessMethod } from '../../../common/contracts';
 import { nativeMessagingPermission } from '../../../common/native-messaging-permission';
 import { applyLocalSourceAccessMethod } from '../../local-source-access-method';
 import { LocalSourceAccessMethodSetting } from '../LocalSourceAccessMethodSetting';
+import {
+    NativeHostDownload,
+    NativeHostDownloadKind,
+    resolveCurrentNativeHostDownload,
+} from '../../../common/native-host-download';
 
 import '../../../common/local-source-access-warning.pcss';
 import '../../../common/file-access-warning.pcss';
@@ -38,6 +48,10 @@ export const OptionsApp = observer(() => {
     const { injectionsStore, translationStore } = useContext(rootStore);
     const { getOptionsData, refreshLocalSourceAccess } = injectionsStore;
     const browserTarget = getCurrentBrowserTarget();
+    const [nativeHostDownload, setNativeHostDownload] = useState<NativeHostDownload>({
+        kind: NativeHostDownloadKind.AllDownloads,
+        url: NATIVE_HOST_ALL_DOWNLOADS_URL,
+    });
 
     const openBrowserExtensionSettings = browserTarget === BrowserTarget.Firefox
         ? undefined
@@ -49,7 +63,14 @@ export const OptionsApp = observer(() => {
      * Opens native-host installation instructions.
      */
     const openNativeHostInstructions = (): void => {
-        tabs.openTab(NATIVE_HOST_INSTALLATION_URL).catch(log.error);
+        tabs.openTab(nativeHostDownload.url).catch(log.error);
+    };
+
+    /**
+     * Opens every published Helper package.
+     */
+    const openAllNativeHostDownloads = (): void => {
+        tabs.openTab(NATIVE_HOST_ALL_DOWNLOADS_URL).catch(log.error);
     };
 
     /**
@@ -99,6 +120,24 @@ export const OptionsApp = observer(() => {
     }, [getOptionsData]);
 
     useEffect(() => {
+        let active = true;
+
+        resolveCurrentNativeHostDownload()
+            .then((download) => {
+                if (active) {
+                    setNativeHostDownload(download);
+                }
+            })
+            .catch((error) => {
+                log.error('Failed to resolve Kode Injector Helper download', error);
+            });
+
+        return () => {
+            active = false;
+        };
+    }, []);
+
+    useEffect(() => {
         return browserLanguageChannel.subscribe((language) => {
             return i18n.setLocalePreference(language);
         });
@@ -136,7 +175,10 @@ export const OptionsApp = observer(() => {
                         browserTarget={browserTarget}
                         method={injectionsStore.localSourceAccessMethod}
                         disabled={injectionsStore.localSourceAccessMethodPending}
+                        download={nativeHostDownload}
                         onChange={changeLocalSourceAccessMethod}
+                        onDownloadNativeHost={openNativeHostInstructions}
+                        onViewAllDownloads={openAllNativeHostDownloads}
                     />
                     {injectionsStore.localSourceAccess.kind
                         === LocalSourceAccessMethod.Browser ? (
@@ -152,6 +194,7 @@ export const OptionsApp = observer(() => {
                                 state={injectionsStore.localSourceAccess}
                                 compact={false}
                                 disabled={injectionsStore.localSourceAccessMethodPending}
+                                download={nativeHostDownload}
                                 onCheckAgain={refreshLocalSourceAccess}
                                 onDownload={openNativeHostInstructions}
                                 onRequestPermission={() => {
@@ -159,6 +202,7 @@ export const OptionsApp = observer(() => {
                                         LocalSourceAccessMethod.NativeHost,
                                     );
                                 }}
+                                onViewAllDownloads={openAllNativeHostDownloads}
                             />
                         )}
                     <NewInjectionForm />

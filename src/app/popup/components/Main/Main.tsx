@@ -78,9 +78,11 @@ export const Main = observer(() => {
                     state={settingsStore.localSourceAccess}
                     compact
                     disabled={false}
+                    download={undefined}
                     onCheckAgain={undefined}
                     onDownload={undefined}
                     onRequestPermission={undefined}
+                    onViewAllDownloads={undefined}
                 />
             )}
             <Row className="popup-main-controls" align="middle" justify="center">

@@ -8,11 +8,41 @@ import { expect, test, vi } from 'vitest';
 
 import { BrowserTarget } from '../src/app/common/browser-target';
 import { LocalSourceAccessMethod } from '../src/app/common/contracts';
+import {
+    NativeHostDownloadKind,
+    NativeHostPackageTarget,
+} from '../src/app/common/native-host-download';
 import { LocalSourceAccessMethodSetting } from '../src/app/options/components/LocalSourceAccessMethodSetting';
 
 vi.mock('../src/app/common/translator', () => ({
     translator: { getMessage: (key: string) => key },
 }));
+
+vi.mock('webextension-polyfill', () => ({
+    default: { runtime: {} },
+}));
+
+const directDownload = {
+    kind: NativeHostDownloadKind.Direct,
+    url: 'https://example.test/helper.dmg',
+    target: NativeHostPackageTarget.MacOSAppleSilicon,
+};
+
+const renderMethodSetting = (
+    browserTarget: BrowserTarget,
+    method: LocalSourceAccessMethod,
+): string => renderToStaticMarkup(React.createElement(
+    LocalSourceAccessMethodSetting,
+    {
+        browserTarget,
+        method,
+        disabled: false,
+        download: directDownload,
+        onChange: vi.fn(),
+        onDownloadNativeHost: vi.fn(),
+        onViewAllDownloads: vi.fn(),
+    },
+));
 
 test.each([BrowserTarget.Chrome, BrowserTarget.Edge])(
     '%s renders browser and native-host choices with the browser description',
@@ -23,7 +53,10 @@ test.each([BrowserTarget.Chrome, BrowserTarget.Edge])(
                 browserTarget,
                 method: LocalSourceAccessMethod.Browser,
                 disabled: false,
+                download: directDownload,
                 onChange: vi.fn(),
+                onDownloadNativeHost: vi.fn(),
+                onViewAllDownloads: vi.fn(),
             },
         ));
 
@@ -46,7 +79,10 @@ test.each([BrowserTarget.Chrome, BrowserTarget.Edge])(
                 browserTarget,
                 method: LocalSourceAccessMethod.NativeHost,
                 disabled: false,
+                download: directDownload,
                 onChange: vi.fn(),
+                onDownloadNativeHost: vi.fn(),
+                onViewAllDownloads: vi.fn(),
             },
         ));
 
@@ -62,7 +98,10 @@ test('Firefox renders native-host mode without a selector', () => {
             browserTarget: BrowserTarget.Firefox,
             method: LocalSourceAccessMethod.NativeHost,
             disabled: false,
+            download: directDownload,
             onChange: vi.fn(),
+            onDownloadNativeHost: vi.fn(),
+            onViewAllDownloads: vi.fn(),
         },
     ));
 
@@ -72,3 +111,39 @@ test('Firefox renders native-host mode without a selector', () => {
     expect(html).not.toContain('local_source_method_browser');
     expect(html).not.toContain('ant-radio-group');
 });
+
+test('Firefox retains helper management actions', () => {
+    const html = renderMethodSetting(
+        BrowserTarget.Firefox,
+        LocalSourceAccessMethod.NativeHost,
+    );
+
+    expect(html).toContain('native_helper_download_or_update');
+    expect(html).toContain('native_helper_view_all_downloads');
+});
+
+test.each([BrowserTarget.Chrome, BrowserTarget.Edge])(
+    '%s browser-file mode hides helper actions',
+    (browserTarget) => {
+        const html = renderMethodSetting(
+            browserTarget,
+            LocalSourceAccessMethod.Browser,
+        );
+
+        expect(html).not.toContain('native_helper_download_or_update');
+        expect(html).not.toContain('native_helper_view_all_downloads');
+    },
+);
+
+test.each([BrowserTarget.Chrome, BrowserTarget.Edge])(
+    '%s native-host mode retains helper management actions',
+    (browserTarget) => {
+        const html = renderMethodSetting(
+            browserTarget,
+            LocalSourceAccessMethod.NativeHost,
+        );
+
+        expect(html).toContain('native_helper_download_or_update');
+        expect(html).toContain('native_helper_view_all_downloads');
+    },
+);

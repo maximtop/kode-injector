@@ -26,7 +26,9 @@ export const PROJECT_REPOSITORY_URL = 'https://github.com/maximtop/kode-injector
 
 export const PROJECT_NEW_ISSUE_URL = `${PROJECT_REPOSITORY_URL}/issues/new`;
 
-export const NATIVE_HOST_INSTALLATION_URL = `${PROJECT_REPOSITORY_URL}/releases`;
+export const NATIVE_HOST_RELEASES_URL = `${PROJECT_REPOSITORY_URL}/releases`;
+
+export const NATIVE_HOST_ALL_DOWNLOADS_URL = NATIVE_HOST_RELEASES_URL;
 
 /**
  * Browser permissions requested or emitted by the extension.

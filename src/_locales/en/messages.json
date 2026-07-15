@@ -120,47 +120,43 @@
         "description": "Button label for reporting a problem."
     },
     "native_host_required_title": {
-        "message": "Kode Injector Native Host is required",
+        "message": "Kode Injector Helper is required",
         "description": "Warning title shown when the native helper is unavailable."
     },
     "native_host_explanation": {
-        "message": "Local injection files are read through a separate native helper shared by Firefox, Chrome, and Edge.",
+        "message": "Kode Injector Helper reads local injection files for Firefox, Chrome, and Edge.",
         "description": "Explains why the native helper is required."
     },
     "native_host_read_only": {
-        "message": "The helper is read-only: it cannot write files, execute programs, list directories, or access the network.",
+        "message": "Kode Injector Helper is read-only: it cannot write files, execute programs, list directories, or access the network.",
         "description": "Explains the native helper security boundary."
     },
     "native_host_status_checking": {
-        "message": "Checking the native helper…",
+        "message": "Checking Kode Injector Helper…",
         "description": "Native helper checking status."
     },
     "native_host_status_not_installed": {
-        "message": "The native helper is not installed or is not registered for this browser.",
+        "message": "Kode Injector Helper is not installed or is not registered for this browser.",
         "description": "Native helper missing status."
     },
     "native_host_status_update_required": {
-        "message": "The native helper must be updated.",
+        "message": "Kode Injector Helper must be updated.",
         "description": "Native helper incompatible version status."
     },
     "native_host_status_ready": {
-        "message": "The native helper is ready.",
+        "message": "Kode Injector Helper is ready.",
         "description": "Native helper ready status."
     },
     "native_host_status_disconnected": {
-        "message": "The native helper disconnected. Check again to reconnect.",
+        "message": "Kode Injector Helper disconnected. Check again to reconnect.",
         "description": "Native helper disconnected status."
     },
     "native_host_status_read_failed": {
-        "message": "The native helper could not read a configured file.",
+        "message": "Kode Injector Helper could not read a configured file.",
         "description": "Native helper read failure status."
     },
-    "native_host_download": {
-        "message": "Download native host",
-        "description": "Button opening native helper installation instructions."
-    },
     "native_host_install_instructions": {
-        "message": "Download and install the package for your operating system, then return here and check again.",
+        "message": "Download and install Kode Injector Helper for your operating system, then return here and check again.",
         "description": "Native helper installation guidance."
     },
     "native_host_check_again": {
@@ -168,8 +164,44 @@
         "description": "Button rechecking native helper status."
     },
     "popup_native_host_unavailable": {
-        "message": "Local file injection needs the Kode Injector Native Host. Open settings for installation or recovery instructions.",
+        "message": "Local file injection needs Kode Injector Helper. Open settings for installation or recovery instructions.",
         "description": "Compact popup warning when the native helper is unavailable."
+    },
+    "native_helper_download_or_update": {
+        "message": "Download or update Kode Injector Helper",
+        "description": "Action that downloads the matching Kode Injector Helper package."
+    },
+    "native_helper_view_all_downloads": {
+        "message": "View all downloads",
+        "description": "Action that opens all available Kode Injector Helper downloads."
+    },
+    "native_helper_download_unsupported": {
+        "message": "A download could not be selected automatically for this system. Choose one from all downloads.",
+        "description": "Guidance shown when the current operating system or architecture has no direct download mapping."
+    },
+    "native_helper_target_macos_apple_silicon": {
+        "message": "Kode Injector Helper for macOS (Apple silicon)",
+        "description": "Label for the Apple silicon macOS helper package."
+    },
+    "native_helper_target_macos_intel": {
+        "message": "Kode Injector Helper for macOS (Intel)",
+        "description": "Label for the Intel macOS helper package."
+    },
+    "native_helper_target_windows_arm64": {
+        "message": "Kode Injector Helper for Windows (ARM64)",
+        "description": "Label for the ARM64 Windows helper package."
+    },
+    "native_helper_target_windows_x86_64": {
+        "message": "Kode Injector Helper for Windows (x86-64)",
+        "description": "Label for the x86-64 Windows helper package."
+    },
+    "native_helper_target_linux_arm64": {
+        "message": "Kode Injector Helper for Linux (ARM64)",
+        "description": "Label for the ARM64 Linux helper package."
+    },
+    "native_helper_target_linux_x86_64": {
+        "message": "Kode Injector Helper for Linux (x86-64)",
+        "description": "Label for the x86-64 Linux helper package."
     },
     "file_access_disabled": {
         "message": "Local file access is disabled",

@@ -57,10 +57,11 @@ test('official actions are pinned to immutable commits', () => {
     });
 });
 
-test('continuous integration validates extensions and the native host', () => {
+test('continuous integration validates extensions, Go, and the macOS helper', () => {
     const workflow = readWorkflow('ci.yml');
     const extensionJob = getJob(workflow, 'extension');
     const nativeJob = getJob(workflow, 'native');
+    const macOSHelperJob = getJob(workflow, 'macos-helper');
 
     expect(workflow).toContain('push:');
     expect(workflow).toContain('branches: [master]');
@@ -82,6 +83,14 @@ test('continuous integration validates extensions and the native host', () => {
     );
     expect(nativeJob).toContain("go-version: '1.26.x'");
     expect(nativeJob).toContain('go test -race ./...');
+    expect(macOSHelperJob).toContain('name: Test macOS helper');
+    expect(macOSHelperJob).toContain('runs-on: macos-latest');
+    expect(macOSHelperJob).toContain('contents: read');
+    expect(macOSHelperJob).toContain("node-version: '24'");
+    expect(macOSHelperJob).toContain("go-version: '1.26.x'");
+    expect(macOSHelperJob).toContain('pnpm install --frozen-lockfile');
+    expect(macOSHelperJob).toContain('pnpm native:macos:validate');
+    expect(macOSHelperJob).not.toContain('APPLE_');
     expect(workflow).not.toContain('pnpm/action-setup');
 });
 
@@ -120,15 +129,22 @@ test('release candidates use isolated Apple credentials and are retained', () =>
     expect(job).toContain('security import');
     expect(job).toContain('pnpm native:package');
     expect(job).toContain('scripts/native-host/notarize.sh');
-    expect(job).toContain('for arch in amd64 arm64; do');
-    expect(job).toContain('darwin-$arch.dmg');
+    expect(job).toContain('package.ts --list-macos-artifacts');
+    expect(job).toContain('package.ts --list-artifacts');
     expect(job).not.toContain('darwin-universal');
-    expect(job).toContain('shasum -a 256 kode-injector-native-* > SHA256SUMS');
+    expect(job).toContain('syspolicy_check distribution');
+    expect(job).toContain('spctl --assess --type execute');
+    expect(job).toContain('spctl --assess --type open');
+    expect(job).toContain('xcrun stapler validate');
+    expect(job.indexOf('SHA256SUMS')).toBeGreaterThan(job.lastIndexOf('stapler'));
+    expect(job).toContain('shasum -a 256');
+    expect(job).not.toMatch(/kode-injector-(?:helper|native)-[^$\s"']+\.(?:dmg|zip|gz)/u);
     expect(job).toContain('shasum -a 256 -c SHA256SUMS');
     expect(job).toContain(
         'actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1',
     );
     expect(job).toContain('retention-days: 30');
+    expect(job).toContain('name: kode-injector-helper-${{ needs.validate-release.outputs.version }}');
     expect(job).toContain('if: always()');
     expect(job).toContain('security delete-keychain');
     expect(job).toContain('APPLE_NOTARY_KEY_PATH:-$RUNNER_TEMP/kode-injector-notary-key.p8');
