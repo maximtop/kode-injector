@@ -14,8 +14,13 @@ func DefaultPaths() (Paths, error) {
 	}
 	productRoot := filepath.Join(home, "Library", "Application Support", "Kode Injector Native Host")
 	return Paths{
-		ProductRoot:     productRoot,
-		HostExecutable:  filepath.Join(productRoot, "kode-injector-native"),
+		UserRoot:       home,
+		ProductRoot:    productRoot,
+		HostExecutable: filepath.Join(productRoot, "kode-injector-native"),
+		ManagedApplicationRoots: []string{
+			"/Applications",
+			filepath.Join(home, "Applications"),
+		},
 		FirefoxManifest: filepath.Join(home, "Library", "Application Support", "Mozilla", "NativeMessagingHosts", ManifestFileName),
 		ChromeManifest:  filepath.Join(home, "Library", "Application Support", "Google", "Chrome", "NativeMessagingHosts", ManifestFileName),
 		EdgeManifest:    filepath.Join(home, "Library", "Application Support", "Microsoft Edge", "NativeMessagingHosts", ManifestFileName),

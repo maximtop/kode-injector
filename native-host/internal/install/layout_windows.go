@@ -22,6 +22,7 @@ func DefaultPaths() (Paths, error) {
 	}
 	productRoot := filepath.Join(localAppData, "Kode Injector Native Host")
 	return Paths{
+		UserRoot:        localAppData,
 		ProductRoot:     productRoot,
 		HostExecutable:  filepath.Join(productRoot, "kode-injector-native.exe"),
 		FirefoxManifest: filepath.Join(productRoot, "firefox-"+ManifestFileName),

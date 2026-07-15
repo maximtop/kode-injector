@@ -154,8 +154,22 @@ between the selected methods.
   browser profiles.
 - Never expose Apple signing identities, notarization profiles, release tokens,
   or other credentials in source files or logs.
-- Run `(cd native-host && go test -race ./...)`, `pnpm native:validate`, and
-  `pnpm validate` after native-host changes.
+- The managed macOS manifests must point directly to the signed host inside
+  `Kode Injector Helper.app/Contents/Helpers/`. Never add a second hidden host
+  copy, daemon, login item, privileged helper, auto-updater, or profile scan.
+- The graphical app may invoke only its fixed bundle-relative installer with
+  the closed `status`, `install`, and `uninstall` actions. Never pass
+  user-controlled paths or arguments, invoke a shell, or inherit an unsafe
+  process environment.
+- Keep platform, architecture, lifecycle, action, and error domains as closed
+  enums/constants. Do not repeat magic platform strings or release asset names.
+- Sign nested helpers before the outer app without `codesign --deep`. Notarize,
+  staple, and validate the app before creating and separately notarizing the
+  DMG. Recreate checksums only after final stapling.
+- Run `(cd native-host && go test -race ./...)`,
+  `swift test --package-path native-host/macos-helper`,
+  `pnpm native:macos:validate`, `pnpm native:validate`, and `pnpm validate`
+  after native-host lifecycle or packaging changes.
 
 ## Testing
 

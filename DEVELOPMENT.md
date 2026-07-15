@@ -8,6 +8,8 @@ extension, and contribute to the project.
 - [Node.js 24 LTS](https://nodejs.org/)
 - [pnpm](https://pnpm.io/) package manager
 - [Go 1.26](https://go.dev/) for the native host
+- Xcode 16 or newer, including the Swift 6 toolchain and command-line tools,
+  for the macOS helper application and disk images
 
 ## Getting started
 
@@ -123,12 +125,24 @@ To test Native Host as an optional Chromium method, choose **Native Host** in
 Options and accept the browser's permission request. Chrome and Edge show their
 unpacked IDs on their extension-management pages. Copy
 `native-host/dev-extension-ids.example.json` to the gitignored
-`native-host/dev-extension-ids.json`, enter those IDs, and open the packaged
-native installer application in development mode. It prints the exact
+`native-host/dev-extension-ids.json`, enter those IDs, and run the packaged
+installer's contributor-only command. On macOS, after copying the app to
+Applications, run it explicitly from the repository root:
+
+```sh
+"/Applications/Kode Injector Helper.app/Contents/Helpers/kode-injector-installer" \
+  development \
+  --ids native-host/dev-extension-ids.json \
+  --confirm
+```
+
+Linux and Windows contributors use the equivalent installer executable from
+their extracted platform package. The command prints the exact
 `chrome-extension://<id>/` origins and requires confirmation before updating
-the development registrations. If an unpacked ID changes, update the local
-file and repeat that native-app flow. There are intentionally no Makefile
-install or verification shortcuts.
+development registrations. If an unpacked ID changes, update the local file
+and repeat the command. This copy-based development path is intentionally
+separate from the end-user app lifecycle; there are no end-user changing-ID
+controls, profile scanning, wildcard origins, or Makefile install shortcuts.
 
 Switching back to **Browser file access** removes the optional Chromium
 `nativeMessaging` permission. Permission requests must originate from the
@@ -240,23 +254,68 @@ logical UTF-8 files are limited to 5 MiB and use 512 KiB raw chunks.
 Per-user manifests are installed in each browser's documented
 `NativeMessagingHosts` location. Windows uses the Mozilla, Google Chrome, and
 Microsoft Edge HKCU registry keys. macOS and Linux use browser-specific manifest
-directories. Every manifest points to the same executable.
+directories. In the managed macOS flow, every manifest points directly to the
+signed host at `Kode Injector Helper.app/Contents/Helpers/kode-injector-native`;
+the application never creates a second hidden executable copy. The legacy
+copy-install code remains only for Linux, Windows, and the explicit unpacked-ID
+contributor flow.
 
 Firefox declares `nativeMessaging` as a required permission. Chrome and Edge
 declare it in `optional_permissions`; existing Chromium users remain on browser
 file access unless they explicitly choose Native Host in Options. This avoids a
 new required-permission prompt or upgrade disablement for those users.
 
-`pnpm native:package` produces separate `darwin-amd64.dmg` and
-`darwin-arm64.dmg` packages for Intel and Apple Silicon Macs, Linux
-x86-64/ARM64 tarballs, Windows x86-64/ARM64 ZIPs, and `SHA256SUMS` under
-`build/native/<version>/`. Each macOS DMG contains only its matching
-architecture and is signed and notarized independently. The production Chrome
-origin is always the Chrome Web Store ID
+`pnpm native:package` produces these stable, separate release assets under
+`build/native/<version>/`:
+
+- `kode-injector-helper-macos-intel.dmg`
+- `kode-injector-helper-macos-apple-silicon.dmg`
+- `kode-injector-native-linux-x86-64.tar.gz`
+- `kode-injector-native-linux-arm64.tar.gz`
+- `kode-injector-native-windows-x86-64.zip`
+- `kode-injector-native-windows-arm64.zip`
+- `SHA256SUMS`
+
+Options constructs a version-matched public URL of the form
+`https://github.com/maximtop/kode-injector/releases/download/v<version>/<asset>`
+from `runtime.getManifest().version` and `runtime.getPlatformInfo()`. It never
+uses a moving latest-release alias, guesses an unsupported target, or calls the GitHub API;
+unknown values fall back to the complete Releases page. Consequently the draft
+must be manually published before these end-user links become available.
+
+Each macOS disk image contains one architecture-specific `Kode Injector
+Helper.app` and an Applications symlink, with no root-level executable. The app
+has a normal Dock/Finder identity and this signed layout:
+
+```text
+Kode Injector Helper.app/
+  Contents/
+    Info.plist
+    MacOS/Kode Injector Helper
+    Resources/AppIcon.icns
+    Helpers/kode-injector-native
+    Helpers/kode-injector-installer
+```
+
+Run `pnpm native:macos:test` for the dependency-free Swift tests and
+`pnpm native:macos:validate` for Swift, Go, Info.plist, bundle-layout, and exact
+architecture checks. The production Chrome origin is always the Chrome Web
+Store ID
 `fgdehkdkmaiedleekbjpfoicpmodbicg`. `KODE_INJECTOR_EDGE_ID` is optional: when
 it is unset, production Chromium manifests contain only the Chrome origin. An
 unpacked Edge build remains available through the explicit
 development-registration flow described above; no wildcard origin is added.
+
+The end-user macOS lifecycle is deliberately graphical and per-user: drag the
+app to `/Applications`, or use Finder's **Go → Home** command, create the
+`Applications` folder if needed, and drag it to `~/Applications` without an
+administrator password. Open the installed copy and use **Install**,
+**Repair/Reinstall**, or confirmed **Uninstall**. Reopening the app from Finder,
+Spotlight, or Launchpad shows the current host path and all three registration
+states. After Uninstall removes only Kode Injector registrations, the user moves
+the app to Trash. The app has no daemon, login item, privileged helper,
+automatic updater, network client, shell invocation, or arbitrary command
+arguments.
 
 ### GitHub Actions validation
 
@@ -265,7 +324,16 @@ the extension with Node.js 24 and pnpm, builds every browser release artifact,
 and runs the Go 1.26 native-host suite with the race detector. CI has read-only
 repository permissions and never publishes a release.
 
-The `Native host release` workflow uses a GitHub-hosted macOS runner. Configure
+The `Native host release` workflow uses a GitHub-hosted macOS runner. It signs
+the two nested helpers inside-out and then signs the outer app; signing commands
+must not use `--deep`. Each architecture is notarized twice: first a ZIP of the
+app is submitted, accepted, stapled, and validated, then the disk image is
+rebuilt around that stapled app, signed, submitted, stapled, and validated.
+Final checks use `codesign`, `stapler`, `syspolicy_check distribution`,
+`spctl --type execute` for the mounted app, and `spctl --type open` for the DMG.
+`SHA256SUMS` is regenerated only after the final stapling operation.
+
+Configure
 these sensitive repository secrets:
 
 - `APPLE_CERTIFICATE_P12_BASE64`
@@ -295,7 +363,7 @@ Before creating a tag, run the signing preflight:
 2. Wait for validation, packaging, signing, notarization, stapling, and checksum
    verification to complete.
 3. Download and inspect the retained
-   `kode-injector-native-<version>` workflow artifact. It expires after 30 days.
+   `kode-injector-helper-<version>` workflow artifact. It expires after 30 days.
    A manual run does not create a GitHub Release.
 
 To prepare a native-host release:
@@ -306,7 +374,11 @@ To prepare a native-host release:
 3. Wait for the workflow to verify the tag, rebuild and sign the packages, and
    create an unpublished [GitHub Draft Release](https://github.com/maximtop/kode-injector/releases).
 4. Download the draft assets and inspect the platform archives, both notarized
-   macOS DMGs, and `SHA256SUMS`.
+   macOS DMGs, both independently stapled apps, and `SHA256SUMS`. For the final
+   manual Gatekeeper gate, download each DMG through a browser on a clean test
+   account, verify quarantine is present, launch the app from the mounted image
+   and Applications without bypassing Gatekeeper, test Install/Repair/Uninstall,
+   and repeat once without network access to confirm the stapled tickets work.
 5. If the candidate is correct, click **Publish release** in the GitHub UI.
 
 The workflow refuses a tag that does not match `package.json`, does not point to

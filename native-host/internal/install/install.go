@@ -32,11 +32,13 @@ type DevelopmentIDs struct {
 }
 
 type Paths struct {
-	ProductRoot     string
-	HostExecutable  string
-	FirefoxManifest string
-	ChromeManifest  string
-	EdgeManifest    string
+	UserRoot                string
+	ProductRoot             string
+	HostExecutable          string
+	ManagedApplicationRoots []string
+	FirefoxManifest         string
+	ChromeManifest          string
+	EdgeManifest            string
 }
 
 type Config struct {

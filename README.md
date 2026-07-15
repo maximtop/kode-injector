@@ -45,15 +45,58 @@ browser's built-in local-file access by default, so they do not require a
 separate application. Open the extension's details in the browser and enable
 **Allow access to file URLs** when the warning appears in Kode Injector.
 
-Firefox reads local files through the separately installed
-[Kode Injector Native Host](https://github.com/maximtop/kode-injector/releases).
-Chrome and Edge can use the same read-only helper as an optional alternative;
-select **Native Host** in Kode Injector settings to request the browser
-permission and switch methods. Platform packages appear on the releases page
-after the maintainer verifies and publishes a draft release. Apple Silicon Mac
-users download `darwin-arm64.dmg`; Intel Mac users download
-`darwin-amd64.dmg`. Each operating-system and architecture package is a
-separate release asset, so users do not need to download the other builds.
+Firefox reads local files through the separately installed **Kode Injector
+Helper**. Chrome and Edge can use the same read-only helper as an optional
+alternative; select **Native Host** in Kode Injector settings to request the
+browser permission and switch methods.
+
+Options automatically links to the package for the installed extension version
+and the current operating system and architecture. **View all downloads** opens
+the complete [GitHub Releases page](https://github.com/maximtop/kode-injector/releases)
+when automatic selection is unavailable. Each platform build is a separate
+asset; users never need to download a bundle containing other systems.
+
+On macOS:
+
+1. Download `kode-injector-helper-macos-apple-silicon.dmg` on an Apple Silicon
+   Mac or `kode-injector-helper-macos-intel.dmg` on an Intel Mac.
+2. Open the disk image and drag **Kode Injector Helper** to **Applications**.
+   If you cannot write to the system Applications folder, choose **Go → Home**
+   in Finder, create an `Applications` folder there if needed, and drag the app
+   into that folder instead. This per-user location needs no administrator
+   password.
+3. Open **Kode Injector Helper** from Applications, Spotlight, or Launchpad and
+   click **Install**. No Terminal or administrator password is required.
+4. Return to Kode Injector Options and click **Check again**.
+
+The application remains in the system or Home Applications folder so it is easy
+to find later. Reopen it to inspect browser registration status, repair or
+reinstall registrations, or
+uninstall them. To remove it completely, click **Uninstall** in the application
+first, then move **Kode Injector Helper** from its Applications folder to Trash.
+The helper does not install a daemon, login item, automatic updater, or hidden
+executable copy.
+
+On Linux, extract the package for your architecture and run these commands from
+the extracted directory:
+
+```sh
+./kode-injector-installer install
+./kode-injector-installer uninstall
+```
+
+On Windows, extract the package for your architecture and run these commands in
+PowerShell from the extracted directory:
+
+```powershell
+.\kode-injector-installer.exe install
+.\kode-injector-installer.exe uninstall
+```
+
+Both installers operate only for the current user and require no administrator
+or root access. Keep the installer and `kode-injector-native` executable
+together when installing. The archive's `README.txt` contains the same commands
+and the unpacked-extension development flow.
 
 ### Install from source
 
@@ -71,8 +114,8 @@ To run the latest development build from source:
 For Firefox, open `about:debugging`, select **This Firefox**, click
 **Load Temporary Add-on**, and select `build/dev/firefox/manifest.json`.
 
-Install the native host package for your operating system before testing
-Firefox. To test the optional Native Host method with unpacked Chrome or Edge,
+Install Kode Injector Helper for your operating system before testing Firefox.
+To test the optional Native Host method with unpacked Chrome or Edge,
 copy the displayed extension IDs into `native-host/dev-extension-ids.json`
 using the committed example, then run the packaged installer's explicit
 development-registration flow. Review the printed origins before confirming
@@ -117,8 +160,8 @@ Native Host is optional in these browsers. Choosing it in Options requests the
 optional `nativeMessaging` permission; declining the request leaves browser
 file access selected.
 
-Firefox always uses the Native Host because extension pages cannot directly
-load arbitrary local files. The host is read-only and uses the same configured
+Firefox always uses Kode Injector Helper because extension pages cannot
+directly load arbitrary local files. The host is read-only and uses the same configured
 `file:///` paths; no rule migration is needed when changing methods in Chrome
 or Edge.
 
@@ -186,16 +229,18 @@ add a rule for this site.
 Ensure the path is a valid `file:///` URL and that the file exists at that
 location. In Chrome or Edge browser-file mode, open the extension's browser
 settings, enable **Allow access to file URLs**, then use **Check again** in
-Options. In Firefox or Native Host mode, install or update the Kode Injector
-Native Host and check again. The helper only reads explicitly requested local
+Options. In Firefox or Native Host mode, install or update **Kode Injector
+Helper** and check again. The helper only reads explicitly requested local
 regular files up to 5 MiB. It cannot write files, execute programs, list
 directories, or access the network.
 
-Native-host updates are manual. Download the current package from the
-[GitHub Releases page](https://github.com/maximtop/kode-injector/releases)
-and run its installer again. The packaged uninstaller removes the executable
-and Kode Injector browser registrations without touching extension rules or
-settings.
+Helper updates are manual. Options links to the package matching the installed
+extension; copy the newer **Kode Injector Helper** to Applications, open it,
+and choose **Reinstall** or **Repair**. To uninstall, find **Kode Injector
+Helper** in the system or Home Applications folder, Spotlight, or Launchpad,
+open it, click **Uninstall**,
+then move the app to Trash. This removes Kode Injector browser registrations
+without touching extension rules or settings.
 
 **Should I use Native Host in Chrome or Edge?**
 

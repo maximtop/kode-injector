@@ -14,6 +14,7 @@ func DefaultPaths() (Paths, error) {
 	}
 	productRoot := filepath.Join(home, ".local", "share", "kode-injector-native-host")
 	return Paths{
+		UserRoot:        home,
 		ProductRoot:     productRoot,
 		HostExecutable:  filepath.Join(productRoot, "kode-injector-native"),
 		FirefoxManifest: filepath.Join(home, ".mozilla", "native-messaging-hosts", ManifestFileName),

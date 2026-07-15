@@ -4,3 +4,5 @@ deploy.sh
 .env
 .sdd/
 /native-host/dev-extension-ids.json
+/native-host/macos-helper/.build/
+/native-host/macos-helper/.swiftpm/

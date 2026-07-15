@@ -8,25 +8,31 @@ import React from 'react';
 import { Alert, Button } from 'antd';
 
 import type { NativeHostAccessState } from './contracts';
+import type { NativeHostDownload } from './native-host-download';
 import { NativeHostStatus } from './native-host-protocol';
+import { NativeHostDownloadActions } from './NativeHostDownloadActions';
 import { translator } from './translator';
 
 interface LocalSourceAccessWarningProps {
     state: NativeHostAccessState;
     compact: boolean;
     disabled: boolean;
+    download: NativeHostDownload | undefined;
     onCheckAgain: (() => void | Promise<void>) | undefined;
     onDownload: (() => void | Promise<void>) | undefined;
     onRequestPermission: (() => void | Promise<void>) | undefined;
+    onViewAllDownloads: (() => void | Promise<void>) | undefined;
 }
 
 export const LocalSourceAccessWarning = ({
     state,
     compact,
     disabled,
+    download,
     onCheckAgain,
     onDownload,
     onRequestPermission,
+    onViewAllDownloads,
 }: LocalSourceAccessWarningProps): JSX.Element | null => {
     const statusMessages: Record<NativeHostStatus, string> = {
         [NativeHostStatus.Checking]: translator.getMessage('native_host_status_checking'),
@@ -37,6 +43,15 @@ export const LocalSourceAccessWarning = ({
         [NativeHostStatus.ReadFailed]: translator.getMessage('native_host_status_read_failed'),
     };
     const { host } = state;
+    const downloadIsPrimary = state.permissionGranted
+        && (host.status === NativeHostStatus.NotInstalled
+            || host.status === NativeHostStatus.UpdateRequired);
+    const checkAgainIsPrimary = state.permissionGranted
+        && (host.status === NativeHostStatus.Disconnected
+            || host.status === NativeHostStatus.ReadFailed);
+    const showInstallInstructions = host.status === NativeHostStatus.NotInstalled
+        || host.status === NativeHostStatus.UpdateRequired
+        || host.status === NativeHostStatus.Disconnected;
     if (state.permissionGranted && host.status === NativeHostStatus.Ready) {
         return null;
     }
@@ -85,7 +100,11 @@ export const LocalSourceAccessWarning = ({
                                     </span>
                                 )}
                             </div>
-                            <div>{translator.getMessage('native_host_install_instructions')}</div>
+                            {showInstallInstructions && (
+                                <div>
+                                    {translator.getMessage('native_host_install_instructions')}
+                                </div>
+                            )}
                         </>
                     )}
                     <div className="local-source-access-warning-actions">
@@ -99,19 +118,19 @@ export const LocalSourceAccessWarning = ({
                                 {translator.getMessage('native_host_enable_permission')}
                             </Button>
                         )}
-                        {state.permissionGranted && onDownload && (
-                            <Button
-                                size="small"
-                                type="primary"
+                        {download && (
+                            <NativeHostDownloadActions
+                                download={download}
                                 disabled={disabled}
-                                onClick={() => { onDownload(); }}
-                            >
-                                {translator.getMessage('native_host_download')}
-                            </Button>
+                                primary={downloadIsPrimary}
+                                onDownload={onDownload}
+                                onViewAllDownloads={onViewAllDownloads}
+                            />
                         )}
                         {onCheckAgain && (
                             <Button
                                 size="small"
+                                type={checkAgainIsPrimary ? 'primary' : 'default'}
                                 disabled={disabled}
                                 onClick={() => { onCheckAgain(); }}
                             >
