@@ -57,6 +57,19 @@ test('official actions are pinned to immutable commits', () => {
     });
 });
 
+test('every setup-go action caches the native-host dependencies', () => {
+    ['ci.yml', 'release.yml'].forEach((workflowName) => {
+        const workflow = readWorkflow(workflowName);
+        const setupGoCount = workflow.match(/uses: actions\/setup-go@/gu)?.length ?? 0;
+        const dependencyPathCount = workflow.match(
+            /cache-dependency-path: native-host\/go\.sum/gu,
+        )?.length ?? 0;
+
+        expect(setupGoCount, workflowName).toBeGreaterThan(0);
+        expect(dependencyPathCount, workflowName).toBe(setupGoCount);
+    });
+});
+
 test('continuous integration validates extensions, Go, and the macOS helper', () => {
     const workflow = readWorkflow('ci.yml');
     const extensionJob = getJob(workflow, 'extension');
