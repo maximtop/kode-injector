@@ -5,8 +5,7 @@
 > pages.
 
 <p align="center">
-  <!-- TODO: add screenshot -->
-  <img src="assets/screenshot.png" alt="Kode Injector screenshot" width="600">
+  <img src="assets/screenshot.png" alt="Kode Injector options page using Native Host" width="600">
 </p>
 
 ## Description
