@@ -243,7 +243,10 @@ The `Makefile` exposes additional targets:
 1. Bump the `version` field in `package.json`.
 2. Run `make build` to produce the browser directories and ZIPs under
    `build/release/`.
-3. Run `make chrome_update` to publish to the Chrome Web Store.
+3. Push the matching version tag to create a GitHub Draft Release containing
+   the same store-ready `chrome.zip`, `edge.zip`, and `firefox.zip` artifacts.
+4. After checking the draft assets, upload the appropriate ZIP to each browser
+   store. Store submission remains manual until the item in `TODO.md` is done.
 
 ## Native host development and releases
 
@@ -327,14 +330,17 @@ the extension with Node.js 24 and pnpm, builds every browser release artifact,
 and runs the Go 1.26 native-host suite with the race detector. CI has read-only
 repository permissions and never publishes a release.
 
-The `Native host release` workflow uses a GitHub-hosted macOS runner. It signs
-the two nested helpers inside-out and then signs the outer app; signing commands
-must not use `--deep`. Each architecture is notarized twice: first a ZIP of the
-app is submitted, accepted, stapled, and validated, then the disk image is
-rebuilt around that stapled app, signed, submitted, stapled, and validated.
-Final checks use `codesign`, `stapler`, `syspolicy_check distribution`,
-`spctl --type execute` for the mounted app, and `spctl --type open` for the DMG.
-`SHA256SUMS` is regenerated only after the final stapling operation.
+The `Release` workflow builds `chrome.zip`, `edge.zip`, and `firefox.zip` on a
+GitHub-hosted Linux runner and retains them as store-ready artifacts. A separate
+GitHub-hosted macOS runner signs the two nested helpers inside-out and then
+signs the outer app; signing commands must not use `--deep`. Each architecture
+is notarized twice: first a ZIP of the app is submitted, accepted, stapled, and
+validated, then the disk image is rebuilt around that stapled app, signed,
+submitted, stapled, and validated. Final checks use `codesign`, `stapler`,
+`syspolicy_check distribution`, `spctl --type execute` for the mounted app, and
+`spctl --type open` for the DMG. `SHA256SUMS` is regenerated after final
+stapling and extended with the three browser-extension archives before the
+draft release is created.
 
 Configure
 these sensitive repository secrets:
@@ -362,25 +368,26 @@ configured.
 
 Before creating a tag, run the signing preflight:
 
-1. Open **Actions** → **Native host release** and choose **Run workflow**.
+1. Open **Actions** → **Release** and choose **Run workflow**.
 2. Wait for validation, packaging, signing, notarization, stapling, and checksum
    verification to complete.
-3. Download and inspect the retained
-   `kode-injector-helper-<version>` workflow artifact. It expires after 30 days.
-   A manual run does not create a GitHub Release.
+3. Download and inspect the retained `kode-injector-helper-<version>` and
+   `kode-injector-extensions-<version>` workflow artifacts. They expire after
+   30 days. A manual run does not create a GitHub Release.
 
-To prepare a native-host release:
+To prepare a release:
 
 1. Set `package.json` to the intended semantic version and merge the change to
    `master`.
 2. Create a matching tag, such as `v0.9.0`, on that `master` commit and push it.
 3. Wait for the workflow to verify the tag, rebuild and sign the packages, and
    create an unpublished [GitHub Draft Release](https://github.com/maximtop/kode-injector/releases).
-4. Download the draft assets and inspect the platform archives, both notarized
-   macOS DMGs, both independently stapled apps, and `SHA256SUMS`. For the final
-   manual Gatekeeper gate, download each DMG through a browser on a clean test
-   account, verify quarantine is present, launch the app from the mounted image
-   and Applications without bypassing Gatekeeper, test Install/Repair/Uninstall,
+4. Download the draft assets and inspect `chrome.zip`, `edge.zip`,
+   `firefox.zip`, the native platform archives, both notarized macOS DMGs, both
+   independently stapled apps, and `SHA256SUMS`. For the final manual
+   Gatekeeper gate, download each DMG through a browser on a clean test account,
+   verify quarantine is present, launch the app from the mounted image and
+   Applications without bypassing Gatekeeper, test Install/Repair/Uninstall,
    and repeat once without network access to confirm the stapled tickets work.
 5. If the candidate is correct, click **Publish release** in the GitHub UI.
 
