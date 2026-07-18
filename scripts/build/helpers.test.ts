@@ -2,12 +2,9 @@
  * @file
  */
 
-import fs from 'node:fs';
-import path from 'node:path';
 import { expect, test } from 'vitest';
 
 import { BROWSER_TARGETS, CHANNEL_ENVS } from '../constants';
-import { AVAILABLE_LOCALES } from '../../src/app/common/locale/locale-constants';
 import { updateLocalesMSGName, updateManifest } from './helpers';
 
 test('updateManifest applies the package version', () => {
@@ -93,27 +90,6 @@ test('updateManifest creates the Firefox background and signing metadata', () =>
     });
 });
 
-test('source manifest keeps required permissions stable across browser transforms', () => {
-    const source = fs.readFileSync(
-        path.join(process.cwd(), 'src/manifest.json'),
-        'utf8',
-    );
-    const requiredPermissions = ['storage', 'scripting', 'activeTab'];
-
-    for (const browser of [BROWSER_TARGETS.CHROME, BROWSER_TARGETS.EDGE]) {
-        const manifest = JSON.parse(updateManifest(source, { browser, version: '1.2.3' }));
-        expect(manifest.permissions, browser).toEqual(requiredPermissions);
-        expect(manifest.optional_permissions, browser).toEqual(['nativeMessaging']);
-    }
-
-    const firefox = JSON.parse(updateManifest(source, {
-        browser: BROWSER_TARGETS.FIREFOX,
-        version: '1.2.3',
-    }));
-    expect(firefox.permissions).toEqual([...requiredPermissions, 'nativeMessaging']);
-    expect(firefox.optional_permissions).toBeUndefined();
-});
-
 test('updateLocalesMSGName marks development builds', () => {
     const result = JSON.parse(updateLocalesMSGName(
         '{"name":{"message":"Kode Injector"}}',
@@ -130,21 +106,4 @@ test('updateLocalesMSGName leaves production names unchanged', () => {
     ));
 
     expect(result.name.message).toBe('Kode Injector');
-});
-
-test('locale build transforms cover every packaged catalog', () => {
-    for (const locale of AVAILABLE_LOCALES) {
-        const filePath = path.join(process.cwd(), 'src/_locales', locale, 'messages.json');
-        const source = fs.readFileSync(filePath, 'utf8');
-        const sourceName = JSON.parse(source).name.message as string;
-        const devName = JSON.parse(
-            updateLocalesMSGName(source, CHANNEL_ENVS.DEV),
-        ).name.message as string;
-        const prodName = JSON.parse(
-            updateLocalesMSGName(source, CHANNEL_ENVS.RELEASE),
-        ).name.message as string;
-
-        expect(devName, locale).toBe(`${sourceName} (Dev)`);
-        expect(prodName, locale).toBe(sourceName);
-    }
 });

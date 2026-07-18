@@ -45,17 +45,6 @@ afterEach(() => {
     });
 });
 
-test('native package matrix covers every supported target', () => {
-    expect(NATIVE_TARGETS.map((target) => `${target.os}/${target.arch}`).sort()).toEqual([
-        'darwin/amd64',
-        'darwin/arm64',
-        'linux/amd64',
-        'linux/arm64',
-        'windows/amd64',
-        'windows/arm64',
-    ]);
-});
-
 test('release asset names come from the shared catalog and are human readable', () => {
     expect([...getNativeArtifactNames()].sort()).toEqual(
         NATIVE_HOST_PUBLISHED_ASSETS.map((asset) => asset.name).sort(),
@@ -145,7 +134,6 @@ test('macOS app assembly exposes only the branded app and Applications link', ()
 test('installer embeds the production Chrome ID without requiring Edge', () => {
     const flags = getInstallerLdflags(undefined, '0.8.2');
 
-    expect(PRODUCTION_CHROME_EXTENSION_ID).toBe('fgdehkdkmaiedleekbjpfoicpmodbicg');
     expect(flags).toContain(
         `-X=main.defaultChromeID=${PRODUCTION_CHROME_EXTENSION_ID}`,
     );

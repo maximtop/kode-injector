@@ -179,24 +179,40 @@ Build helper tests run with `pnpm test:build`. Extension behavior is verified
 with headless Playwright smoke tests that load the unpacked extension and test
 target sites.
 
-### Headless extension smoke testing
+Tests must verify observable behavior. Do not mirror repository-owned source,
+workflow, manifest, locale, configuration, or exported constants in test
+expectations merely to pin their current contents. Parsing JSON/YAML or importing
+a constant does not make such an assertion behavioral. Exercise transformation
+logic with synthetic inputs, inspect artifacts actually produced by code, and
+use schemas or linters for externally defined formats. When meaningful execution
+is not practical, document a manual verification instead of testing that source
+text or duplicated literal values are present or ordered.
 
-Browser smoke and regression checks for this repository MUST run headlessly and
-must not open or expose a visible browser window. When Playwright is available,
-launch Chromium with the built extension loaded through both flags below:
+### Extension smoke testing
+
+Browser smoke and regression checks MUST run headlessly in CI and unattended
+automation. A headed run is allowed only for explicit local debugging. Configure
+the default once in `playwright.config.ts`; the custom fixture must consume the
+resolved Playwright project value rather than adding a separate Chromium
+headless flag. Launch Playwright's bundled Chromium with a newly created
+temporary `userDataDir` and the built extension:
 
 ```ts
-const browser = await chromium.launch({
-    headless: true,
+const { headless } = testInfo.project.use;
+const context = await chromium.launchPersistentContext(userDataDir, {
+    channel: 'chromium',
+    headless,
     args: [
-        '--headless=new',
+        '--disable-extensions-file-access-check',
         `--disable-extensions-except=${extensionPath}`,
         `--load-extension=${extensionPath}`,
     ],
 });
 ```
 
-Use `build/dev/chrome/` for localization and workflow smoke checks. Keep the browser
-context isolated, verify popup/options pages through their extension URLs, and
-close the browser after the run. Do not use headed mode, attach to a user's
-visible browser session, or leave test tabs open.
+Derive the extension ID from the MV3 service-worker URL and assert file access
+with `isAllowedFileSchemeAccess()` before testing. Teardown must close the
+context and remove the temporary profile. Use `build/dev/chrome/` for local
+workflow checks. A local headed run must still use the temporary profile and
+close all pages afterward. Never attach to a user's browser session, reuse a
+user profile, or leave test tabs open.

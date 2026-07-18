@@ -47,6 +47,8 @@ pnpm release   # release build for every browser
 pnpm lint      # run ESLint over source, scripts, and the Rspack config
 pnpm typecheck # validate TypeScript and TSX without emitting files
 pnpm test      # run build-helper and localization tests
+pnpm exec playwright install chromium # one-time local Chromium installation
+pnpm test:e2e  # build dev Chrome and run the headless core injection E2E
 pnpm locales:validate # validate all locale catalogs and UI usage
 pnpm validate  # run the complete local quality gate
 pnpm native:test # run Go unit and subprocess tests with race detection
@@ -149,6 +151,39 @@ from the compact popup warning shown when Helper is unavailable, removes the
 optional Chromium `nativeMessaging` permission. Permission requests must
 originate from the Advanced Options user action; background code must never
 request it automatically or silently fall back between methods.
+
+### Headless core injection E2E
+
+Install Playwright's bundled Chromium once, then run the self-contained test:
+
+```sh
+pnpm exec playwright install chromium
+pnpm test:e2e
+```
+
+The default is configured once as `DEFAULT_HEADLESS` in
+`tests/e2e/playwright.config.ts`. To watch the browser during local debugging,
+build first and use Playwright's standard override:
+
+```sh
+pnpm dev chrome
+pnpm test:e2e:run --headed
+```
+
+The test creates an isolated temporary profile, loads `build/dev/chrome`,
+enables file access only through Chromium's automation switch, adds one rule
+through the real Options UI, and verifies real local JavaScript and CSS on a
+matching loopback hostname. It also verifies that a second hostname is not
+modified. It never opens a visible window, uses an installed browser profile,
+or requires Kode Injector Helper.
+
+`pnpm test:e2e:run` skips the build and is intended for CI. Set
+`KODE_INJECTOR_E2E_EXTENSION_PATH=build/release/chrome` to test an existing
+release candidate. `pnpm validate` remains browser-independent; GitHub CI and
+the Release workflow install Chromium and run E2E explicitly.
+
+Firefox/Native Host, Edge-specific packaging, popup controls, localization,
+and target-page CSP behavior are outside this minimal scenario.
 
 ## Tech stack
 
@@ -326,9 +361,10 @@ arguments.
 ### GitHub Actions validation
 
 The `CI` workflow runs for pushes to `master` and pull requests. It validates
-the extension with Node.js 24 and pnpm, builds every browser release artifact,
-and runs the Go 1.26 native-host suite with the race detector. CI has read-only
-repository permissions and never publishes a release.
+the extension with Node.js 24 and pnpm, runs the headless core injection E2E,
+builds every browser release artifact, and runs the Go 1.26 native-host suite
+with the race detector. CI has read-only repository permissions and never
+publishes a release.
 
 The `Release` workflow builds `chrome.zip`, `edge.zip`, and `firefox.zip` on a
 GitHub-hosted Linux runner and retains them as store-ready artifacts. A separate

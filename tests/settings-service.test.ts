@@ -4,7 +4,7 @@
 
 import { expect, test, vi } from 'vitest';
 
-import { SETTINGS, STORAGE_KEYS } from '../src/app/common/constants';
+import { SETTINGS } from '../src/app/common/constants';
 import {
     SettingsService,
     type SettingsStorage,
@@ -410,8 +410,4 @@ test('setLocalSourceAccessMethod cannot select browser access on Firefox', async
     expect(
         storage.writes[storage.writes.length - 1]?.[SETTINGS.LOCAL_SOURCE_ACCESS_METHOD],
     ).toBe(LocalSourceAccessMethod.NativeHost);
-});
-
-test('settings expose the expected storage key', () => {
-    expect(STORAGE_KEYS.SETTINGS).toBe('settings');
 });
