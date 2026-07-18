@@ -278,8 +278,10 @@ expired.
 Configure these sensitive repository secrets:
 
 - `CHROME_CLIENT_ID` and `CHROME_CLIENT_SECRET` — the OAuth 2.0 client ID and
-  secret from the Credentials page of the Google Cloud Console project that
-  has the Chrome Web Store API enabled (mirrored from the local `.env`)
+  secret of a **Web application** client with
+  `https://developers.google.com/oauthplayground` as an authorized redirect
+  URI, created on the Credentials page of the Google Cloud Console project
+  that has the Chrome Web Store API enabled (mirrored from the local `.env`)
 - `CHROME_REFRESH_TOKEN`
 - `CHROME_PUBLISHER_ID` (shown on the Developer Dashboard account page)
 
@@ -290,11 +292,23 @@ Configure this repository variable:
 The Google Cloud OAuth consent screen backing these credentials must be in
 the "In production" status: refresh tokens issued while it is in "Testing"
 are revoked after seven days. An unused refresh token also expires after
-about six months; regenerate it with `make chrome_code` and
-`make chrome_refresh`, then update the `CHROME_REFRESH_TOKEN` secret.
+about six months. To obtain a new refresh token, run `make chrome_code` — it
+opens the Google OAuth Playground; plug in your own client credentials,
+authorize the `chromewebstore` scope, exchange the code for tokens, and copy
+the issued `refresh_token` into `.env`. Verify it with `make chrome_refresh`,
+then update the `CHROME_REFRESH_TOKEN` secret. If the store API answers
+`deleted_client`, the OAuth client itself was removed: create a new Web
+application client (redirect URI
+`https://developers.google.com/oauthplayground`), update
+`CHROME_CLIENT_ID`/`CHROME_CLIENT_SECRET` locally and in the GitHub secrets,
+and issue a fresh refresh token.
 
 Failure playbook:
 
+- **Authentication failure (`deleted_client`, `invalid_grant`, 401)**: the
+  OAuth client or refresh token is dead. Recreate the credentials per the
+  runbook above, update the GitHub secrets, and re-run the workflow —
+  nothing was uploaded to the store.
 - **Upload stuck `IN_PROGRESS` or a previous submission still in review**:
   the run fails without submitting anything. Re-run it after the store
   settles — re-uploading the same version replaces the unsubmitted draft.
@@ -314,8 +328,8 @@ The local fallback uses the `Makefile` targets below and the local
 | --- | --- |
 | `make chrome_status` | Check the status of the Chrome Web Store item |
 | `make chrome_update` | Upload a new build to the Chrome Web Store |
-| `make chrome_code` | Obtain the OAuth authorization code |
-| `make chrome_refresh` | Exchange the code for a refresh token |
+| `make chrome_code` | Open the OAuth Playground to obtain a new refresh token |
+| `make chrome_refresh` | Verify the refresh token by exchanging it for an access token |
 
 ## Releases
 
