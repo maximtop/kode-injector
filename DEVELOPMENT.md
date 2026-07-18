@@ -292,11 +292,21 @@ Configure this repository variable:
 The Google Cloud OAuth consent screen backing these credentials must be in
 the "In production" status: refresh tokens issued while it is in "Testing"
 are revoked after seven days. An unused refresh token also expires after
-about six months. To obtain a new refresh token, run `make chrome_code` — it
-opens the Google OAuth Playground; plug in your own client credentials,
-authorize the `chromewebstore` scope, exchange the code for tokens, and copy
-the issued `refresh_token` into `.env`. Verify it with `make chrome_refresh`,
-then update the `CHROME_REFRESH_TOKEN` secret. If the store API answers
+about six months. To obtain a new refresh token, open the
+[Google OAuth Playground](https://developers.google.com/oauthplayground/),
+enable "Use your own OAuth credentials" (gear icon) with the client ID and
+secret, authorize the `https://www.googleapis.com/auth/chromewebstore`
+scope, exchange the authorization code for tokens, and copy the issued
+`refresh_token` into `.env`. Verify the credentials by exchanging the
+refresh token for an access token:
+
+```sh
+source .env
+curl -s "https://oauth2.googleapis.com/token" -d \
+  "client_id=$CHROME_CLIENT_ID&client_secret=$CHROME_CLIENT_SECRET&grant_type=refresh_token&refresh_token=$CHROME_REFRESH_TOKEN"
+```
+
+Then update the `CHROME_REFRESH_TOKEN` secret. If the store API answers
 `deleted_client`, the OAuth client itself was removed: create a new Web
 application client (redirect URI
 `https://developers.google.com/oauthplayground`), update
@@ -328,8 +338,6 @@ The local fallback uses the `Makefile` targets below and the local
 | --- | --- |
 | `make chrome_status` | Check the status of the Chrome Web Store item |
 | `make chrome_update` | Upload a new build to the Chrome Web Store |
-| `make chrome_code` | Open the OAuth Playground to obtain a new refresh token |
-| `make chrome_refresh` | Verify the refresh token by exchanging it for an access token |
 
 ## Releases
 
