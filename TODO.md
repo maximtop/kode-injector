@@ -4,6 +4,7 @@
 - [x] Switch from js to ts
 - [ ] Handle popup open on the service pages
 - [x] Create draft releases from version tags with GitHub Actions
-- [ ] Automate extension publishing to Chrome Web Store, Microsoft Edge Add-ons, and Firefox Add-ons (AMO)
+- [x] Automate extension publishing to Chrome Web Store (deploy workflow on release publication)
+- [ ] Automate extension publishing to Microsoft Edge Add-ons and Firefox Add-ons (AMO)
 - [ ] Import/export injections
 - [x] Switch to vitest

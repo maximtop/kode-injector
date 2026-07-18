@@ -260,11 +260,55 @@ make typecheck
 
 ## Deployment
 
-Production uploads to the Chrome Web Store use the `Makefile` targets below and
-the local `go-webext` checkout. Store credentials and app IDs are stored in
-`.env` (gitignored).
+Chrome Web Store deployment is automated by the `Deploy Chrome Web Store`
+workflow. Publishing a GitHub Release for a `vX.Y.Z` tag verifies the
+release's `chrome.zip` against `SHA256SUMS` and the tag version, uploads it to
+the store item with a pinned `go-webext`, and submits it for review with
+deferred publishing. Nothing goes live automatically: when the review verdict
+email arrives, publish the approved version manually in the Chrome Web Store
+Developer Dashboard. An approved staged submission expires back to a draft
+after about 30 days if left unpublished.
 
-The `Makefile` exposes additional targets:
+The workflow can also be started manually from the Actions tab for an
+already-published release tag. That is required for releases whose tag
+predates the workflow (their `published` event runs the workflow tree at the
+tagged commit, which lacks it) and for re-deploying after a staged submission
+expired.
+
+Configure these sensitive repository secrets:
+
+- `CHROME_CLIENT_ID` and `CHROME_CLIENT_SECRET` — the OAuth 2.0 client ID and
+  secret from the Credentials page of the Google Cloud Console project that
+  has the Chrome Web Store API enabled (mirrored from the local `.env`)
+- `CHROME_REFRESH_TOKEN`
+- `CHROME_PUBLISHER_ID` (shown on the Developer Dashboard account page)
+
+Configure this repository variable:
+
+- `CHROME_APP_ID` (the public store item ID)
+
+The Google Cloud OAuth consent screen backing these credentials must be in
+the "In production" status: refresh tokens issued while it is in "Testing"
+are revoked after seven days. An unused refresh token also expires after
+about six months; regenerate it with `make chrome_code` and
+`make chrome_refresh`, then update the `CHROME_REFRESH_TOKEN` secret.
+
+Failure playbook:
+
+- **Upload stuck `IN_PROGRESS` or a previous submission still in review**:
+  the run fails without submitting anything. Re-run it after the store
+  settles — re-uploading the same version replaces the unsubmitted draft.
+- **Submission rejected after review**: no workflow fails; the verdict
+  arrives by store email days after a green run. Read the reasons in the
+  dashboard, then appeal, ship a fixed version through a new release, or
+  resubmit the same version from the dashboard if only listing metadata was
+  at fault.
+- **Staged submission expired**: start the workflow manually for the same
+  release tag.
+
+The local fallback uses the `Makefile` targets below and the local
+`go-webext` checkout. Store credentials and app IDs are stored in `.env`
+(gitignored).
 
 | Command | What it does |
 | --- | --- |
@@ -280,8 +324,11 @@ The `Makefile` exposes additional targets:
    `build/release/`.
 3. Push the matching version tag to create a GitHub Draft Release containing
    the same store-ready `chrome.zip`, `edge.zip`, and `firefox.zip` artifacts.
-4. After checking the draft assets, upload the appropriate ZIP to each browser
-   store. Store submission remains manual until the item in `TODO.md` is done.
+4. After checking the draft assets, publish the GitHub Release. Publishing
+   triggers the Chrome Web Store deployment automatically; Edge and Firefox
+   submission remains manual until the remaining item in `TODO.md` is done.
+5. When the store review completes, publish the approved version manually in
+   the Chrome Web Store Developer Dashboard.
 
 ## Native host development and releases
 
@@ -377,6 +424,14 @@ submitted, stapled, and validated. Final checks use `codesign`, `stapler`,
 `spctl --type open` for the DMG. `SHA256SUMS` is regenerated after final
 stapling and extended with the three browser-extension archives before the
 draft release is created.
+
+The `Deploy Chrome Web Store` workflow runs when a GitHub Release is
+published (or manually from the Actions tab for an existing release tag). It
+re-verifies `chrome.zip` against the release `SHA256SUMS` and the tag
+version, uploads it with a pinned `go-webext`, and submits it for review with
+deferred publishing. It has read-only repository permissions and uses the
+`CHROME_*` secrets and variable listed in the Deployment section; deployments
+are serialized through a concurrency group so runs never interleave.
 
 Configure
 these sensitive repository secrets:
