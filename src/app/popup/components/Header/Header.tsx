@@ -4,73 +4,48 @@
 
 import React, { useContext } from 'react';
 import { observer } from 'mobx-react';
-import {
-    Button,
-    Layout,
-} from 'antd';
-import { PauseCircleOutlined, SettingOutlined, PlayCircleOutlined } from '@ant-design/icons';
+import { Button } from '@mantine/core';
 
-import { messenger } from '../../../common/messenger';
 import { translator } from '../../../common/translator';
+import { IconPause } from '../../../common/components/icons';
 import { rootStore } from '../../stores/RootStore';
 
 export const Header = observer(() => {
     const { settingsStore } = useContext(rootStore);
+    const paused = !settingsStore.appEnabled;
+    const title = paused
+        ? translator.getMessage('popup_enable_all')
+        : translator.getMessage('popup_pause_all');
 
     /**
-     * Opens the extension settings page.
-     */
-    const handleOpenSettingsClick = async (): Promise<void> => {
-        await messenger.openSettings();
-    };
-
-    /**
-     * Disables the extension globally.
+     * Toggles the global pause state.
      */
     const handlePauseClick = async (): Promise<void> => {
-        await settingsStore.disableApp();
-    };
-
-    /**
-     * Enables the extension globally.
-     */
-    const handleEnableClick = async (): Promise<void> => {
-        await settingsStore.enableApp();
+        if (paused) {
+            await settingsStore.enableApp();
+        } else {
+            await settingsStore.disableApp();
+        }
     };
 
     return (
-        <Layout.Header className="header">
-            <div className="header-content">
-                <h1>Kode Injector</h1>
-                <div className="header-actions">
-                    {
-                        settingsStore.appEnabled
-                            ? (
-                                <Button
-                                    type="text"
-                                    icon={<PauseCircleOutlined />}
-                                    title={translator.getMessage('popup_pause_all')}
-                                    onClick={handlePauseClick}
-                                />
-                            )
-                            : (
-                                <Button
-                                    type="text"
-                                    icon={<PlayCircleOutlined />}
-                                    title={translator.getMessage('popup_enable_all')}
-                                    onClick={handleEnableClick}
-                                />
-                            )
-                    }
-
-                    <Button
-                        type="text"
-                        icon={<SettingOutlined />}
-                        title={translator.getMessage('popup_open_settings')}
-                        onClick={handleOpenSettingsClick}
-                    />
-                </div>
-            </div>
-        </Layout.Header>
+        <header className="p-head">
+            <img src="assets/img/icon-48.png" alt="" />
+            <h1 className="p-head-name">Kode Injector</h1>
+            <Button
+                variant="subtle"
+                size="compact-sm"
+                className="p-head-pause"
+                leftSection={<IconPause size={13} />}
+                aria-pressed={paused}
+                title={title}
+                onClick={handlePauseClick}
+                data-testid="popup-pause"
+            >
+                {paused
+                    ? translator.getMessage('pause_resume')
+                    : translator.getMessage('injections_pause_all')}
+            </Button>
+        </header>
     );
 });

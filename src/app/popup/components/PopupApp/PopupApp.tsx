@@ -4,10 +4,14 @@
 
 import React, { useContext, useEffect, useLayoutEffect } from 'react';
 import { observer } from 'mobx-react';
-import { ConfigProvider, Layout } from 'antd';
 
+import { AppProviders } from '../../../common/components/AppProviders';
 import { Header } from '../Header';
-import { Main } from '../Main';
+import { PausedStrip } from '../PausedStrip';
+import { AccessBlock } from '../AccessBlock';
+import { SiteBlock } from '../SiteBlock';
+import { RulesList } from '../RulesList';
+import { EmptyCta } from '../EmptyCta';
 import { Footer } from '../Footer';
 import { rootStore } from '../../stores/RootStore';
 import { browserLanguageChannel } from '../../../common/browser-language-channel';
@@ -15,8 +19,6 @@ import { applyDocumentLocale } from '../../../common/document-locale';
 import { i18n } from '../../../common/i18n';
 import { translator } from '../../../common/translator';
 
-import '../../../common/local-source-access-warning.pcss';
-import '../../../common/file-access-warning.pcss';
 import './popup-app.pcss';
 
 export const PopupApp = observer(() => {
@@ -52,12 +54,24 @@ export const PopupApp = observer(() => {
     }
 
     return (
-        <ConfigProvider direction={translationStore.direction}>
-            <Layout className="popup-app">
+        <AppProviders direction={translationStore.direction}>
+            <div className="popup-app">
                 <Header />
-                <Main />
+                <PausedStrip />
+                {settingsStore.isSupportedPage ? (
+                    <>
+                        <AccessBlock />
+                        <SiteBlock />
+                        <RulesList />
+                        <EmptyCta />
+                    </>
+                ) : (
+                    <p className="unsupported-page" data-testid="popup-unsupported">
+                        {translator.getMessage('popup_unsupported_page')}
+                    </p>
+                )}
                 <Footer />
-            </Layout>
-        </ConfigProvider>
+            </div>
+        </AppProviders>
     );
 });

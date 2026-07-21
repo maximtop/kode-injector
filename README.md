@@ -5,7 +5,7 @@
 > pages.
 
 <p align="center">
-  <img src="assets/screenshot.png" alt="Kode Injector options page using Native Host" width="600">
+  <img src="assets/screenshot.png" alt="Kode Injector options page with injection rules" width="600">
 </p>
 
 ## Description

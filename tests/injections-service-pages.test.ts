@@ -29,7 +29,7 @@ test.each([
 ])('browser page %s has no injection state and does not log an error', (url) => {
     const error = vi.spyOn(log, 'error').mockImplementation(() => undefined);
 
-    expect(injections.hasSiteEnabledInjections(url)).toBe(false);
+    expect(injections.getInjectionsByUrl(url) ?? []).toEqual([]);
     expect(injections.isSiteBlacklisted(url)).toBe(false);
     expect(error).not.toHaveBeenCalled();
 });

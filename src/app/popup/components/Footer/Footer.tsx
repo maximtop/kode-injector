@@ -3,45 +3,38 @@
  */
 
 import React from 'react';
-import {
-    Button,
-    Col,
-    Layout,
-    Row,
-} from 'antd';
-import { DislikeOutlined } from '@ant-design/icons';
-import { observer } from 'mobx-react';
+import browser from 'webextension-polyfill';
 
-import { PROJECT_NEW_ISSUE_URL } from '../../../common/constants';
 import { messenger } from '../../../common/messenger';
 import { translator } from '../../../common/translator';
+import { IconGear } from '../../../common/components/icons';
 
 /**
- * Renders the popup footer and issue-report action.
+ * Renders the popup footer with the options link and version.
  *
  * @returns Popup footer element.
  */
-export const Footer = observer((): JSX.Element => {
+export const Footer = (): React.JSX.Element => {
+    const { version } = browser.runtime.getManifest();
+
     /**
-     * Opens the issue reporting page.
+     * Opens the extension settings page.
      */
-    const handleReportClick = (): void => {
-        messenger.openTab(PROJECT_NEW_ISSUE_URL);
+    const handleOpenSettingsClick = async (): Promise<void> => {
+        await messenger.openSettings();
     };
 
     return (
-        <Layout.Footer className="footer">
-            <Row justify="center">
-                <Col>
-                    <Button
-                        icon={<DislikeOutlined />}
-                        onClick={handleReportClick}
-                        title={translator.getMessage('popup_report_issue_title')}
-                    >
-                        {translator.getMessage('popup_report_issue')}
-                    </Button>
-                </Col>
-            </Row>
-        </Layout.Footer>
+        <footer className="p-foot">
+            <button
+                type="button"
+                onClick={handleOpenSettingsClick}
+                title={translator.getMessage('popup_open_settings')}
+            >
+                <IconGear size={13} />
+                {translator.getMessage('popup_options')}
+            </button>
+            <span>{`v${version}`}</span>
+        </footer>
     );
-});
+};

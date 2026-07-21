@@ -9,12 +9,25 @@ import { nanoid } from 'nanoid';
 import { storage } from './storage';
 import type {
     CssInjectionCode,
+    InjectionFileField,
+    InjectionFileIssues,
     InjectionRule,
     InjectionsCodeResponse,
     NewInjectionData,
     StoredInjectionsState,
 } from '../common/contracts';
-import { normalizeStoredInjectionsState } from '../common/contracts';
+import { InjectionField } from '../common/constants';
+import { hasInjectionSource, normalizeStoredInjectionsState } from '../common/contracts';
+import {
+    FILE_ENABLED_FLAGS,
+    FILE_KINDS,
+    isFileActive,
+} from '../common/injection-files';
+import {
+    CURRENT_INJECTIONS_SCHEMA_VERSION,
+    INJECTIONS_MIGRATIONS,
+} from './injections-migrations';
+import { runMigrations, SCHEMA_VERSION_KEY } from '../common/storage-migrations';
 import { log } from '../common/log';
 import { urlUtils } from '../common/url-utils';
 import { app } from './app';
@@ -54,35 +67,128 @@ class Injections {
      */
     updateStorage = throttle(async (): Promise<void> => {
         await storage.set<StoredInjectionsState>(this.STORAGE_KEY, {
+            [SCHEMA_VERSION_KEY]: CURRENT_INJECTIONS_SCHEMA_VERSION,
             injections: this.injections,
             blocklist: this.blocklist,
-        });
+        } as StoredInjectionsState);
     }, this.UPDATE_STORAGE_TIMEOUT_MS);
 
     /**
+     * Normalizes user-provided injection data.
+     *
+     * @param injectionData Raw injection data.
+     *
+     * @returns Trimmed data with a site and at least one source path, or null.
+     */
+    private normalizeInjectionData = (
+        injectionData: Partial<NewInjectionData> | null | undefined,
+    ): NewInjectionData | null => {
+        const site = injectionData?.site?.trim() ?? '';
+        const jsPath = urlUtils.normalizeRuleFilePath(injectionData?.jsPath ?? '');
+        const cssPath = urlUtils.normalizeRuleFilePath(injectionData?.cssPath ?? '');
+
+        if (!site || !hasInjectionSource({ jsPath, cssPath })) {
+            return null;
+        }
+
+        return { site, jsPath, cssPath };
+    };
+
+    /**
      * Adds a validated injection rule.
+     *
+     * @param injectionData Raw injection data.
+     * @param enabled Initial enabled state of the created rule.
+     *
+     * @returns The created rule, or null when the data is invalid.
      */
     addInjection = (
         injectionData: Partial<NewInjectionData> | null | undefined,
+        enabled = true,
     ): InjectionRule | null => {
-        // TODO make possible to add inject only css or only js
-        if (!injectionData
-            || !injectionData.cssPath
-            || !injectionData.jsPath
-            || !injectionData.site) {
+        const normalized = this.normalizeInjectionData(injectionData);
+        if (!normalized) {
             return null;
         }
-        const { site, jsPath, cssPath } = injectionData;
+
         const injection: InjectionRule = {
             id: nanoid(),
-            site,
-            jsPath,
-            cssPath,
-            enabled: true,
+            ...normalized,
+            enabled,
+            [InjectionField.JsEnabled]: true,
+            [InjectionField.CssEnabled]: true,
         };
         this.injections.push(injection);
         this.updateStorage();
         return injection;
+    };
+
+    /**
+     * Updates an injection rule, preserving its identifier and enabled state.
+     *
+     * @param id Identifier of the rule to update.
+     * @param injectionData Raw replacement data.
+     *
+     * @returns The updated rule, or null when the rule or data is invalid.
+     */
+    updateInjection = (
+        id: string,
+        injectionData: Partial<NewInjectionData> | null | undefined,
+    ): InjectionRule | null => {
+        const normalized = this.normalizeInjectionData(injectionData);
+        if (!normalized) {
+            return null;
+        }
+
+        const injection = find(this.injections, { id });
+        if (!injection) {
+            log.error(`Injection with id = "${id}" not found`);
+            return null;
+        }
+
+        const updated: InjectionRule = {
+            ...injection,
+            ...normalized,
+            // Clearing a path resets its flag, so re-adding the file later
+            // never resurrects a stale disabled state.
+            [InjectionField.JsEnabled]: normalized.jsPath ? injection.jsEnabled : true,
+            [InjectionField.CssEnabled]: normalized.cssPath ? injection.cssEnabled : true,
+        };
+        const idx = this.injections.indexOf(injection);
+        this.injections.splice(idx, 1, updated);
+        this.updateStorage();
+        return updated;
+    };
+
+    /**
+     * Enables or disables one source file of a rule.
+     *
+     * @param id Identifier of the rule.
+     * @param field Path field whose file is toggled.
+     * @param enabled New enabled state of the file.
+     *
+     * @returns The updated rule, or null when the rule or file is missing.
+     */
+    setInjectionFileEnabled = (
+        id: string,
+        field: InjectionFileField,
+        enabled: boolean,
+    ): InjectionRule | null => {
+        const injection = find(this.injections, { id });
+        if (!injection) {
+            log.error(`Injection with id = "${id}" not found`);
+            return null;
+        }
+        if (!injection[field]) {
+            log.error(`Injection "${id}" has no ${field} file to toggle`);
+            return null;
+        }
+
+        const updated: InjectionRule = { ...injection, [FILE_ENABLED_FLAGS[field]]: enabled };
+        const idx = this.injections.indexOf(injection);
+        this.injections.splice(idx, 1, updated);
+        this.updateStorage();
+        return updated;
     };
 
     /**
@@ -151,10 +257,9 @@ class Injections {
         if (!hostname) {
             return null;
         }
-        // TODO on enter format site input
-        // TODO later allow to match exclusions by url
-        // example.org, www.example.org, https://example.org, https://example.org
-        return this.injections.filter((inj) => inj.site.includes(hostname));
+        // Exact host matching: subdomains need their own rule, and a rule
+        // never fires on unrelated hosts that merely contain the site text.
+        return this.injections.filter((inj) => inj.site === hostname);
     };
 
     /**
@@ -181,7 +286,10 @@ class Injections {
             return;
         }
 
-        const enabledInjections = injections.filter((injection) => injection.enabled);
+        // Only active JS files run: rule enabled, path set, per-file flag on.
+        // (An empty path would also resolve to the worker's own bundle.)
+        const enabledInjections = injections
+            .filter((injection) => isFileActive(injection, InjectionField.JsPath));
         const promises = enabledInjections.map(async (injection) => {
             const { jsPath } = injection;
             const result = await sourceReader.read(jsPath);
@@ -210,7 +318,7 @@ class Injections {
         }
 
         const promises: Promise<CssInjectionCode | null>[] = injections
-            .filter((injection) => injection.enabled)
+            .filter((injection) => isFileActive(injection, InjectionField.CssPath))
             .map(async (injection) => {
                 const { cssPath } = injection;
                 const result = await sourceReader.read(cssPath);
@@ -260,11 +368,30 @@ class Injections {
     }
 
     /**
-     * Checks whether a site has enabled injection rules.
+     * Probes every configured source file and reports unreadable ones.
+     *
+     * @returns Unreadable path fields keyed by rule identifier; rules whose
+     * files all read successfully are omitted.
      */
-    hasSiteEnabledInjections = (url: string): boolean => {
-        const injections = this.getInjectionsByUrl(url);
-        return Boolean(injections?.some((injection) => injection.enabled));
+    getFileIssues = async (): Promise<InjectionFileIssues> => {
+        const issues: InjectionFileIssues = {};
+
+        await Promise.all(this.injections.map(async (injection) => {
+            const failed = (await Promise.all(FILE_KINDS.map(async (field) => {
+                const path = injection[field];
+                if (!path) {
+                    return null;
+                }
+                const result = await sourceReader.read(path);
+                return result.ok ? null : field;
+            }))).filter((field): field is InjectionFileField => field !== null);
+
+            if (failed.length > 0) {
+                issues[injection.id] = failed;
+            }
+        }));
+
+        return issues;
     };
 
     /**
@@ -281,12 +408,34 @@ class Injections {
 
     /**
      * Restores persisted injection state.
+     *
+     * Sites saved by older versions may carry schemes, www prefixes, or
+     * paths; they are normalized to bare hostnames so exact matching keeps
+     * firing for them. Unrecognizable values are preserved as-is.
      */
     init = async (): Promise<void> => {
         const storedState = await storage.get<unknown>(this.STORAGE_KEY);
-        const { injections, blocklist } = normalizeStoredInjectionsState(storedState);
-        this.injections = injections;
+        const { state, migrated } = runMigrations(
+            storedState,
+            CURRENT_INJECTIONS_SCHEMA_VERSION,
+            INJECTIONS_MIGRATIONS,
+        );
+        const { injections, blocklist } = normalizeStoredInjectionsState(state);
+        let repaired = migrated;
+        this.injections = injections.map((injection) => {
+            const site = urlUtils.normalizeRuleSite(injection.site) ?? injection.site;
+            if (site !== injection.site) {
+                repaired = true;
+                return { ...injection, site };
+            }
+            return injection;
+        });
         this.blocklist = blocklist;
+        // Persist immediately after a schema migration or site repair so the
+        // stored state converges without waiting for the next user mutation.
+        if (repaired) {
+            this.updateStorage();
+        }
     };
 }
 

@@ -8,6 +8,7 @@ import {
     BrowserTarget,
     getExtensionSettingsUrl,
 } from './browser-target';
+import { OPTIONS_PAGE_PATH, OPTIONS_QUERY_PARAMS } from './constants';
 import type { PopupTab } from './contracts';
 import { log } from './log';
 
@@ -42,6 +43,30 @@ class Tabs {
     openTab = (url: string): Promise<browser.Tabs.Tab> => {
         return browser.tabs.create({ active: true, url });
     }
+
+    /**
+     * Builds an options page URL that prefills the rule editor with a site.
+     *
+     * @param site Hostname to prefill.
+     *
+     * @returns Absolute options page URL with the prefill query parameter.
+     */
+    getOptionsUrlForSite = (site: string): string => {
+        const baseUrl = browser.runtime.getURL(OPTIONS_PAGE_PATH);
+        return `${baseUrl}?${OPTIONS_QUERY_PARAMS.PREFILL_SITE}=${encodeURIComponent(site)}`;
+    };
+
+    /**
+     * Builds an options page URL that opens a specific tab.
+     *
+     * @param tab Options tab identifier.
+     *
+     * @returns Absolute options page URL with the tab query parameter.
+     */
+    getOptionsUrlForTab = (tab: string): string => {
+        const baseUrl = browser.runtime.getURL(OPTIONS_PAGE_PATH);
+        return `${baseUrl}?${OPTIONS_QUERY_PARAMS.TAB}=${encodeURIComponent(tab)}`;
+    };
 
     /**
      * Returns the active browser tab.

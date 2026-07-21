@@ -5,6 +5,9 @@
 export const MESSAGE_TYPES = {
     ADD_INJECTION: 'add.injection',
     REMOVE_INJECTION: 'remove.injection',
+    UPDATE_INJECTION: 'update.injection',
+    SET_INJECTION_FILE_ENABLED: 'set.injection.file.enabled',
+    GET_INJECTION_FILE_ISSUES: 'get.injection.file.issues',
     ENABLE_INJECTION: 'enable.injection',
     DISABLE_INJECTION: 'disable.injection',
     GET_OPTIONS_DATA: 'get.options.data',
@@ -16,8 +19,8 @@ export const MESSAGE_TYPES = {
     OPEN_SETTINGS: 'open.settings',
     GET_INJECTIONS_CODE: 'get.injections.code',
     OPEN_TAB: 'open.tab',
-    DISABLE_INJECTIONS_FOR_SITE: 'enable.injection.for.site',
-    ENABLE_INJECTIONS_FOR_SITE: 'disable.injection.for.site',
+    DISABLE_INJECTIONS_FOR_SITE: 'disable.injections.for.site',
+    ENABLE_INJECTIONS_FOR_SITE: 'enable.injections.for.site',
     SET_INTERFACE_LANGUAGE: 'set.interface.language',
     LANGUAGE_CHANGED: 'language.changed',
 } as const;
@@ -55,4 +58,35 @@ export enum InjectionField {
     Site = 'site',
     JsPath = 'jsPath',
     CssPath = 'cssPath',
+    JsEnabled = 'jsEnabled',
+    CssEnabled = 'cssEnabled',
 }
+
+/**
+ * Path of the options page inside the extension bundle.
+ */
+export const OPTIONS_PAGE_PATH = 'options.html';
+
+/**
+ * Query parameters recognized by the options page.
+ */
+export const OPTIONS_QUERY_PARAMS = {
+    PREFILL_SITE: 'site',
+    TAB: 'tab',
+} as const;
+
+/**
+ * Identifiers of the options page tabs, also used as deep-link values.
+ */
+export const OPTIONS_TABS = {
+    INJECTIONS: 'injections',
+    SETTINGS: 'settings',
+} as const;
+
+/**
+ * The localStorage key persisting the selected color scheme.
+ *
+ * Extension pages share one origin, so the popup and the options page
+ * read the same value and stay in sync through storage events.
+ */
+export const COLOR_SCHEME_STORAGE_KEY = 'kode-injector-color-scheme';

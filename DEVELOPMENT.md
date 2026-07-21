@@ -188,10 +188,15 @@ and target-page CSP behavior are outside this minimal scenario.
 ## Tech stack
 
 - **Runtime:** Manifest V3 browser extension (Chrome / Firefox / Edge)
-- **UI:** React 17, MobX 6, Ant Design 4
+- **UI:** React 19, MobX 6, Mantine 9
 - **Bundling:** Rspack 2 with built-in SWC
 - **Styling:** PostCSS with `postcss-import`, `postcss-preset-env`,
-  `postcss-nested`, and `postcss-svg`; CSS Modules via Rspack native CSS
+  `postcss-nested`, and `postcss-svg`; CSS Modules via Rspack native CSS.
+  Design tokens live in `src/app/common/styles/tokens.pcss` (light + dark
+  schemes keyed to `data-mantine-color-scheme`); Mantine component overrides
+  in `src/app/common/styles/mantine-overrides.pcss`. The selected theme is
+  persisted in the localStorage key `kode-injector-color-scheme` shared by
+  the options page and popup
 - **Polyfill:** `webextension-polyfill` for cross-browser APIs
 - **Linting:** ESLint with the Airbnb config; 4-space indentation
 

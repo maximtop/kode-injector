@@ -10,10 +10,13 @@ import {
 } from 'mobx';
 
 import {
+    type InjectionFileField,
+    type InjectionRule,
     LocalSourceAccessMethod,
     type LocalSourceAccessState,
     type PopupTab,
 } from '../../common/contracts';
+import { FILE_ENABLED_FLAGS, isRuleActive } from '../../common/injection-files';
 import { messenger } from '../../common/messenger';
 import { log } from '../../common/log';
 import { tabs } from '../../common/tabs';
@@ -77,16 +80,39 @@ export class SettingsStore {
     currentTab: PopupTab = {};
 
     /**
-     * Whether the current site has enabled injection rules.
+     * Injection rules matching the current site.
      */
     @observable
-    siteHasEnabledInjections = false;
+    matchingInjections: InjectionRule[] = [];
 
     /**
      * Whether injections are disabled for the current site.
      */
     @observable
     siteIsBlacklisted = false;
+
+    /**
+     * Whether the current site has enabled injection rules.
+     *
+     * @returns Whether any matching rule is enabled.
+     */
+    @computed
+    get siteHasEnabledInjections(): boolean {
+        return this.matchingInjections.some(isRuleActive);
+    }
+
+    /**
+     * Number of active rules matching the current site.
+     *
+     * A rule is active when it is enabled and at least one of its files is
+     * both present and enabled.
+     *
+     * @returns Count of active matching rules.
+     */
+    @computed
+    get activeInjectionCount(): number {
+        return this.matchingInjections.filter(isRuleActive).length;
+    }
 
     /**
      * Loads settings and injection state for the popup.
@@ -102,7 +128,7 @@ export class SettingsStore {
             this.appEnabled = state.appEnabled;
             this.currentTab = state.currentTab;
             this.localSourceAccess = state.localSourceAccess;
-            this.siteHasEnabledInjections = state.siteHasEnabledInjections;
+            this.matchingInjections = state.matchingInjections;
             this.siteIsBlacklisted = state.siteIsBlacklisted;
             this.popupDataReady = true;
         });
@@ -210,11 +236,32 @@ export class SettingsStore {
     }
 
     /**
+     * Whether the current tab is a page the extension can inject into.
+     *
+     * Browser-internal pages (chrome://, about:, the new tab) and file
+     * URLs have no usable hostname for rules.
+     *
+     * @returns Whether the current page supports injection rules.
+     */
+    @computed
+    get isSupportedPage(): boolean {
+        const { url } = this.currentTab;
+        if (!url || !/^https?:/i.test(url)) {
+            return false;
+        }
+
+        return Boolean(urlUtils.getHostnameWithoutWww(url));
+    }
+
+    /**
      * Disables injections for the current site.
      */
     disableInjectionsForSite = async (): Promise<void> => {
         const currentTab = await tabs.getCurrentTab();
         await messenger.disableInjectionsForSite(currentTab);
+        runInAction(() => {
+            this.siteIsBlacklisted = true;
+        });
     }
 
     /**
@@ -223,5 +270,56 @@ export class SettingsStore {
     enableInjectionsForSite = async (): Promise<void> => {
         const currentTab = await tabs.getCurrentTab();
         await messenger.enableInjectionsForSite(currentTab);
+        runInAction(() => {
+            this.siteIsBlacklisted = false;
+        });
+    }
+
+    /**
+     * Toggles a single file of a matching rule and reloads the current tab.
+     *
+     * @param id Identifier of the rule.
+     * @param field Path field whose file is toggled.
+     */
+    toggleInjectionFile = async (id: string, field: InjectionFileField): Promise<void> => {
+        const injection = this.matchingInjections.find((item) => item.id === id);
+        if (!injection) {
+            log.error(`Injection with id = "${id}" not found`);
+            return;
+        }
+
+        try {
+            const updated = await messenger.setInjectionFileEnabled(
+                id,
+                field,
+                !injection[FILE_ENABLED_FLAGS[field]],
+            );
+            if (!updated) {
+                return;
+            }
+            runInAction(() => {
+                this.matchingInjections = this.matchingInjections
+                    .map((item) => (item.id === id ? updated : item));
+            });
+            await tabs.reloadTab(this.currentTab.id);
+        } catch (e) {
+            log.error(e instanceof Error ? e.message : e);
+        }
+    }
+
+    /**
+     * Opens the options page with the rule editor prefilled for this site.
+     *
+     * Falls back to plainly opening the options page for tabs without
+     * a usable hostname.
+     */
+    openOptionsForCurrentSite = async (): Promise<void> => {
+        const site = urlUtils.getHostnameWithoutWww(this.currentTab.url);
+        if (!site) {
+            await messenger.openSettings();
+            return;
+        }
+
+        await messenger.openTab(tabs.getOptionsUrlForSite(site));
     }
 }

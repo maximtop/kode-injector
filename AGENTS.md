@@ -20,7 +20,10 @@ Browser extension with a React-based popup and options page.
 
 ## Tech Stack
 
-- **UI:** React 17, MobX 6, Ant Design 4
+- **UI:** React 19, MobX 6, Mantine 9 on a custom design-token layer
+  (`src/app/common/styles/tokens.pcss`, light + dark via
+  `data-mantine-color-scheme`; theme choice persisted in localStorage key
+  `kode-injector-color-scheme`)
 - **Bundling:** Rspack 2 with built-in SWC
 - **Styling:** PostCSS with Rspack native CSS Modules
 - **Cross-browser API:** `webextension-polyfill`
@@ -54,11 +57,11 @@ src/
       index.ts              # Runs at document_start; requests injection code
     options/
       index.tsx             # Options page root
-      components/            # Header, Footer, OptionsApp, NewInjectionForm, InjectionsTable
+      components/            # OptionsApp, Topbar, InjectionsView, RuleEditorModal, SettingsView, Footer
       stores/InjectionsStore.ts, RootStore.ts
     popup/
       index.tsx             # Popup root
-      components/            # Header, Footer, Main, PopupApp
+      components/            # PopupApp, Header, PausedStrip, AccessBlock, SiteBlock, RulesList, EmptyCta, Footer
       stores/RootStore.ts, SettingsStore.ts
   pages/
     background/              # Background HTML + JS bootstrap
@@ -86,9 +89,11 @@ native-host/                # Shared Go native messaging host and installer
 - **Content script** runs at `document_start` on `<all_urls>`. On load it sends
   a `GET_INJECTIONS_CODE` message to the background, receives matching JS/CSS,
   and executes them on the page.
-- **Popup** queries the background for the current tab's state (has injections?
-  blacklisted?) and provides per-site and global toggles.
-- **Options page** manages injection rules: add (site + JS path + CSS path),
+- **Popup** queries the background for the current tab's state (matching rules,
+  blacklisted?) and provides per-rule, per-site, and global toggles plus an
+  "add rule for this site" deep link into the options page.
+- **Options page** manages injection rules: create/edit in a modal (site plus
+  an optional JS and/or CSS path — at least one required), duplicate,
   enable/disable, and delete.
 - **Messaging** flows through `src/app/common/messenger.ts`, with message types
   defined in `src/app/common/constants.ts`.

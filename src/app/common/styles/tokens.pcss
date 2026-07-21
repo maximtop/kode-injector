@@ -1,0 +1,50 @@
+/*
+ * Design tokens of the Kode Injector UI, ported from the design prototype.
+ *
+ * Light values live on :root; the dark scheme overrides them under the
+ * data-mantine-color-scheme attribute managed by Mantine.
+ */
+
+:root {
+    --bg: oklch(97.8% 0.004 175);
+    --surface: oklch(100% 0 0);
+    --fg: oklch(22% 0.012 190);
+    --muted: oklch(47% 0.015 185);
+    --border: oklch(89.5% 0.006 180);
+    /* Brand green #00a485 sampled from the extension icon. */
+    --accent: oklch(63.5% 0.115 172);
+    --accent-soft: oklch(63.5% 0.115 172 / 0.11);
+    /* Dark ink on the accent passes AA contrast; white does not. */
+    --accent-ink: oklch(20% 0.04 180);
+    --ok: oklch(60% 0.14 140);
+    --warn: oklch(70% 0.13 70);
+    /* Darker variant for small status dots: >=3:1 on light surfaces. */
+    --warn-dot: oklch(58% 0.13 70);
+    --warn-soft: oklch(70% 0.13 70 / 0.14);
+    --danger: oklch(56% 0.19 25);
+    --danger-soft: oklch(56% 0.19 25 / 0.1);
+    --shadow: 0 1px 2px oklch(20% 0.01 190 / 0.06), 0 4px 16px oklch(20% 0.01 190 / 0.07);
+    --shadow-lg: 0 4px 12px oklch(20% 0.01 190 / 0.12), 0 16px 48px oklch(20% 0.01 190 / 0.18);
+    --sans: system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+    --r: 8px;
+}
+
+[data-mantine-color-scheme="dark"] {
+    --bg: oklch(17.5% 0.01 190);
+    --surface: oklch(21.5% 0.012 190);
+    --fg: oklch(93% 0.005 180);
+    --muted: oklch(66% 0.012 180);
+    --border: oklch(30% 0.012 190);
+    --accent: oklch(72% 0.125 172);
+    --accent-soft: oklch(72% 0.125 172 / 0.14);
+    --accent-ink: oklch(16% 0.02 180);
+    --ok: oklch(72% 0.14 140);
+    --warn: oklch(76% 0.12 75);
+    --warn-dot: oklch(76% 0.12 75);
+    --warn-soft: oklch(76% 0.12 75 / 0.14);
+    --danger: oklch(68% 0.16 25);
+    --danger-soft: oklch(68% 0.16 25 / 0.14);
+    --shadow: 0 1px 2px oklch(5% 0 0 / 0.4), 0 4px 16px oklch(5% 0 0 / 0.4);
+    --shadow-lg: 0 4px 12px oklch(5% 0 0 / 0.5), 0 16px 48px oklch(5% 0 0 / 0.6);
+}

@@ -15,6 +15,242 @@
         "message": "Kode Injector popup",
         "description": "Toolbar popup document title."
     },
+    "tab_injections": {
+        "message": "Rules",
+        "description": "Options tab listing injection rules."
+    },
+    "tab_settings": {
+        "message": "Settings",
+        "description": "Options tab with extension settings."
+    },
+    "access_pill_ok": {
+        "message": "File access OK",
+        "description": "Header status pill when local files can be read."
+    },
+    "access_pill_disabled": {
+        "message": "File access disabled",
+        "description": "Header status pill when the browser blocks file URLs."
+    },
+    "access_pill_helper": {
+        "message": "Helper not found",
+        "description": "Header status pill when Kode Injector Helper is unavailable."
+    },
+    "access_pill_permission": {
+        "message": "Permission needed",
+        "description": "Header status pill when the native messaging permission is missing."
+    },
+    "access_pill_checking": {
+        "message": "Checking…",
+        "description": "Header status pill while file access is being probed."
+    },
+    "access_pill_title": {
+        "message": "File access status. Opens Settings.",
+        "description": "Tooltip of the header file-access status pill."
+    },
+    "theme_toggle_title": {
+        "message": "Toggle light or dark theme",
+        "description": "Tooltip of the header theme toggle button."
+    },
+    "injections_filter_placeholder": {
+        "message": "Filter by site…",
+        "description": "Placeholder of the rule list search field."
+    },
+    "injections_pause_all": {
+        "message": "Pause all",
+        "description": "Label of the global pause switch in the options toolbar."
+    },
+    "injections_new": {
+        "message": "New rule",
+        "description": "Button that opens the rule editor for a new rule."
+    },
+    "rules_count": {
+        "message": "No rules | %count% rule | %count% rules",
+        "description": "List summary with the total rule count. Plural forms separated by | starting with the zero form; %count% is a number."
+    },
+    "rules_off_count": {
+        "message": "None turned off | %count% turned off | %count% turned off",
+        "description": "List summary suffix with the disabled rule count. Plural forms separated by | starting with the zero form; %count% is a number."
+    },
+    "pause_strip_text": {
+        "message": "Paused everywhere. No code is being injected on any site.",
+        "description": "Strip shown while injecting is globally paused."
+    },
+    "pause_resume": {
+        "message": "Resume",
+        "description": "Action that ends the global pause."
+    },
+    "access_line_attention": {
+        "message": "File access needs attention.",
+        "description": "Inline warning above the rule list when file access is broken."
+    },
+    "access_review_settings": {
+        "message": "Review in Settings",
+        "description": "Link from the inline file-access warning to the Settings tab."
+    },
+    "rules_filter_match": {
+        "message": "%visible% of %total% rules match “%query%”",
+        "description": "List summary while filtering. %visible% and %total% are numbers, %query% is the search text."
+    },
+    "rule_tag_off": {
+        "message": "Off",
+        "description": "Tag shown on disabled rule rows."
+    },
+    "rule_actions_title": {
+        "message": "Rule actions",
+        "description": "Tooltip of the rule overflow menu button."
+    },
+    "rule_edit": {
+        "message": "Edit",
+        "description": "Menu action that opens the rule editor."
+    },
+    "rule_duplicate": {
+        "message": "Duplicate",
+        "description": "Menu action that duplicates a rule as a disabled copy."
+    },
+    "rule_delete": {
+        "message": "Delete…",
+        "description": "Menu action that starts rule deletion."
+    },
+    "rule_delete_question": {
+        "message": "Delete the rule for %host%?",
+        "description": "Inline confirmation before deleting a rule. %host% is a hostname."
+    },
+    "rule_delete_confirm": {
+        "message": "Delete",
+        "description": "Button that permanently deletes the rule."
+    },
+    "cancel": {
+        "message": "Cancel",
+        "description": "Generic action that dismisses a confirmation or dialog."
+    },
+    "empty_title": {
+        "message": "Inject your first file",
+        "description": "Title of the zero-rules onboarding state."
+    },
+    "empty_description": {
+        "message": "Map a website to local JavaScript or CSS that runs automatically on every visit.",
+        "description": "Subtitle of the zero-rules onboarding state."
+    },
+    "empty_step_site_title": {
+        "message": "Pick a site",
+        "description": "Title of onboarding step one."
+    },
+    "empty_step_site_text": {
+        "message": "The hostname where your code should run, like example.com.",
+        "description": "Text of onboarding step one."
+    },
+    "empty_step_files_title": {
+        "message": "Point at local files",
+        "description": "Title of onboarding step two."
+    },
+    "empty_step_files_text": {
+        "message": "A file:/// path to your JS, CSS, or both.",
+        "description": "Text of onboarding step two."
+    },
+    "empty_step_reload_title": {
+        "message": "Reload the page",
+        "description": "Title of onboarding step three."
+    },
+    "empty_step_reload_text": {
+        "message": "Your code is injected on every load until you turn it off.",
+        "description": "Text of onboarding step three."
+    },
+    "editor_title_new": {
+        "message": "New rule",
+        "description": "Rule editor title when creating a rule."
+    },
+    "editor_title_edit": {
+        "message": "Edit rule",
+        "description": "Rule editor title when editing a rule."
+    },
+    "editor_site_label": {
+        "message": "Site",
+        "description": "Label of the rule editor hostname field."
+    },
+    "editor_js_label": {
+        "message": "JavaScript file",
+        "description": "Label of the rule editor JavaScript path field."
+    },
+    "editor_css_label": {
+        "message": "CSS file",
+        "description": "Label of the rule editor CSS path field."
+    },
+    "editor_site_hint": {
+        "message": "The hostname to match, without https:// or path.",
+        "description": "Hint below the hostname field before a valid value is entered."
+    },
+    "editor_site_match_hint": {
+        "message": "Will apply on every page of %site%. Subdomains need their own rule.",
+        "description": "Hint below the hostname field for a valid value. %site% is a hostname."
+    },
+    "editor_site_error": {
+        "message": "Enter a valid hostname, like example.com.",
+        "description": "Validation error for an invalid hostname."
+    },
+    "editor_file_scheme_error": {
+        "message": "Use a file:/// URL or an absolute file path.",
+        "description": "Validation error for a source path that is neither a file URL nor an absolute path."
+    },
+    "editor_at_least_one_error": {
+        "message": "Add at least one file: JavaScript, CSS, or both.",
+        "description": "Validation error when both file paths are empty."
+    },
+    "editor_save": {
+        "message": "Save changes",
+        "description": "Rule editor submit button when editing."
+    },
+    "form_add_injection": {
+        "message": "Add rule",
+        "description": "Button that creates an injection rule."
+    },
+    "settings_file_access_subtitle": {
+        "message": "How Kode Injector reads the file:/// paths in your rules.",
+        "description": "Subtitle of the file access settings group."
+    },
+    "tag_default": {
+        "message": "Default",
+        "description": "Tag marking the default file access method."
+    },
+    "settings_browser_access_ok": {
+        "message": "Browser file access is enabled. Local files can be read.",
+        "description": "Status line when browser file access works."
+    },
+    "settings_browser_access_off": {
+        "message": "“Allow access to file URLs” is turned off in the browser's extension settings.",
+        "description": "Status line when the browser blocks file URLs."
+    },
+    "settings_show_me_where": {
+        "message": "Show me where",
+        "description": "Expander revealing the browser settings screenshot."
+    },
+    "settings_firefox_helper_locked": {
+        "message": "Firefox blocks extensions from reading file:// URLs, so Kode Injector always uses the Helper here.",
+        "description": "Explains why Firefox cannot switch the access method."
+    },
+    "settings_language_subtitle": {
+        "message": "Applies to the options page and popup immediately.",
+        "description": "Subtitle of the language settings group."
+    },
+    "settings_appearance_title": {
+        "message": "Appearance",
+        "description": "Title of the appearance settings group."
+    },
+    "settings_appearance_subtitle": {
+        "message": "Theme for Kode Injector pages.",
+        "description": "Subtitle of the appearance settings group."
+    },
+    "theme_light": {
+        "message": "Light",
+        "description": "Light theme option."
+    },
+    "theme_system": {
+        "message": "System",
+        "description": "Theme option following the system color scheme."
+    },
+    "theme_dark": {
+        "message": "Dark",
+        "description": "Dark theme option."
+    },
     "language_label": {
         "message": "Interface language",
         "description": "Label for the interface language selector."
@@ -31,62 +267,6 @@
         "message": "Report an issue or view the source code",
         "description": "Tooltip for the project source link."
     },
-    "form_site_placeholder": {
-        "message": "Site",
-        "description": "Placeholder for the website hostname matched by an injection rule."
-    },
-    "form_site_required": {
-        "message": "Enter a site",
-        "description": "Validation message when the site hostname is empty."
-    },
-    "form_js_path_required": {
-        "message": "Enter the path to a JavaScript file",
-        "description": "Validation message when the local JavaScript file path is empty."
-    },
-    "form_css_path_required": {
-        "message": "Enter the path to a CSS file",
-        "description": "Validation message when the local CSS file path is empty."
-    },
-    "form_add_injection": {
-        "message": "Add injection",
-        "description": "Button that creates an injection rule."
-    },
-    "table_site": {
-        "message": "Site",
-        "description": "Injection table column for the matched website."
-    },
-    "table_js_path": {
-        "message": "JavaScript file path",
-        "description": "Injection table column for a local JavaScript file."
-    },
-    "table_css_path": {
-        "message": "CSS file path",
-        "description": "Injection table column for a local CSS file."
-    },
-    "table_actions": {
-        "message": "Actions",
-        "description": "Injection table column containing controls."
-    },
-    "table_empty": {
-        "message": "No injections added",
-        "description": "Empty state shown when no injection rules exist."
-    },
-    "injection_disable": {
-        "message": "Turn off injection",
-        "description": "Tooltip for disabling one injection rule."
-    },
-    "injection_enable": {
-        "message": "Turn on injection",
-        "description": "Tooltip for enabling one injection rule."
-    },
-    "injection_remove": {
-        "message": "Remove injection",
-        "description": "Tooltip for deleting one injection rule."
-    },
-    "injection_remove_confirm": {
-        "message": "This injection will be removed permanently. Are you sure?",
-        "description": "Confirmation before permanently deleting an injection rule."
-    },
     "popup_pause_all": {
         "message": "Pause injecting on all sites",
         "description": "Tooltip for globally pausing Kode Injector."
@@ -99,9 +279,57 @@
         "message": "Open settings",
         "description": "Tooltip for opening the options page."
     },
-    "popup_no_injections": {
-        "message": "No injections",
-        "description": "Popup state when the current site has no enabled injection rules."
+    "popup_paused_strip": {
+        "message": "Paused everywhere",
+        "description": "Popup strip and status shown while globally paused."
+    },
+    "popup_rules_caption": {
+        "message": "Rules on this site",
+        "description": "Caption above the popup matched-rules list."
+    },
+    "popup_file_toggle_for": {
+        "message": "Toggle %name%",
+        "description": "Accessible label of a popup per-file switch. %name% is the file kind and name."
+    },
+    "popup_file_rule_off": {
+        "message": "Turned off with its rule in Options",
+        "description": "Title of a per-file switch that is disabled because its rule is off."
+    },
+    "popup_rules_active": {
+        "message": "No rules active on this site | %count% rule active on this site | %count% rules active on this site",
+        "description": "Popup status with the active rule count. Plural forms separated by | starting with the zero form; %count% is a number."
+    },
+    "popup_no_rules": {
+        "message": "No rules for this site",
+        "description": "Popup status when no rules match the current site."
+    },
+    "popup_site_disabled": {
+        "message": "Disabled on this site",
+        "description": "Popup status when injections are disabled for the current site."
+    },
+    "popup_all_rules_off": {
+        "message": "All rules turned off",
+        "description": "Popup status when every matching rule is disabled."
+    },
+    "popup_files_unreadable": {
+        "message": "Local files can't be read",
+        "description": "Popup status when file access is broken."
+    },
+    "popup_add_rule": {
+        "message": "Add rule for this site",
+        "description": "Popup button that opens the options page with the site prefilled."
+    },
+    "popup_options": {
+        "message": "Options",
+        "description": "Popup footer link to the options page."
+    },
+    "popup_enable_file_access": {
+        "message": "Enable file access",
+        "description": "Popup action that opens settings to fix browser file access."
+    },
+    "popup_install_helper": {
+        "message": "Install Helper",
+        "description": "Popup action that opens settings to install Kode Injector Helper."
     },
     "popup_disable_site": {
         "message": "Disable injecting on this site",
@@ -110,22 +338,6 @@
     "popup_enable_site": {
         "message": "Enable injecting on this site",
         "description": "Tooltip for enabling injection rules on the current site."
-    },
-    "popup_report_issue_title": {
-        "message": "Report an issue on GitHub",
-        "description": "Tooltip for the issue reporting action."
-    },
-    "popup_report_issue": {
-        "message": "Report an issue",
-        "description": "Button label for reporting a problem."
-    },
-    "native_host_required_title": {
-        "message": "Kode Injector Helper is required",
-        "description": "Warning title shown when the native helper is unavailable."
-    },
-    "native_host_explanation": {
-        "message": "Kode Injector Helper reads local injection files for Firefox, Chrome, and Edge.",
-        "description": "Explains why the native helper is required."
     },
     "native_host_read_only": {
         "message": "Kode Injector Helper is read-only: it cannot write files, execute programs, list directories, or access the network.",
@@ -155,13 +367,9 @@
         "message": "Kode Injector Helper could not read a configured file.",
         "description": "Native helper read failure status."
     },
-    "native_host_install_instructions": {
-        "message": "Download and install Kode Injector Helper for your operating system, then return here and check again.",
-        "description": "Native helper installation guidance."
-    },
     "native_host_check_again": {
         "message": "Check again",
-        "description": "Button rechecking native helper status."
+        "description": "Button rechecking the selected file access method."
     },
     "popup_native_host_unavailable": {
         "message": "Local file injection needs Kode Injector Helper. Open settings for installation or recovery instructions.",
@@ -174,6 +382,10 @@
     "native_helper_download_or_update": {
         "message": "Download or update Kode Injector Helper",
         "description": "Action that downloads the matching Kode Injector Helper package."
+    },
+    "helper_download": {
+        "message": "Download",
+        "description": "Button on the helper download card."
     },
     "native_helper_view_all_downloads": {
         "message": "View all downloads",
@@ -207,10 +419,6 @@
         "message": "Kode Injector Helper for Linux (x86-64)",
         "description": "Label for the x86-64 Linux helper package."
     },
-    "file_access_disabled": {
-        "message": "Local file access is disabled",
-        "description": "Warning title shown when the browser denies access to local file URLs."
-    },
     "file_access_instructions": {
         "message": "Open your browser's extension settings for Kode Injector and enable Access local files on your computer or Allow access to file URLs, then check again.",
         "description": "Instructions for enabling browser permission to read local injection files."
@@ -219,21 +427,17 @@
         "message": "Open extension settings",
         "description": "Button that opens the browser-managed settings for Kode Injector."
     },
-    "file_access_check_again": {
-        "message": "Check again",
-        "description": "Button that rechecks browser local-file permission."
-    },
     "popup_file_access_disabled": {
         "message": "Local file access is disabled. Open settings for instructions.",
         "description": "Compact popup warning when local injection files cannot be read."
     },
     "local_source_method": {
-        "message": "Local file access method",
-        "description": "Label for choosing how local injection files are read."
+        "message": "File access",
+        "description": "Title of the file access settings group."
     },
     "local_source_method_advanced": {
         "message": "Advanced",
-        "description": "Expandable section containing the optional Chromium Native Host method."
+        "description": "Tag marking the optional Native Host method."
     },
     "local_source_method_browser": {
         "message": "Browser file access",
@@ -252,16 +456,12 @@
         "description": "Shown when a Chromium nativeMessaging permission request is declined."
     },
     "local_source_method_native_host_description": {
-        "message": "Use Native Host instead of enabling “Allow access to file URLs”. This keeps the extension's browser-managed file:// access disabled; the separately installed read-only Helper reads the files configured in your injection rules. It also provides the same access method across browsers, but requires installing Helper and granting the optional Native Host permission.",
+        "message": "Reads local files through the separately installed read-only Helper. Works without the browser's “Allow access to file URLs” toggle and behaves the same in every browser.",
         "description": "Explains that Native Host replaces browser file-URL access, its security and consistency benefits, and its installation and permission tradeoffs."
     },
     "local_source_method_use_browser": {
         "message": "Use browser file access",
         "description": "Action that switches Chromium back to browser-managed local-file access."
-    },
-    "local_source_method_use_native_host": {
-        "message": "Use Native Host",
-        "description": "Action that explicitly selects the optional Chromium Native Host method."
     },
     "local_source_method_change_failed": {
         "message": "Could not change the local file access method. Try again.",
@@ -274,5 +474,41 @@
     "native_host_enable_permission": {
         "message": "Enable permission",
         "description": "Button requesting the optional Chromium nativeMessaging permission."
+    },
+    "editor_files_hint": {
+        "message": "Point at least one file — JavaScript, CSS, or both.",
+        "description": "Hint above the rule editor file fields."
+    },
+    "rules_filter_empty": {
+        "message": "No rules match “%query%”.",
+        "description": "Shown when the site filter matches nothing. %query% is the search text."
+    },
+    "rules_filter_clear": {
+        "message": "Clear filter",
+        "description": "Button that resets the site filter."
+    },
+    "popup_unsupported_page": {
+        "message": "Kode Injector can't run on this page.",
+        "description": "Popup state on browser-internal pages where injection is impossible."
+    },
+    "rule_file_unreadable": {
+        "message": "File can't be read",
+        "description": "Chip tooltip suffix when a source file cannot be read."
+    },
+    "rule_tag_file_issue": {
+        "message": "File issue",
+        "description": "Tag on rules whose source files cannot be read."
+    },
+    "rule_open_file": {
+        "message": "Open file",
+        "description": "Chip tooltip suffix; clicking opens the file in a tab."
+    },
+    "injection_disable_for": {
+        "message": "Turn off rule for %host%",
+        "description": "Accessible label of a rule switch that is on. %host% is a hostname."
+    },
+    "injection_enable_for": {
+        "message": "Turn on rule for %host%",
+        "description": "Accessible label of a rule switch that is off. %host% is a hostname."
     }
 }

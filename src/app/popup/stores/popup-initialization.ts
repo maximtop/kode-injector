@@ -4,6 +4,7 @@
 
 import { SETTINGS } from '../../common/constants';
 import type {
+    InjectionRule,
     LocalSourceAccessState,
     PopupDataResponse,
     PopupTab,
@@ -30,9 +31,9 @@ export interface PopupPresentationState {
     currentTab: PopupTab;
 
     /**
-     * Whether matching injections exist.
+     * Injection rules matching the current site.
      */
-    siteHasEnabledInjections: boolean;
+    matchingInjections: InjectionRule[];
 
     /**
      * Whether the current site is blocked.
@@ -60,7 +61,7 @@ export const preparePopupState = async (
         appEnabled: popupData.settings[SETTINGS.APP_ENABLED],
         currentTab,
         localSourceAccess: popupData.localSourceAccess,
-        siteHasEnabledInjections: popupData.siteHasEnabledInjections,
+        matchingInjections: popupData.matchingInjections,
         siteIsBlacklisted: popupData.siteIsBlacklisted,
     };
 };
