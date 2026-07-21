@@ -10,6 +10,8 @@ import {
 import find from 'lodash/find';
 
 import {
+    type InjectionFileField,
+    type InjectionFileIssues,
     type InjectionRule,
     LocalSourceAccessMethod,
     type LocalSourceAccessState,
@@ -74,6 +76,24 @@ export class InjectionsStore {
     localSourceAccessMethodPending = false;
 
     /**
+     * Whether injections are enabled globally.
+     */
+    @observable
+    appEnabled = true;
+
+    /**
+     * Message describing the last failed access-method change, if any.
+     */
+    @observable
+    methodChangeError: string | null = null;
+
+    /**
+     * Unreadable source-path fields keyed by rule identifier.
+     */
+    @observable
+    fileIssues: InjectionFileIssues = {};
+
+    /**
      * Monotonic generation used to discard stale readiness responses.
      */
     private localSourceAccessRequest = 0;
@@ -112,14 +132,31 @@ export class InjectionsStore {
             localSourceAccessMethod,
             injections,
             selectedLanguage,
+            appEnabled,
         } = await messenger.getOptionsData();
         await i18n.init(selectedLanguage);
         runInAction(() => {
             this.localSourceAccess = localSourceAccess;
             this.localSourceAccessMethod = localSourceAccessMethod;
             this.injections = injections;
+            this.appEnabled = appEnabled;
             this.optionsDataReady = true;
         });
+        this.refreshFileIssues();
+    }
+
+    /**
+     * Re-probes source-file readability for every rule.
+     */
+    refreshFileIssues = async (): Promise<void> => {
+        try {
+            const fileIssues = await messenger.getInjectionFileIssues();
+            runInAction(() => {
+                this.fileIssues = fileIssues;
+            });
+        } catch (e) {
+            log.error(e instanceof Error ? e.message : e);
+        }
     }
 
     /**
@@ -169,19 +206,140 @@ export class InjectionsStore {
 
     /**
      * Adds an injection rule and refreshes options data.
+     *
+     * @param injectionData New rule data.
+     *
+     * @returns The created rule, or null when creation failed.
      */
-    addInjection = async (injectionData: NewInjectionData): Promise<void> => {
+    addInjection = async (injectionData: NewInjectionData): Promise<InjectionRule | null> => {
         try {
             const injection = await messenger.addInjection(injectionData);
             if (!injection) {
-                return;
+                return null;
             }
             runInAction(() => {
                 this.injections.push(injection);
             });
+            this.refreshFileIssues();
+            return injection;
         } catch (e) {
             log.error(e);
+            return null;
         }
+    }
+
+    /**
+     * Updates an injection rule in place.
+     *
+     * @param id Identifier of the rule to update.
+     * @param injectionData Replacement rule data.
+     *
+     * @returns The updated rule, or null when the update failed.
+     */
+    updateInjection = async (
+        id: string,
+        injectionData: NewInjectionData,
+    ): Promise<InjectionRule | null> => {
+        try {
+            const updated = await messenger.updateInjection(id, injectionData);
+            if (!updated) {
+                return null;
+            }
+            runInAction(() => {
+                this.injections = this.injections
+                    .map((inj) => (inj.id === id ? updated : inj));
+            });
+            this.refreshFileIssues();
+            return updated;
+        } catch (e) {
+            log.error(e instanceof Error ? e.message : e);
+            return null;
+        }
+    }
+
+    /**
+     * Enables or disables one file of a rule.
+     *
+     * @param id Identifier of the rule.
+     * @param field Path field whose file is toggled.
+     * @param enabled New enabled state of the file.
+     */
+    setInjectionFileEnabled = async (
+        id: string,
+        field: InjectionFileField,
+        enabled: boolean,
+    ): Promise<void> => {
+        try {
+            const updated = await messenger.setInjectionFileEnabled(id, field, enabled);
+            if (!updated) {
+                return;
+            }
+            runInAction(() => {
+                this.injections = this.injections
+                    .map((inj) => (inj.id === id ? updated : inj));
+            });
+        } catch (e) {
+            log.error(e instanceof Error ? e.message : e);
+        }
+    }
+
+    /**
+     * Duplicates an injection rule as a disabled copy.
+     *
+     * The copy starts with both files enabled and the rule disabled, so the
+     * user turns it on deliberately after adjusting it.
+     *
+     * @param id Identifier of the rule to duplicate.
+     */
+    duplicateInjection = async (id: string): Promise<void> => {
+        const injection = find(this.injections, { id });
+        if (!injection) {
+            log.error(`Injection with id = "${id}" not found`);
+            return;
+        }
+
+        const { site, jsPath, cssPath } = injection;
+        try {
+            const copy = await messenger.addInjection({ site, jsPath, cssPath }, false);
+            if (!copy) {
+                return;
+            }
+            runInAction(() => {
+                this.injections.push(copy);
+            });
+        } catch (e) {
+            log.error(e instanceof Error ? e.message : e);
+        }
+    }
+
+    /**
+     * Toggles the global injections switch.
+     */
+    toggleAppEnabled = async (): Promise<void> => {
+        const nextEnabled = !this.appEnabled;
+        try {
+            if (nextEnabled) {
+                await messenger.enableApp();
+            } else {
+                await messenger.disableApp();
+            }
+            runInAction(() => {
+                this.appEnabled = nextEnabled;
+            });
+        } catch (e) {
+            log.error(e instanceof Error ? e.message : e);
+        }
+    }
+
+    /**
+     * Records a failed access-method change for inline display.
+     *
+     * @param message Localized failure description, or null to clear.
+     */
+    setMethodChangeError = (message: string | null): void => {
+        runInAction(() => {
+            this.methodChangeError = message;
+        });
     }
 
     /**

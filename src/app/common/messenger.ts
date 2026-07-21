@@ -5,6 +5,8 @@
 import browser from 'webextension-polyfill';
 
 import type {
+    InjectionFileField,
+    InjectionFileIssues,
     InjectionRule,
     InjectionsCodeResponse,
     LocalSourceAccessMethod,
@@ -44,9 +46,61 @@ class Messenger {
 
     /**
      * Requests creation of an injection rule.
+     *
+     * @param injectionData Injection rule data.
+     * @param enabled Initial enabled state of the created rule.
+     *
+     * @returns The created rule, or null when the data is invalid.
      */
-    addInjection = (injectionData: NewInjectionData): Promise<InjectionRule | null> => {
-        return this.sendMessage(MESSAGE_TYPES.ADD_INJECTION, { injectionData });
+    addInjection = (
+        injectionData: NewInjectionData,
+        enabled?: boolean,
+    ): Promise<InjectionRule | null> => {
+        return this.sendMessage(MESSAGE_TYPES.ADD_INJECTION, { injectionData, enabled });
+    }
+
+    /**
+     * Requests an update of an existing injection rule.
+     *
+     * @param id Identifier of the rule to update.
+     * @param injectionData Replacement rule data.
+     *
+     * @returns The updated rule, or null when the rule or data is invalid.
+     */
+    updateInjection = (
+        id: string,
+        injectionData: NewInjectionData,
+    ): Promise<InjectionRule | null> => {
+        return this.sendMessage(MESSAGE_TYPES.UPDATE_INJECTION, { id, injectionData });
+    }
+
+    /**
+     * Requests a readability probe of every configured source file.
+     *
+     * @returns Unreadable path fields keyed by rule identifier.
+     */
+    getInjectionFileIssues = (): Promise<InjectionFileIssues> => {
+        return this.sendMessage(MESSAGE_TYPES.GET_INJECTION_FILE_ISSUES);
+    }
+
+    /**
+     * Requests enabling or disabling one source file of a rule.
+     *
+     * @param id Identifier of the rule.
+     * @param field Path field whose file is toggled.
+     * @param enabled New enabled state of the file.
+     *
+     * @returns The updated rule, or null when the rule or file is missing.
+     */
+    setInjectionFileEnabled = (
+        id: string,
+        field: InjectionFileField,
+        enabled: boolean,
+    ): Promise<InjectionRule | null> => {
+        return this.sendMessage(
+            MESSAGE_TYPES.SET_INJECTION_FILE_ENABLED,
+            { id, field, enabled },
+        );
     }
 
     /**

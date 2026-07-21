@@ -3,10 +3,13 @@
  */
 
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 
-import 'antd/dist/antd.css';
+import '@mantine/core/styles.css';
+import '../common/styles/tokens.pcss';
+import '../common/styles/mantine-overrides.pcss';
 
+import { applyInitialColorScheme } from '../common/color-scheme';
 import { OptionsApp } from './components/OptionsApp';
 
 /**
@@ -16,9 +19,7 @@ export const optionsPage = () => {
     const root = document.getElementById('root');
 
     if (root) {
-        ReactDOM.render(
-            <OptionsApp />,
-            root,
-        );
+        applyInitialColorScheme();
+        createRoot(root).render(<OptionsApp />);
     }
 };

@@ -23,7 +23,15 @@ test('popup locale initializes before presentation state is returned', async () 
                 'localSourceAccess.method': LocalSourceAccessMethod.NativeHost,
                 'language.selected': 'de',
             },
-            siteHasEnabledInjections: true,
+            matchingInjections: [{
+                id: 'rule-1',
+                site: 'example.com',
+                jsPath: 'file:///patch.js',
+                cssPath: '',
+                enabled: true,
+                jsEnabled: true,
+                cssEnabled: true,
+            }],
             siteIsBlacklisted: false,
         },
         async (language) => { calls.push(`locale:${language}`); },
@@ -39,7 +47,15 @@ test('popup locale initializes before presentation state is returned', async () 
             permissionGranted: true,
             host: { status: NativeHostStatus.NotInstalled },
         },
-        siteHasEnabledInjections: true,
+        matchingInjections: [{
+            id: 'rule-1',
+            site: 'example.com',
+            jsPath: 'file:///patch.js',
+            cssPath: '',
+            enabled: true,
+            jsEnabled: true,
+            cssEnabled: true,
+        }],
         siteIsBlacklisted: false,
     });
 });

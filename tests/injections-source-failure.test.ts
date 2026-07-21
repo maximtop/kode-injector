@@ -37,6 +37,8 @@ beforeEach(() => {
         jsPath: 'file:///tmp/index.js',
         cssPath: 'file:///tmp/styles.css',
         enabled: true,
+        jsEnabled: true,
+        cssEnabled: true,
     }];
     injections.blocklist = [];
 });

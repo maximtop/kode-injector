@@ -1,42 +1,165 @@
-.content {
-    padding: 0 50px;
+/*
+ * Options page shell: topbar, tabs rail, content column, and footer.
+ */
 
-    .local-source-method-setting {
-        display: grid;
-        gap: 8px;
-        max-width: 1100px;
-        margin-top: 20px;
-        margin-bottom: 16px;
+.app-shell {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.mono {
+    font-family: var(--mono);
+    direction: ltr;
+    unicode-bidi: isolate;
+}
+
+/* ---------- topbar ---------- */
+
+.topbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+}
+
+.topbar-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 24px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 16px;
+    font-weight: 650;
+    letter-spacing: -0.01em;
+    margin: 0;
+}
+
+/* The icon carries its own border and rounding; extra CSS
+   border-radius would clip its corners at small sizes. */
+.brand img {
+    width: 26px;
+    height: 26px;
+    flex: none;
+}
+
+.topbar-spacer {
+    flex: 1;
+}
+
+.status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 5px 12px;
+    border: 1px solid var(--border);
+    border-radius: 99px;
+    background: transparent;
+    font: inherit;
+    font-size: 12.5px;
+    color: var(--muted);
+    cursor: pointer;
+    transition: background 0.13s ease, border-color 0.13s ease, color 0.13s ease;
+
+    &:hover {
+        border-color: var(--muted);
     }
 
-    .local-source-method-setting-control {
-        display: flex;
-        align-items: center;
-        gap: 16px;
+    &.warn {
+        color: var(--fg);
+        background: var(--warn-soft);
+        border-color: transparent;
+    }
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--ok);
+    flex: none;
+
+    .status-pill.warn & {
+        background: var(--warn-dot);
     }
 
-    .local-source-method-setting-description {
-        max-width: 720px;
-        color: rgb(0 0 0 / 65%);
+    .status-pill.pending & {
+        background: var(--muted);
     }
+}
 
-    .local-source-method-setting-advanced {
-        max-width: 720px;
+/* ---------- tabs rail ---------- */
 
-        summary {
-            width: fit-content;
-            cursor: pointer;
-            font-weight: 600;
+.tabs-rail {
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+}
+
+.tabs-rail-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+/* ---------- content ---------- */
+
+.app-main {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 24px 24px 96px;
+    width: 100%;
+    flex: 1;
+}
+
+/* ---------- footer ---------- */
+
+.page-foot {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 24px 32px;
+    width: 100%;
+    color: var(--muted);
+    font-size: 12.5px;
+    display: flex;
+    gap: 16px;
+
+    & a {
+        color: var(--muted);
+
+        &:hover {
+            color: var(--fg);
         }
     }
+}
 
-    .local-source-method-setting-advanced-content {
-        display: grid;
-        justify-items: start;
-        gap: 8px;
-        margin-top: 8px;
-        padding: 12px;
-        border: 1px solid rgb(0 0 0 / 15%);
-        background: rgb(255 255 255 / 60%);
+@media (max-width: 480px) {
+    .topbar-inner {
+        padding: 0 16px;
+        gap: 10px;
+    }
+
+    .status-pill-text {
+        display: none;
+    }
+
+    .status-pill {
+        padding: 6px 9px;
+    }
+
+    .tabs-rail-inner {
+        padding: 0 16px;
+    }
+
+    .app-main {
+        padding: 16px 16px 96px;
     }
 }

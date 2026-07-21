@@ -42,15 +42,15 @@ export interface LocaleValidationOptions {
 }
 
 const MESSAGE_KEY_PATTERN = /__MSG_([A-Za-z0-9_]+)__/g;
-const TRANSLATOR_KEY_PATTERN = /translator\.getMessage\(\s*['"]([^'"]+)['"]/g;
+const TRANSLATOR_KEY_PATTERN = /translator\.get(?:Message|Plural)\(\s*['"]([^'"]+)['"]/g;
 const UI_ATTRIBUTE_NAMES = new Set(['title', 'placeholder', 'aria-label', 'alt']);
 
 const UI_STRING_EXEMPTIONS = new Map([
-    ['src/app/options/components/Header/Header.tsx:Kode Injector', 'Product name'],
+    ['src/app/options/components/Topbar/Topbar.tsx:Kode Injector', 'Product name'],
     ['src/app/popup/components/Header/Header.tsx:Kode Injector', 'Product name'],
-    ['src/app/options/components/Footer/Footer.tsx:© maximtop, 2017-', 'Copyright'],
-    ['src/app/options/components/NewInjectionForm/NewInjectionForm.tsx:file:///index.js', 'Technical example'],
-    ['src/app/options/components/NewInjectionForm/NewInjectionForm.tsx:file:///styles.css', 'Technical example'],
+    ['src/app/options/components/RuleEditorModal/RuleEditorModal.tsx:example.com', 'Technical example'],
+    ['src/app/options/components/RuleEditorModal/RuleEditorModal.tsx:file:///Users/you/overrides/patch.js', 'Technical example'],
+    ['src/app/options/components/RuleEditorModal/RuleEditorModal.tsx:file:///Users/you/overrides/theme.css', 'Technical example'],
 ]);
 
 /**
@@ -215,7 +215,8 @@ const reportHardcodedStrings = (rootPath: string, sourcePath: string): string[] 
                 && node.name.kind === ts.SyntaxKind.Identifier
                 && UI_ATTRIBUTE_NAMES.has(node.name.text)
                 && node.initializer
-                && ts.isStringLiteral(node.initializer)) {
+                && ts.isStringLiteral(node.initializer)
+                && hasLetters(node.initializer.text)) {
                 report(node.initializer, node.initializer.text);
             } else if (ts.isCallExpression(node)
                 && ts.isPropertyAccessExpression(node.expression)

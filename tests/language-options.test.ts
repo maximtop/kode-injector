@@ -4,7 +4,7 @@
 
 import { expect, test } from 'vitest';
 
-import { buildLanguageOptions } from '../src/app/options/components/LanguageSelect/language-options';
+import { buildLanguageOptions } from '../src/app/options/components/SettingsView/language-options';
 
 test('auto selection places browser language first', () => {
     const options = buildLanguageOptions('auto', 'Browser language');

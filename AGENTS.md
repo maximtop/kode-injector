@@ -2,6 +2,10 @@
 
 Guidance for LLM agents working in this repository.
 
+Environment setup, build commands, the tech stack, and the project structure
+are documented once in [DEVELOPMENT.md](DEVELOPMENT.md); this file covers the
+conventions and safety rules specific to working on the code.
+
 ## Project Overview
 
 **Kode Injector** is a browser extension (Manifest V3) that injects custom
@@ -18,65 +22,10 @@ Manifest V3 service worker; Firefox uses a Manifest V3 background page.
 
 Browser extension with a React-based popup and options page.
 
-## Tech Stack
+## Tech Stack & Project Structure
 
-- **UI:** React 17, MobX 6, Ant Design 4
-- **Bundling:** Rspack 2 with built-in SWC
-- **Styling:** PostCSS with Rspack native CSS Modules
-- **Cross-browser API:** `webextension-polyfill`
-- **Linting:** ESLint (Airbnb config, 4-space indent)
-- **Package manager:** pnpm
-
-## Project Structure
-
-```
-src/
-  manifest.json              # MV3 manifest
-  _locales/{...}/            # i18n message bundles (30 supported locales)
-  assets/img/                # Extension icons
-  app/
-    background/              # Service worker
-      index.ts              # Entry — wires up stores and message handler
-      injections.ts         # Injection rules store (CRUD, matching, code fetch)
-      settings.ts           # App-level settings (enabled/disabled)
-      storage.ts            # chrome.storage wrapper
-      message-handler.ts    # Routes runtime messages to injections/settings/app
-      execute-script.ts     # Injects JS into tabs
-      app.ts                # Global enable/disable
-      update-service.ts     # Update checks
-    common/
-      constants.ts          # MESSAGE_TYPES, STORAGE_KEYS, SETTINGS
-      messenger.ts          # Message-passing helpers between popup/options and background
-      tabs.ts               # Tab helpers
-      url-utils.ts          # URL/hostname parsing
-      log.ts                # Logging
-    content-script/
-      index.ts              # Runs at document_start; requests injection code
-    options/
-      index.tsx             # Options page root
-      components/            # Header, Footer, OptionsApp, NewInjectionForm, InjectionsTable
-      stores/InjectionsStore.ts, RootStore.ts
-    popup/
-      index.tsx             # Popup root
-      components/            # Header, Footer, Main, PopupApp
-      stores/RootStore.ts, SettingsStore.ts
-  pages/
-    background/              # Background HTML + JS bootstrap
-    content-script/         # Content script entry
-    options/                 # Options HTML + JS bootstrap
-    popup/                   # Popup HTML + JS bootstrap
-scripts/
-  constants.ts              # Build channel and browser target constants
-  build/
-    bundle.ts               # Commander-based build entry point
-    bundle-runner.ts        # Rspack run/watch orchestration
-    cli.ts                  # Browser subcommands and watch validation
-    archive-plugin.ts       # Browser ZIP archive plugin
-    helpers.ts              # Manifest & locale transforms
-rspack.config.ts            # Typed Rspack and SWC config
-build/                      # Output (build/<channel>/<browser>)
-native-host/                # Shared Go native messaging host and installer
-```
+See [DEVELOPMENT.md — Tech stack](DEVELOPMENT.md#tech-stack) and
+[DEVELOPMENT.md — Project structure](DEVELOPMENT.md#project-structure).
 
 ## Architecture
 
@@ -86,9 +35,11 @@ native-host/                # Shared Go native messaging host and installer
 - **Content script** runs at `document_start` on `<all_urls>`. On load it sends
   a `GET_INJECTIONS_CODE` message to the background, receives matching JS/CSS,
   and executes them on the page.
-- **Popup** queries the background for the current tab's state (has injections?
-  blacklisted?) and provides per-site and global toggles.
-- **Options page** manages injection rules: add (site + JS path + CSS path),
+- **Popup** queries the background for the current tab's state (matching rules,
+  blacklisted?) and provides per-rule, per-site, and global toggles plus an
+  "add rule for this site" deep link into the options page.
+- **Options page** manages injection rules: create/edit in a modal (site plus
+  an optional JS and/or CSS path — at least one required), duplicate,
   enable/disable, and delete.
 - **Messaging** flows through `src/app/common/messenger.ts`, with message types
   defined in `src/app/common/constants.ts`.
@@ -119,20 +70,10 @@ native-host/                # Shared Go native messaging host and installer
   Keep component-specific values local; place values shared across modules in
   `src/app/common/constants.ts` or the relevant common contract.
 
-## Build & Development Commands
+## File Access Method Policy
 
-```sh
-pnpm install   # install dependencies
-pnpm dev       # one-shot dev build for Chrome, Edge, and Firefox
-pnpm dev chrome --watch # watch one explicit dev browser target
-pnpm release   # release build for Chrome, Edge, and Firefox
-make lint      # ESLint and TypeScript validation
-```
-
-Append `chrome`, `edge`, or `firefox` to `pnpm dev` or `pnpm release` to build
-one target. Outputs are `build/<channel>/<browser>/` and
-`build/<channel>/<browser>.zip`. Load the Chrome dev build via
-`chrome://extensions/` → **Load unpacked** → `build/dev/chrome/`.
+Build and development commands are listed in
+[DEVELOPMENT.md — Available commands](DEVELOPMENT.md#available-commands).
 
 Chrome and Edge default to browser-managed file-URL access. Their Native Host
 mode is an Advanced opt-in and its `nativeMessaging` permission must remain

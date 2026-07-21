@@ -1,0 +1,33 @@
+/*
+ * Rule editor modal: field stack and footer actions.
+ */
+
+.editor-fields {
+    padding: 20px;
+    display: grid;
+    gap: 16px;
+
+    /* Fields read as wells inside the white modal surface. */
+    & .mantine-TextInput-input {
+        background: var(--bg);
+    }
+}
+
+.editor-files-hint {
+    margin: 0 0 -6px;
+    font-size: 12.5px;
+    color: var(--muted);
+}
+
+.editor-form-error {
+    font-size: 12.5px;
+    color: var(--danger);
+}
+
+.editor-foot {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 16px 20px;
+    border-top: 1px solid var(--border);
+}

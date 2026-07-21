@@ -71,20 +71,34 @@ export interface NewInjectionData {
     [InjectionField.Site]: string;
 
     /**
-     * Local JavaScript file path.
+     * Local JavaScript file path. Empty string when the rule has no JS source.
      */
     [InjectionField.JsPath]: string;
 
     /**
-     * Local CSS file path.
+     * Local CSS file path. Empty string when the rule has no CSS source.
      */
     [InjectionField.CssPath]: string;
 }
 
 /**
- * Persisted injection rule with runtime state.
+ * Checks whether injection data references at least one source file.
+ *
+ * @param data Injection paths to inspect.
+ *
+ * @returns Whether a JS or CSS source is present.
  */
-export interface InjectionRule extends NewInjectionData {
+export const hasInjectionSource = (
+    data: Pick<NewInjectionData, InjectionField.JsPath | InjectionField.CssPath>,
+): boolean => {
+    return Boolean(data[InjectionField.JsPath] || data[InjectionField.CssPath]);
+};
+
+/**
+ * Injection rule as it may exist in storage: per-file flags are optional
+ * because rules saved before per-file toggles existed lack them.
+ */
+export interface StoredInjectionRule extends NewInjectionData {
     /**
      * Unique injection rule identifier.
      */
@@ -94,6 +108,31 @@ export interface InjectionRule extends NewInjectionData {
      * Whether the injection rule is enabled.
      */
     enabled: boolean;
+
+    /**
+     * Whether the JS source runs while the rule is enabled.
+     */
+    [InjectionField.JsEnabled]?: boolean;
+
+    /**
+     * Whether the CSS source applies while the rule is enabled.
+     */
+    [InjectionField.CssEnabled]?: boolean;
+}
+
+/**
+ * Normalized injection rule with both per-file flags present.
+ */
+export interface InjectionRule extends StoredInjectionRule {
+    /**
+     * Whether the JS source runs while the rule is enabled.
+     */
+    [InjectionField.JsEnabled]: boolean;
+
+    /**
+     * Whether the CSS source applies while the rule is enabled.
+     */
+    [InjectionField.CssEnabled]: boolean;
 }
 
 /**
@@ -110,6 +149,11 @@ export interface StoredInjectionsState {
      */
     blocklist: string[];
 }
+
+/**
+ * Path fields that reference a source file inside a rule.
+ */
+export type InjectionFileField = InjectionField.JsPath | InjectionField.CssPath;
 
 /**
  * Injection data returned to the options page.
@@ -130,6 +174,11 @@ export type OptionsDataResponse = {
      * Persisted interface language preference.
      */
     selectedLanguage: LocalePreference;
+
+    /**
+     * Whether injections are enabled globally.
+     */
+    appEnabled: boolean;
 };
 
 /**
@@ -257,15 +306,23 @@ export type PopupDataResponse = {
     settings: AppSettings;
 
     /**
-     * Whether the current site has enabled injection rules.
+     * Injection rules matching the current site, regardless of their state.
      */
-    siteHasEnabledInjections: boolean;
+    matchingInjections: InjectionRule[];
 
     /**
      * Whether injections are disabled for the current site.
      */
     siteIsBlacklisted: boolean;
 };
+
+/**
+ * Source paths that could not be read, keyed by rule identifier.
+ */
+export type InjectionFileIssues = Record<
+    string,
+    (InjectionField.JsPath | InjectionField.CssPath)[]
+>;
 
 /**
  * CSS source prepared for content-script injection.
@@ -315,8 +372,20 @@ export type RuntimeMessage =
         type: typeof MESSAGE_TYPES.SET_LOCAL_SOURCE_ACCESS_METHOD;
         data: { method: LocalSourceAccessMethod };
     }
-    | { type: typeof MESSAGE_TYPES.ADD_INJECTION; data: { injectionData: NewInjectionData } }
+    | {
+        type: typeof MESSAGE_TYPES.ADD_INJECTION;
+        data: { injectionData: NewInjectionData; enabled?: boolean };
+    }
+    | {
+        type: typeof MESSAGE_TYPES.UPDATE_INJECTION;
+        data: { id: string; injectionData: NewInjectionData };
+    }
+    | {
+        type: typeof MESSAGE_TYPES.SET_INJECTION_FILE_ENABLED;
+        data: { id: string; field: InjectionFileField; enabled: boolean };
+    }
     | { type: typeof MESSAGE_TYPES.REMOVE_INJECTION; data: { id: string } }
+    | { type: typeof MESSAGE_TYPES.GET_INJECTION_FILE_ISSUES; data?: undefined }
     | { type: typeof MESSAGE_TYPES.ENABLE_INJECTION; data: { id: string } }
     | { type: typeof MESSAGE_TYPES.DISABLE_INJECTION; data: { id: string } }
     | { type: typeof MESSAGE_TYPES.GET_POPUP_DATA; data: { tab: PopupTab } }
@@ -365,16 +434,40 @@ const isRecord = (value: unknown): value is Record<string, unknown> => {
  *
  * @returns Whether the value is an injection rule.
  */
-export const isInjectionRule = (value: unknown): value is InjectionRule => {
+export const isInjectionRule = (value: unknown): value is StoredInjectionRule => {
     if (!isRecord(value)) {
         return false;
     }
+
+    const isOptionalBoolean = (flag: unknown): boolean => (
+        flag === undefined || typeof flag === 'boolean'
+    );
 
     return typeof value.id === 'string'
         && typeof value.site === 'string'
         && typeof value.jsPath === 'string'
         && typeof value.cssPath === 'string'
-        && typeof value.enabled === 'boolean';
+        && typeof value.enabled === 'boolean'
+        && isOptionalBoolean(value[InjectionField.JsEnabled])
+        && isOptionalBoolean(value[InjectionField.CssEnabled]);
+};
+
+/**
+ * Fills in default per-file flags for a stored rule.
+ *
+ * Rules saved before per-file toggles existed lack the flags; they default
+ * to enabled, matching the whole-rule behavior they had.
+ *
+ * @param rule Stored rule, possibly without per-file flags.
+ *
+ * @returns Rule with both per-file flags present.
+ */
+export const normalizeInjectionRule = (rule: StoredInjectionRule): InjectionRule => {
+    return {
+        ...rule,
+        [InjectionField.JsEnabled]: rule[InjectionField.JsEnabled] ?? true,
+        [InjectionField.CssEnabled]: rule[InjectionField.CssEnabled] ?? true,
+    };
 };
 
 /**
@@ -447,7 +540,7 @@ export const normalizeStoredInjectionsState = (value: unknown): StoredInjections
 
     return {
         injections: Array.isArray(value.injections)
-            ? value.injections.filter(isInjectionRule)
+            ? value.injections.filter(isInjectionRule).map(normalizeInjectionRule)
             : [],
         blocklist: Array.isArray(value.blocklist)
             ? value.blocklist.filter((item): item is string => typeof item === 'string')

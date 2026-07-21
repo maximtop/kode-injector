@@ -5,6 +5,7 @@
 import browser from 'webextension-polyfill';
 
 import type {
+    InjectionFileIssues,
     InjectionRule,
     InjectionsCodeResponse,
     LocalSourceAccessState,
@@ -13,7 +14,7 @@ import type {
     RuntimeMessage,
 } from '../common/contracts';
 import { LocalSourceAccessMethod } from '../common/contracts';
-import { MESSAGE_TYPES } from '../common/constants';
+import { InjectionField, MESSAGE_TYPES } from '../common/constants';
 import { toLocalePreference, type LocalePreference } from '../common/locale';
 import { browserLanguageChannel } from '../common/browser-language-channel';
 import { log } from '../common/log';
@@ -30,6 +31,7 @@ import { localSourceAccess } from './local-source-access';
 type MessageResponse =
     | OptionsDataResponse
     | InjectionRule
+    | InjectionFileIssues
     | PopupDataResponse
     | InjectionsCodeResponse
     | browser.Tabs.Tab
@@ -60,6 +62,7 @@ class MessageHandler {
                     localSourceAccessMethod: settings.getLocalSourceAccessMethod(),
                     injections: injectionsData,
                     selectedLanguage: settings.getSelectedLanguage(),
+                    appEnabled: app.enabled,
                 };
             }
             case MESSAGE_TYPES.GET_LOCAL_SOURCE_ACCESS_STATUS: {
@@ -76,8 +79,22 @@ class MessageHandler {
                 return selectedMethod;
             }
             case MESSAGE_TYPES.ADD_INJECTION: {
-                const { injectionData } = data;
-                return injections.addInjection(injectionData);
+                const { injectionData, enabled } = data;
+                return injections.addInjection(injectionData, enabled ?? true);
+            }
+            case MESSAGE_TYPES.UPDATE_INJECTION: {
+                const { id, injectionData } = data;
+                return injections.updateInjection(id, injectionData);
+            }
+            case MESSAGE_TYPES.SET_INJECTION_FILE_ENABLED: {
+                const { id, field, enabled } = data;
+                if (field !== InjectionField.JsPath && field !== InjectionField.CssPath) {
+                    throw new Error(`Unknown injection file field ${field}`);
+                }
+                return injections.setInjectionFileEnabled(id, field, enabled);
+            }
+            case MESSAGE_TYPES.GET_INJECTION_FILE_ISSUES: {
+                return injections.getFileIssues();
             }
             case MESSAGE_TYPES.REMOVE_INJECTION: {
                 const { id } = data;
@@ -95,7 +112,7 @@ class MessageHandler {
                 const popupData: PopupDataResponse = {
                     localSourceAccess: await localSourceAccess.getState(),
                     settings: settings.getSettings(),
-                    siteHasEnabledInjections: injections.hasSiteEnabledInjections(tabUrl),
+                    matchingInjections: injections.getInjectionsByUrl(tabUrl) ?? [],
                     siteIsBlacklisted: injections.isSiteBlacklisted(tabUrl),
                 };
                 return popupData;

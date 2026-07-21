@@ -45,6 +45,7 @@ test('options initialization stores local-source access state', async () => {
         localSourceAccessMethod: LocalSourceAccessMethod.NativeHost,
         injections: [],
         selectedLanguage: 'auto',
+        appEnabled: true,
     });
     const store = new InjectionsStore({} as never);
 
