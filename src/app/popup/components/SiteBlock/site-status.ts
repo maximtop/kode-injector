@@ -4,13 +4,9 @@
 
 import { BrowserTarget } from '../../../common/browser-target';
 import type { LocalSourceAccessState } from '../../../common/contracts';
+import { StatusTone } from '../../../common/status-tone';
 import { translator } from '../../../common/translator';
 import { getAccessBlockState } from '../AccessBlock/access-block-state';
-
-/**
- * Visual tone of the site status line.
- */
-export type SiteStatusTone = 'ok' | 'off' | 'warn';
 
 /**
  * Presentation of the site status line.
@@ -19,7 +15,7 @@ export interface SiteStatus {
     /**
      * Visual tone controlling the status dot color.
      */
-    tone: SiteStatusTone;
+    tone: StatusTone;
 
     /**
      * Localized status text.
@@ -74,27 +70,27 @@ export interface SiteStatusInput {
  */
 export const getSiteStatus = (input: SiteStatusInput): SiteStatus => {
     if (!input.appEnabled) {
-        return { tone: 'off', text: translator.getMessage('popup_paused_strip') };
+        return { tone: StatusTone.Off, text: translator.getMessage('popup_paused_strip') };
     }
 
     if (getAccessBlockState(input.localSourceAccess, input.browserTarget)) {
-        return { tone: 'warn', text: translator.getMessage('popup_files_unreadable') };
+        return { tone: StatusTone.Warn, text: translator.getMessage('popup_files_unreadable') };
     }
 
     if (input.matchingCount === 0) {
-        return { tone: 'off', text: translator.getMessage('popup_no_rules') };
+        return { tone: StatusTone.Off, text: translator.getMessage('popup_no_rules') };
     }
 
     if (input.siteIsBlacklisted) {
-        return { tone: 'off', text: translator.getMessage('popup_site_disabled') };
+        return { tone: StatusTone.Off, text: translator.getMessage('popup_site_disabled') };
     }
 
     if (input.activeCount === 0) {
-        return { tone: 'off', text: translator.getMessage('popup_all_rules_off') };
+        return { tone: StatusTone.Off, text: translator.getMessage('popup_all_rules_off') };
     }
 
     return {
-        tone: 'ok',
+        tone: StatusTone.Ok,
         text: translator.getPlural('popup_rules_active', input.activeCount),
     };
 };

@@ -95,9 +95,10 @@ export const hasInjectionSource = (
 };
 
 /**
- * Persisted injection rule with runtime state.
+ * Injection rule as it may exist in storage: per-file flags are optional
+ * because rules saved before per-file toggles existed lack them.
  */
-export interface InjectionRule extends NewInjectionData {
+export interface StoredInjectionRule extends NewInjectionData {
     /**
      * Unique injection rule identifier.
      */
@@ -111,6 +112,21 @@ export interface InjectionRule extends NewInjectionData {
     /**
      * Whether the JS source runs while the rule is enabled.
      */
+    [InjectionField.JsEnabled]?: boolean;
+
+    /**
+     * Whether the CSS source applies while the rule is enabled.
+     */
+    [InjectionField.CssEnabled]?: boolean;
+}
+
+/**
+ * Normalized injection rule with both per-file flags present.
+ */
+export interface InjectionRule extends StoredInjectionRule {
+    /**
+     * Whether the JS source runs while the rule is enabled.
+     */
     [InjectionField.JsEnabled]: boolean;
 
     /**
@@ -118,14 +134,6 @@ export interface InjectionRule extends NewInjectionData {
      */
     [InjectionField.CssEnabled]: boolean;
 }
-
-/**
- * Injection rule as it may exist in storage: per-file flags are optional
- * because rules saved before per-file toggles existed lack them.
- */
-export type StoredInjectionRule =
-    Omit<InjectionRule, InjectionField.JsEnabled | InjectionField.CssEnabled>
-    & Partial<Pick<InjectionRule, InjectionField.JsEnabled | InjectionField.CssEnabled>>;
 
 /**
  * Persisted collection of injection rules and blocked sites.

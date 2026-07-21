@@ -12,6 +12,7 @@ import {
     type LocalSourceAccessState,
 } from '../../../common/contracts';
 import { NativeHostStatus } from '../../../common/native-host-protocol';
+import { StatusTone } from '../../../common/status-tone';
 import { translator } from '../../../common/translator';
 
 /**
@@ -64,11 +65,6 @@ interface MethodStatusProps {
 }
 
 /**
- * Visual tone of the method status box.
- */
-type StatusTone = 'ok' | 'warn' | 'pending';
-
-/**
  * Derives the status line for the current method.
  *
  * @param state Current local-source access state.
@@ -82,12 +78,12 @@ const getStatusPresentation = (state: LocalSourceAccessState): {
 } => {
     if (state.kind === LocalSourceAccessMethod.Browser) {
         return state.allowed
-            ? { tone: 'ok', text: translator.getMessage('settings_browser_access_ok') }
-            : { tone: 'warn', text: translator.getMessage('settings_browser_access_off') };
+            ? { tone: StatusTone.Ok, text: translator.getMessage('settings_browser_access_ok') }
+            : { tone: StatusTone.Warn, text: translator.getMessage('settings_browser_access_off') };
     }
 
     if (!state.permissionGranted) {
-        return { tone: 'warn', text: translator.getMessage('native_host_permission_required') };
+        return { tone: StatusTone.Warn, text: translator.getMessage('native_host_permission_required') };
     }
 
     const statusMessages: Record<NativeHostStatus, string> = {
@@ -100,12 +96,12 @@ const getStatusPresentation = (state: LocalSourceAccessState): {
     };
 
     const tones: Partial<Record<NativeHostStatus, StatusTone>> = {
-        [NativeHostStatus.Ready]: 'ok',
-        [NativeHostStatus.Checking]: 'pending',
+        [NativeHostStatus.Ready]: StatusTone.Ok,
+        [NativeHostStatus.Checking]: StatusTone.Pending,
     };
 
     return {
-        tone: tones[state.host.status] ?? 'warn',
+        tone: tones[state.host.status] ?? StatusTone.Warn,
         text: statusMessages[state.host.status],
         hostVersion: state.host.hostVersion,
     };
@@ -136,8 +132,8 @@ export const MethodStatus = ({
         <div>
             <div
                 className={classNames('method-status', {
-                    warn: presentation.tone === 'warn',
-                    pending: presentation.tone === 'pending',
+                    warn: presentation.tone === StatusTone.Warn,
+                    pending: presentation.tone === StatusTone.Pending,
                 })}
                 data-testid="method-status"
             >

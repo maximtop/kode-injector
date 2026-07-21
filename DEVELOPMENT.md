@@ -1,7 +1,8 @@
 # Development
 
 This document describes how to set up the development environment, build the
-extension, and contribute to the project.
+extension, and contribute to the project. Coding conventions, architecture
+notes, and safety rules live in [AGENTS.md](AGENTS.md).
 
 ## Prerequisites
 
@@ -204,23 +205,47 @@ and target-page CSP behavior are outside this minimal scenario.
 
 ```
 src/
-  manifest.json          # MV3 manifest (version injected at build time)
-  _locales/              # i18n message bundles (30 supported locales)
-  assets/                # Static images (icons)
+  manifest.json              # MV3 manifest (version injected at build time)
+  _locales/{...}/            # i18n message bundles (30 supported locales)
+  assets/img/                # Extension icons
   app/
-    background/           # Service worker — injections logic, messaging, storage, update service
-    common/               # Shared utilities, locale resolver, translator, messenger, tabs, and logs
-    content-script/       # Content script injected at document_start on all URLs
-    options/              # Options page UI (React) — manage injection rules
-    popup/                # Toolbar popup UI (React) — per-site/global toggles
-  pages/                  # Rspack entry points (HTML + TypeScript bootstrap)
+    background/              # Service worker
+      index.ts              # Entry — wires up stores and message handler
+      injections.ts         # Injection rules store (CRUD, matching, code fetch)
+      settings.ts           # App-level settings (enabled/disabled)
+      storage.ts            # chrome.storage wrapper
+      message-handler.ts    # Routes runtime messages to injections/settings/app
+      execute-script.ts     # Injects JS into tabs
+      app.ts                # Global enable/disable
+      update-service.ts     # Update checks
+    common/
+      constants.ts          # MESSAGE_TYPES, STORAGE_KEYS, SETTINGS
+      messenger.ts          # Message-passing helpers between popup/options and background
+      tabs.ts               # Tab helpers
+      url-utils.ts          # URL/hostname parsing
+      log.ts                # Logging
+    content-script/
+      index.ts              # Runs at document_start; requests injection code
+    options/
+      index.tsx             # Options page root
+      components/            # OptionsApp, Topbar, InjectionsView, RuleEditorModal, SettingsView, Footer
+      stores/InjectionsStore.ts, RootStore.ts
+    popup/
+      index.tsx             # Popup root
+      components/            # PopupApp, Header, PausedStrip, AccessBlock, SiteBlock, RulesList, EmptyCta, Footer
+      stores/RootStore.ts, SettingsStore.ts
+  pages/                     # Rspack entry points (HTML + TypeScript bootstrap)
 scripts/
-  constants.ts            # Build-channel constants
+  constants.ts              # Build channel and browser target constants
   build/
-    archive-plugin.ts     # Browser ZIP archive plugin
-    helpers.ts            # Manifest & locale transforms
-rspack.config.ts          # Typed Rspack and SWC configuration
-build/                    # Build output (dev/ and release/)
+    bundle.ts               # Commander-based build entry point
+    bundle-runner.ts        # Rspack run/watch orchestration
+    cli.ts                  # Browser subcommands and watch validation
+    archive-plugin.ts       # Browser ZIP archive plugin
+    helpers.ts              # Manifest & locale transforms
+rspack.config.ts            # Typed Rspack and SWC config
+build/                      # Output (build/<channel>/<browser>)
+native-host/                # Shared Go native messaging host and installer
 ```
 
 ## Linting

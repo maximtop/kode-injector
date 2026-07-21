@@ -9,6 +9,7 @@ import { Switch } from '@mantine/core';
 
 import { rootStore } from '../../stores/RootStore';
 import { getCurrentBrowserTarget } from '../../../common/browser-target';
+import { StatusTone } from '../../../common/status-tone';
 import { translator } from '../../../common/translator';
 import { getSiteStatus } from './site-status';
 
@@ -51,8 +52,8 @@ export const SiteBlock = observer((): React.JSX.Element => {
             <div className="site-info">
                 <div className="site-host">{settingsStore.currentTabHostname}</div>
                 <div className={classNames('site-status', {
-                    off: status.tone === 'off',
-                    warn: status.tone === 'warn',
+                    off: status.tone === StatusTone.Off,
+                    warn: status.tone === StatusTone.Warn,
                 })}
                 >
                     <span className="site-status-dot" />

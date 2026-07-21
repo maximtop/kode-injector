@@ -11,6 +11,7 @@ import {
 } from '@mantine/core';
 
 import { rootStore } from '../../stores/RootStore';
+import { COLOR_SCHEMES } from '../../../common/color-scheme';
 import type { BrowserTarget } from '../../../common/browser-target';
 import {
     LocalSourceAccessMethod,
@@ -72,7 +73,7 @@ interface SettingsViewProps {
 /**
  * Appearance values shown by the theme switcher.
  */
-const THEME_VALUES = ['light', 'auto', 'dark'] as const;
+const THEME_VALUES = [COLOR_SCHEMES.LIGHT, COLOR_SCHEMES.AUTO, COLOR_SCHEMES.DARK] as const;
 
 /**
  * Renders the Settings tab.

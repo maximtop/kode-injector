@@ -10,8 +10,10 @@ import {
     type MantineColorScheme,
 } from '@mantine/core';
 
+import { COLOR_SCHEMES } from '../../../common/color-scheme';
 import { PROJECT_REPOSITORY_URL } from '../../../common/constants';
 import type { LocalSourceAccessState } from '../../../common/contracts';
+import { StatusTone } from '../../../common/status-tone';
 import { translator } from '../../../common/translator';
 import {
     IconContrast,
@@ -39,7 +41,11 @@ interface TopbarProps {
 /**
  * Cycle order of the header theme toggle.
  */
-const SCHEME_CYCLE: MantineColorScheme[] = ['auto', 'light', 'dark'];
+const SCHEME_CYCLE: MantineColorScheme[] = [
+    COLOR_SCHEMES.AUTO,
+    COLOR_SCHEMES.LIGHT,
+    COLOR_SCHEMES.DARK,
+];
 
 /**
  * Translator keys of the scheme labels.
@@ -92,8 +98,8 @@ export const Topbar = ({
                 <button
                     type="button"
                     className={classNames('status-pill', {
-                        warn: pill.tone === 'warn',
-                        pending: pill.tone === 'pending',
+                        warn: pill.tone === StatusTone.Warn,
+                        pending: pill.tone === StatusTone.Pending,
                     })}
                     onClick={onOpenSettingsTab}
                     title={translator.getMessage('access_pill_title')}
