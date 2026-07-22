@@ -232,14 +232,14 @@ body {
     }
 
     &[data-variant="filled"]:not(.btn-danger) {
-        background: var(--accent);
+        background: var(--accent-strong);
         border-color: transparent;
         color: var(--accent-ink);
         box-shadow: 0 1px 2px oklch(40% 0.1 172 / 0.4), inset 0 1px 0 oklch(100% 0 0 / 0.15);
 
         &:hover {
-            background: var(--accent);
-            filter: brightness(1.06);
+            background: var(--accent-strong);
+            filter: brightness(1.08);
         }
     }
 
@@ -294,7 +294,7 @@ body {
 }
 
 .mantine-SegmentedControl-indicator {
-    background: var(--accent);
+    background: var(--accent-strong);
     border-radius: calc(var(--r) - 3px);
     box-shadow: none;
 }

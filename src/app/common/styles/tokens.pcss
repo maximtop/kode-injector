@@ -11,11 +11,14 @@
     --fg: oklch(22% 0.012 190);
     --muted: oklch(47% 0.015 185);
     --border: oklch(89.5% 0.006 180);
-    /* Brand green #00a485 sampled from the extension icon. */
+    /* Brand green #00a485 sampled from the extension icon. Used for graphics
+       that need only 3:1 (switch tracks, tab underline, status dots). */
     --accent: oklch(63.5% 0.115 172);
     --accent-soft: oklch(63.5% 0.115 172 / 0.11);
-    /* Dark ink on the accent passes AA contrast; white does not. */
-    --accent-ink: oklch(20% 0.04 180);
+    /* Deeper green for filled surfaces that carry text, so white ink clears
+       WCAG AA (5.1:1); white on the plain accent would only reach 3.2:1. */
+    --accent-strong: oklch(52% 0.115 172);
+    --accent-ink: #fff;
     --ok: oklch(60% 0.14 140);
     --warn: oklch(70% 0.13 70);
     /* Darker variant for small status dots: >=3:1 on light surfaces. */
@@ -38,7 +41,8 @@
     --border: oklch(30% 0.012 190);
     --accent: oklch(72% 0.125 172);
     --accent-soft: oklch(72% 0.125 172 / 0.14);
-    --accent-ink: oklch(16% 0.02 180);
+    --accent-strong: oklch(54% 0.125 172);
+    --accent-ink: #fff;
     --ok: oklch(72% 0.14 140);
     --warn: oklch(76% 0.12 75);
     --warn-dot: oklch(76% 0.12 75);
