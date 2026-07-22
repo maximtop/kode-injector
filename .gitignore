@@ -8,3 +8,6 @@ deploy.sh
 /native-host/dev-extension-ids.json
 /native-host/macos-helper/.build/
 /native-host/macos-helper/.swiftpm/
+
+# macOS folder metadata
+.DS_Store
