@@ -397,8 +397,10 @@ not git checkouts, so they skip the nested source archive with a warning.
 
 The workflow can also be started manually from the Actions tab for an
 already-published release tag. Releases published before these assets existed
-(v0.9.1 and older) cannot be deployed this way, because the asset download
-finds no `source.zip`; submit those from the Developer Hub manually instead.
+(v0.9.1 and older) are refused before anything reaches AMO: the workflow
+requires `firefox.zip`, `source.zip`, and `approval-notes.txt` to be present
+on the release and covered by `SHA256SUMS`. Submit those releases from the
+Developer Hub manually instead.
 
 Configure these sensitive repository secrets for Firefox:
 
@@ -430,6 +432,11 @@ Failure playbook:
 - **Upload rejected during AMO validation**: the run fails before a version
   is created. Read the validation messages in the log, fix the package, and
   ship a new release.
+- **`version already exists` during version creation**: the tag was already
+  submitted — typically a re-run of a green deploy. The existing AMO
+  submission is untouched and there is nothing to redo. If that version
+  genuinely must be re-uploaded, delete it in the Developer Hub first, then
+  re-run the workflow.
 - **Submission rejected after review**: no workflow fails; the verdict
   arrives by email days after a green run. Address the reasons and ship a
   fixed version through a new release.

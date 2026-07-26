@@ -18,6 +18,9 @@ jobs:
     name: Upload and submit for review
     if: github.event_name == 'workflow_dispatch' || !github.event.release.prerelease
     runs-on: ubuntu-latest
+    # go-webext bounds the AMO validation wait at 20 minutes; this only
+    # catches a run that hangs outside it.
+    timeout-minutes: 30
     concurrency:
       group: firefox-amo-deploy
       cancel-in-progress: false
@@ -106,6 +109,27 @@ jobs:
           PACKAGE_VERSION: ${{ steps.release.outputs.version }}
         run: |
           set -euo pipefail
+          # Refuse incomplete releases before anything reaches AMO. Without
+          # this, go-webext would create the version and only then fail to
+          # attach the missing source, leaving a half-submitted version
+          # whose number is burned on the listing.
+          for f in firefox.zip source.zip approval-notes.txt SHA256SUMS; do
+            if [[ ! -f "$f" ]]; then
+              echo "Release asset $f is missing. Releases published before" \
+                "the AMO assets existed (v0.9.1 and older) cannot be" \
+                "deployed by this workflow; submit them from the Developer" \
+                "Hub instead." >&2
+              exit 1
+            fi
+          done
+          ASSET_LINES="$(grep -cE \
+            ' (firefox\.zip|source\.zip|approval-notes\.txt)$' SHA256SUMS \
+            || true)"
+          if [[ "$ASSET_LINES" -ne 3 ]]; then
+            echo "SHA256SUMS covers $ASSET_LINES of 3 AMO assets;" \
+              "refusing to deploy an incompletely checksummed release" >&2
+            exit 1
+          fi
           grep -E ' (firefox\.zip|source\.zip|approval-notes\.txt)$' SHA256SUMS \
             | sha256sum --check --strict -
           ZIP_VERSION="$(unzip -p firefox.zip manifest.json | jq -r '.version')"
