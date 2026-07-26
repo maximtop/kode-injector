@@ -1,0 +1,180 @@
+name: Deploy Firefox Add-ons
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Published release tag to deploy (vX.Y.Z)'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Upload and submit for review
+    if: github.event_name == 'workflow_dispatch' || !github.event.release.prerelease
+    runs-on: ubuntu-latest
+    concurrency:
+      group: firefox-amo-deploy
+      cancel-in-progress: false
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GO_WEBEXT_VERSION: v0.4.2
+      FIREFOX_EXTENSION_ID: kode-injector@maximtop.dev
+    steps:
+      - name: Resolve and validate release
+        id: release
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          EVENT_TAG: ${{ github.event.release.tag_name }}
+          INPUT_TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+          if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
+            RELEASE_TAG="$INPUT_TAG"
+            if [[ ! "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+              echo "Release tag must match vX.Y.Z: $RELEASE_TAG" >&2
+              exit 1
+            fi
+          else
+            RELEASE_TAG="$EVENT_TAG"
+            if [[ ! "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+              echo "::notice::Release tag $RELEASE_TAG does not match" \
+                "vX.Y.Z; skipping store deployment."
+              echo "deploy=false" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+          fi
+
+          RELEASE_JSON="$(gh release view "$RELEASE_TAG" \
+            --repo "$GITHUB_REPOSITORY" --json isDraft,isPrerelease)"
+          if [[ "$(jq -r '.isDraft' <<<"$RELEASE_JSON")" != "false" ]]; then
+            echo "Release $RELEASE_TAG is a draft;" \
+              "publish it before deploying to the store" >&2
+            exit 1
+          fi
+          if [[ "$(jq -r '.isPrerelease' <<<"$RELEASE_JSON")" != "false" ]]; then
+            echo "Release $RELEASE_TAG is a pre-release;" \
+              "store deployment ships full releases only" >&2
+            exit 1
+          fi
+
+          echo "deploy=true" >> "$GITHUB_OUTPUT"
+          echo "tag=$RELEASE_TAG" >> "$GITHUB_OUTPUT"
+          echo "version=${RELEASE_TAG#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Check store configuration
+        if: steps.release.outputs.deploy == 'true'
+        env:
+          FIREFOX_CLIENT_ID: ${{ secrets.FIREFOX_CLIENT_ID }}
+          FIREFOX_CLIENT_SECRET: ${{ secrets.FIREFOX_CLIENT_SECRET }}
+        run: |
+          set -euo pipefail
+          missing=()
+          for name in FIREFOX_CLIENT_ID FIREFOX_CLIENT_SECRET; do
+            [[ -n "${!name}" ]] || missing+=("$name")
+          done
+          if [[ "${#missing[@]}" -gt 0 ]]; then
+            echo "Missing store configuration: ${missing[*]}" >&2
+            echo "Set the secrets listed in DEVELOPMENT.md before" \
+              "deploying." >&2
+            exit 1
+          fi
+
+      - name: Download release assets
+        if: steps.release.outputs.deploy == 'true'
+        env:
+          RELEASE_TAG: ${{ steps.release.outputs.tag }}
+        run: |
+          set -euo pipefail
+          gh release download "$RELEASE_TAG" \
+            --repo "$GITHUB_REPOSITORY" \
+            --pattern firefox.zip \
+            --pattern source.zip \
+            --pattern approval-notes.txt \
+            --pattern SHA256SUMS \
+            --dir release-assets
+
+      - name: Verify asset integrity and version
+        if: steps.release.outputs.deploy == 'true'
+        working-directory: release-assets
+        env:
+          PACKAGE_VERSION: ${{ steps.release.outputs.version }}
+        run: |
+          set -euo pipefail
+          grep -E ' (firefox\.zip|source\.zip|approval-notes\.txt)$' SHA256SUMS \
+            | sha256sum --check --strict -
+          ZIP_VERSION="$(unzip -p firefox.zip manifest.json | jq -r '.version')"
+          if [[ "$ZIP_VERSION" != "$PACKAGE_VERSION" ]]; then
+            echo "firefox.zip manifest version $ZIP_VERSION does not match" \
+              "release version $PACKAGE_VERSION" >&2
+            exit 1
+          fi
+          GECKO_ID="$(unzip -p firefox.zip manifest.json \
+            | jq -r '.browser_specific_settings.gecko.id')"
+          if [[ "$GECKO_ID" != "$FIREFOX_EXTENSION_ID" ]]; then
+            echo "firefox.zip gecko id $GECKO_ID does not match" \
+              "$FIREFOX_EXTENSION_ID" >&2
+            exit 1
+          fi
+
+      - name: Set up Go
+        if: steps.release.outputs.deploy == 'true'
+        uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6.5.0
+        with:
+          go-version: '1.26.x'
+          cache: false
+
+      - name: Install go-webext
+        if: steps.release.outputs.deploy == 'true'
+        run: |
+          set -euo pipefail
+          go install "github.com/adguardteam/go-webext@${GO_WEBEXT_VERSION}"
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+
+      - name: Upload to Firefox Add-ons and attach source
+        if: steps.release.outputs.deploy == 'true'
+        env:
+          FIREFOX_CLIENT_ID: ${{ secrets.FIREFOX_CLIENT_ID }}
+          FIREFOX_CLIENT_SECRET: ${{ secrets.FIREFOX_CLIENT_SECRET }}
+        run: |
+          set -euo pipefail
+          # go-webext waits for AMO validation, attaches the source archive,
+          # and returns. Mozilla's review and signing run asynchronously
+          # afterwards; the version publishes itself once approved.
+          go-webext update firefox \
+            -f release-assets/firefox.zip \
+            -s release-assets/source.zip \
+            -c listed \
+            -n "$(cat release-assets/approval-notes.txt)" 2>&1
+
+      - name: Report store status
+        if: steps.release.outputs.deploy == 'true'
+        env:
+          FIREFOX_CLIENT_ID: ${{ secrets.FIREFOX_CLIENT_ID }}
+          FIREFOX_CLIENT_SECRET: ${{ secrets.FIREFOX_CLIENT_SECRET }}
+          RELEASE_TAG: ${{ steps.release.outputs.tag }}
+          PACKAGE_VERSION: ${{ steps.release.outputs.version }}
+        run: |
+          set -euo pipefail
+          go-webext status firefox -a "$FIREFOX_EXTENSION_ID" 2>&1 \
+            | tee "$RUNNER_TEMP/status-output.txt"
+          {
+            echo "## Firefox Add-ons deployment"
+            echo
+            echo "- Release: \`$RELEASE_TAG\` (version $PACKAGE_VERSION)"
+            echo "- Uploaded to the listed channel with the source archive" \
+              "and submitted to the Mozilla review queue."
+            echo "- Mozilla reviews and signs asynchronously (hours to" \
+              "days); the version publishes automatically after approval," \
+              "with no manual publish step."
+            echo "- Track progress in the [Developer Hub](https://addons.mozilla.org/en-US/developers/addon/kode-injector/versions)."
+            echo
+            echo '```'
+            cat "$RUNNER_TEMP/status-output.txt"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"

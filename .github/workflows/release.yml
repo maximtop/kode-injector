@@ -96,6 +96,8 @@ jobs:
             build/release/chrome.zip
             build/release/edge.zip
             build/release/firefox.zip
+            build/release/source.zip
+            build/release/approval-notes.txt
           if-no-files-found: error
           retention-days: 30
 
@@ -273,7 +275,8 @@ jobs:
         working-directory: release-assets
         run: |
           sha256sum -c SHA256SUMS
-          sha256sum chrome.zip edge.zip firefox.zip >> SHA256SUMS
+          sha256sum chrome.zip edge.zip firefox.zip source.zip \
+            approval-notes.txt >> SHA256SUMS
           sha256sum -c SHA256SUMS
       - name: Refuse to replace an existing release
         shell: bash

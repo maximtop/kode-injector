@@ -5,7 +5,8 @@
 - [ ] Handle popup open on the service pages
 - [x] Create draft releases from version tags with GitHub Actions
 - [x] Automate extension publishing to Chrome Web Store (deploy workflow on release publication)
-- [ ] Automate extension publishing to Microsoft Edge Add-ons and Firefox Add-ons (AMO)
+- [x] Automate extension publishing to Firefox Add-ons (AMO) with the source archive
+- [ ] Automate extension publishing to Microsoft Edge Add-ons
 - [ ] Import/export injections
 - [ ] Support multiple files per rule (arbitrary list of JS/CSS sources instead
       of one jsPath + one cssPath; needs storage schema v3 migration — the
