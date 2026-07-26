@@ -9,6 +9,7 @@ import { rspack, type Configuration } from '@rspack/core';
 import packageJson from './package.json';
 import { ArchivePlugin } from './scripts/build/archive-plugin';
 import { updateLocalesMSGName, updateManifest } from './scripts/build/helpers';
+import { SourceArchivePlugin } from './scripts/build/source-archive-plugin';
 import {
     BROWSER_TARGETS,
     CHANNEL_ENVS,
@@ -91,6 +92,17 @@ export const createRspackConfig = (
             filename: 'background.html',
             chunks: ['background'],
         }));
+
+        // Mozilla requires the source of a minified submission, so release
+        // builds carry the archive and its reviewer notes.
+        if (!isDev) {
+            plugins.push(new SourceArchivePlugin(
+                ROOT_PATH,
+                path.join(channelPath, 'source.zip'),
+                path.join(channelPath, 'approval-notes.txt'),
+                `kode-injector-${packageJson.version}`,
+            ));
+        }
     }
 
     return {
