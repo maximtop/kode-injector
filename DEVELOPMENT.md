@@ -414,6 +414,26 @@ GitHub secrets. The local `.env` also needs
 `FIREFOX_APP_ID=kode-injector@maximtop.dev` for `make firefox_status`; the
 workflow reads the ID from the built manifest instead.
 
+Failure playbook:
+
+- **`json: cannot unmarshal array into Go struct field
+  AddonInfo.categories`**: a known go-webext v0.4.2 limitation, not a
+  deployment failure. AMO now returns `categories` as an array of slugs
+  while go-webext still expects the older object shape, so `status` and
+  `insert` cannot decode the response. The upload path (`update`) never
+  reads that struct and is unaffected; the workflow downgrades the status
+  step to a warning so a submitted version is not reported as a failed
+  deploy. `make firefox_status` surfaces the raw error until go-webext is
+  fixed — read the listing in the Developer Hub meanwhile.
+- **Authentication failure (401)**: see the credential runbook above.
+  Nothing was uploaded.
+- **Upload rejected during AMO validation**: the run fails before a version
+  is created. Read the validation messages in the log, fix the package, and
+  ship a new release.
+- **Submission rejected after review**: no workflow fails; the verdict
+  arrives by email days after a green run. Address the reasons and ship a
+  fixed version through a new release.
+
 ## Releases
 
 1. Bump the `version` field in `package.json`.

@@ -161,8 +161,16 @@ jobs:
           PACKAGE_VERSION: ${{ steps.release.outputs.version }}
         run: |
           set -euo pipefail
-          go-webext status firefox -a "$FIREFOX_EXTENSION_ID" 2>&1 \
-            | tee "$RUNNER_TEMP/status-output.txt"
+          # Diagnostics only. The version is already submitted at this point,
+          # so a status failure must never turn a successful deploy red.
+          STATUS_FILE="$RUNNER_TEMP/status-output.txt"
+          STATUS_NOTE=""
+          if ! go-webext status firefox -a "$FIREFOX_EXTENSION_ID" \
+            > "$STATUS_FILE" 2>&1; then
+            STATUS_NOTE="Reading the listing status failed; the version was still submitted. go-webext v0.4.2 cannot decode the AMO \`categories\` field, which the API now returns as an array."
+            echo "::warning::$STATUS_NOTE"
+          fi
+          head -c 8000 "$STATUS_FILE" || true
           {
             echo "## Firefox Add-ons deployment"
             echo
@@ -173,8 +181,12 @@ jobs:
               "days); the version publishes automatically after approval," \
               "with no manual publish step."
             echo "- Track progress in the [Developer Hub](https://addons.mozilla.org/en-US/developers/addon/kode-injector/versions)."
+            if [[ -n "$STATUS_NOTE" ]]; then
+              echo "- $STATUS_NOTE"
+            fi
             echo
             echo '```'
-            cat "$RUNNER_TEMP/status-output.txt"
+            head -c 8000 "$STATUS_FILE"
+            echo
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
