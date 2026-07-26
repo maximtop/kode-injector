@@ -368,6 +368,78 @@ The local fallback uses the `Makefile` targets below and the local
 | --- | --- |
 | `make chrome_status` | Check the status of the Chrome Web Store item |
 | `make chrome_update` | Upload a new build to the Chrome Web Store |
+| `make firefox_status` | Check the status of the AMO listing |
+| `make firefox_update` | Upload `firefox.zip` + `source.zip` to AMO for review |
+
+Firefox Add-ons deployment is automated by the separate `Deploy Firefox
+Add-ons` workflow. Publishing a GitHub Release verifies the release's
+`firefox.zip`, `source.zip`, and `approval-notes.txt` against `SHA256SUMS`,
+the tag version, and the `kode-injector@maximtop.dev` gecko ID, then uploads
+the package and its source to the listed AMO channel with a pinned
+`go-webext`, passing the notes through the AMO `approval_notes` field. The
+workflow only submits: Mozilla reviews and signs asynchronously, from hours
+to days, and publishes the version automatically once approved, so there is
+no publish step on our side. It keeps its own concurrency group and runs
+independently of the Chrome deployment.
+
+AMO requires the source archive because the release bundle is minified.
+`source.zip` and `approval-notes.txt` are produced by the Firefox release
+build itself through `SourceArchivePlugin`: the archive is the committed
+repository state of the tag (`git archive`), with one difference — the
+`README.md` inside it gains a "Building Instructions for Firefox Add-ons
+Review Team" section in place of the invisible `<!-- TOC:AMO_REVIEW -->`
+anchor in the repository README's table of contents. Do not remove that
+anchor; the release build fails without it. Because the archive snapshots
+`HEAD` rather than the working tree, a local release build packages the last
+commit — CI always builds a clean tag checkout. Rebuilding from the archive
+with `pnpm release firefox` reproduces the submitted package; such builds are
+not git checkouts, so they skip the nested source archive with a warning.
+
+The workflow can also be started manually from the Actions tab for an
+already-published release tag. Releases published before these assets existed
+(v0.9.1 and older) are refused before anything reaches AMO: the workflow
+requires `firefox.zip`, `source.zip`, and `approval-notes.txt` to be present
+on the release and covered by `SHA256SUMS`. Submit those releases from the
+Developer Hub manually instead.
+
+Configure these sensitive repository secrets for Firefox:
+
+- `FIREFOX_CLIENT_ID` — the JWT issuer from the
+  [AMO API credentials page](https://addons.mozilla.org/en-US/developers/addon/api/key/)
+  (mirrored from the local `.env`)
+- `FIREFOX_CLIENT_SECRET` — the JWT secret from the same page
+
+AMO credentials belong to the Mozilla account, not to a single add-on. A
+`401 Unknown JWT iss (issuer)` means the issuer no longer exists: generate a
+new credential pair on the page above, then update both `.env` and the
+GitHub secrets. The local `.env` also needs
+`FIREFOX_APP_ID=kode-injector@maximtop.dev` for `make firefox_status`; the
+workflow reads the ID from the built manifest instead.
+
+Failure playbook:
+
+- **`json: cannot unmarshal array into Go struct field
+  AddonInfo.categories`**: a known go-webext v0.4.2 limitation, not a
+  deployment failure. AMO now returns `categories` as an array of slugs
+  while go-webext still expects the older object shape, so `status` and
+  `insert` cannot decode the response. The upload path (`update`) never
+  reads that struct and is unaffected; the workflow downgrades the status
+  step to a warning so a submitted version is not reported as a failed
+  deploy. `make firefox_status` surfaces the raw error until go-webext is
+  fixed — read the listing in the Developer Hub meanwhile.
+- **Authentication failure (401)**: see the credential runbook above.
+  Nothing was uploaded.
+- **Upload rejected during AMO validation**: the run fails before a version
+  is created. Read the validation messages in the log, fix the package, and
+  ship a new release.
+- **`version already exists` during version creation**: the tag was already
+  submitted — typically a re-run of a green deploy. The existing AMO
+  submission is untouched and there is nothing to redo. If that version
+  genuinely must be re-uploaded, delete it in the Developer Hub first, then
+  re-run the workflow.
+- **Submission rejected after review**: no workflow fails; the verdict
+  arrives by email days after a green run. Address the reasons and ship a
+  fixed version through a new release.
 
 ## Releases
 
@@ -375,10 +447,12 @@ The local fallback uses the `Makefile` targets below and the local
 2. Run `make build` to produce the browser directories and ZIPs under
    `build/release/`.
 3. Push the matching version tag to create a GitHub Draft Release containing
-   the same store-ready `chrome.zip`, `edge.zip`, and `firefox.zip` artifacts.
+   the same store-ready `chrome.zip`, `edge.zip`, `firefox.zip`, `source.zip`,
+   and `approval-notes.txt` artifacts.
 4. After checking the draft assets, publish the GitHub Release. Publishing
-   triggers the Chrome Web Store deployment automatically; Edge and Firefox
-   submission remains manual until the remaining item in `TODO.md` is done.
+   triggers the Chrome Web Store and Firefox Add-ons deployments
+   automatically; Edge submission remains manual until the remaining item in
+   `TODO.md` is done.
 5. When the store review completes, publish the approved version manually in
    the Chrome Web Store Developer Dashboard.
 
@@ -465,8 +539,9 @@ builds every browser release artifact, and runs the Go 1.26 native-host suite
 with the race detector. CI has read-only repository permissions and never
 publishes a release.
 
-The `Release` workflow builds `chrome.zip`, `edge.zip`, and `firefox.zip` on a
-GitHub-hosted Linux runner and retains them as store-ready artifacts. A separate
+The `Release` workflow builds `chrome.zip`, `edge.zip`, `firefox.zip`, and the
+AMO review assets (`source.zip`, `approval-notes.txt`) on a GitHub-hosted
+Linux runner and retains them as store-ready artifacts. A separate
 GitHub-hosted macOS runner signs the two nested helpers inside-out and then
 signs the outer app; signing commands must not use `--deep`. Each architecture
 is notarized twice: first a ZIP of the app is submitted, accepted, stapled, and
@@ -526,7 +601,8 @@ To prepare a release:
 3. Wait for the workflow to verify the tag, rebuild and sign the packages, and
    create an unpublished [GitHub Draft Release](https://github.com/maximtop/kode-injector/releases).
 4. Download the draft assets and inspect `chrome.zip`, `edge.zip`,
-   `firefox.zip`, the native platform archives, both notarized macOS DMGs, both
+   `firefox.zip`, `source.zip`, `approval-notes.txt`,
+   the native platform archives, both notarized macOS DMGs, both
    independently stapled apps, and `SHA256SUMS`. For the final manual
    Gatekeeper gate, download each DMG through a browser on a clean test account,
    verify quarantine is present, launch the app from the mounted image and

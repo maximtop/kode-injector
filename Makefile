@@ -1,4 +1,5 @@
-.PHONY: build dev release chrome edge firefox native_test native_package
+.PHONY: build dev release chrome edge firefox native_test native_package \
+	chrome_status chrome_update firefox_status firefox_update
 
 include .env
 
@@ -47,3 +48,13 @@ chrome_status:
 
 chrome_update:
 	../go-webext/go-webext update chrome -a $(CHROME_APP_ID) -f ./build/release/chrome.zip
+
+# `include .env` defines make variables but does not export them, and
+# go-webext reads the AMO credentials from the environment.
+export FIREFOX_CLIENT_ID FIREFOX_CLIENT_SECRET
+
+firefox_status:
+	../go-webext/go-webext status firefox -a $(FIREFOX_APP_ID)
+
+firefox_update:
+	../go-webext/go-webext update firefox -f ./build/release/firefox.zip -s ./build/release/source.zip -c listed -n "$$(cat ./build/release/approval-notes.txt)"

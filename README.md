@@ -28,6 +28,7 @@ and CSS — every time, without manual steps.
 - [Permissions](#permissions)
 - [FAQ / Troubleshooting](#faq--troubleshooting)
 - [Documentation](#documentation)
+<!-- TOC:AMO_REVIEW -->
 
 ---
 
