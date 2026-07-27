@@ -368,6 +368,8 @@ The local fallback uses the `Makefile` targets below and the local
 | --- | --- |
 | `make chrome_status` | Check the status of the Chrome Web Store item |
 | `make chrome_update` | Upload a new build to the Chrome Web Store |
+| `make edge_update` | Upload `edge.zip` to an existing Edge product |
+| `make edge_publish` | Submit the Edge draft for certification |
 | `make firefox_status` | Check the status of the AMO listing |
 | `make firefox_update` | Upload `firefox.zip` + `source.zip` to AMO for review |
 
@@ -441,6 +443,83 @@ Failure playbook:
   arrives by email days after a green run. Address the reasons and ship a
   fixed version through a new release.
 
+Microsoft Edge Add-ons deployment is automated by the separate `Deploy
+Microsoft Edge Add-ons` workflow for updates to an already-published product.
+Publishing a GitHub Release verifies `edge.zip` against `SHA256SUMS` and the
+tag version, uploads it with pinned `go-webext` v0.4.2 and the Edge API v1.1,
+then submits the draft for certification. Microsoft processes certification
+asynchronously and publishes an accepted update according to the listing's
+availability settings.
+
+The Microsoft API cannot create a product or update its listing metadata. The
+first release must therefore be completed in Partner Center:
+
+1. Create the extension product and upload a store-ready `edge.zip` from a
+   published GitHub Release.
+2. Complete Availability, Properties, Privacy, and every enabled Store listing.
+   Use `assets/store/edge-listing.md`, the localized copy under
+   `assets/store/edge-listings/`, the other files under `assets/store/`, and
+   the public `PRIVACY.md` as the maintained sources.
+3. Submit the first release for certification and wait until it is **In the
+   store**. The Update API is for an existing published product.
+4. Copy the Product ID GUID from the Partner Center URL. This is the
+   `EDGE_PRODUCT_ID` used by `go-webext`; it is not the public extension ID.
+5. Open the Partner Center **Publish API** page, create a v1.1 API key, and
+   record its Client ID and one-time key value.
+6. Configure the GitHub Actions values below. Future published releases then
+   upload and submit automatically.
+
+Configure these sensitive repository secrets for Edge:
+
+- `EDGE_CLIENT_ID` — the Client ID shown on the Partner Center Publish API page
+- `EDGE_API_KEY` — an active v1.1 key from the same page
+
+Configure this repository variable:
+
+- `EDGE_PRODUCT_ID` — the Partner Center product GUID
+
+API keys expire after 72 days, and Partner Center shows the exact expiry.
+Rotate the key before that date and update `EDGE_API_KEY`; never print it or
+commit it to source control. For local fallback, put the credentials in the
+gitignored `.env`, using dotenv quoting when the key contains special
+characters, and use `make edge_update` followed by `make edge_publish`. These
+targets pin API v1.1 and let `go-webext` parse the credential values directly
+so make does not alter quoted or special characters.
+
+The Publish API accepts certification notes, but `go-webext` v0.4.2 does not
+send them and has no Edge notes option. Keep stable reviewer guidance in the
+Partner Center listing; if the review steps need to change for a release,
+update them manually before the workflow submits that release.
+
+The Edge Product ID and public Edge extension ID serve different purposes. The
+32-letter public ID becomes available from the store listing and belongs in
+the `KODE_INJECTOR_EDGE_ID` repository variable. Release builds use it only to
+authorize the optional Native Host origin. A missing value does not affect the
+default browser-managed file access, but the Advanced Native Host mode will not
+work for a store-installed Edge build until a later release and matching
+Helper packages are built with that ID.
+
+Edge failure playbook:
+
+- **Authentication failure (401/403)**: the v1.1 key is missing, expired, or
+  does not match the Client ID. Create a new key, update `EDGE_API_KEY`, and
+  re-run the workflow. Nothing is uploaded when authentication fails.
+- **Upload timeout after package processing remains `InProgress`**:
+  `go-webext` v0.4.2 bounds its processing wait at one minute. Check the draft
+  in Partner Center, wait for processing to settle, and re-run if no package
+  was accepted.
+- **Submission already in review**: Microsoft permits only one active
+  submission. Wait for certification to finish before starting another
+  deployment.
+- **Publish step reports `InProgress` in a green run**: the submission request
+  was accepted and continues asynchronously. `go-webext` v0.4.2 checks the
+  publish operation only once; monitor Partner Center for the final result.
+- **Listing or privacy metadata change**: update it manually in Partner Center;
+  the Update API manages packages and submissions only.
+- **Certification rejection**: the verdict arrives through Partner Center and
+  email after the workflow finishes. Address the feedback, then submit a fixed
+  release or metadata update.
+
 ## Releases
 
 1. Bump the `version` field in `package.json`.
@@ -450,9 +529,9 @@ Failure playbook:
    the same store-ready `chrome.zip`, `edge.zip`, `firefox.zip`, `source.zip`,
    and `approval-notes.txt` artifacts.
 4. After checking the draft assets, publish the GitHub Release. Publishing
-   triggers the Chrome Web Store and Firefox Add-ons deployments
-   automatically; Edge submission remains manual until the remaining item in
-   `TODO.md` is done.
+   triggers the Chrome Web Store, Firefox Add-ons, and Microsoft Edge Add-ons
+   deployment workflows automatically. Edge automation starts only after its
+   one-time Partner Center publication and repository configuration are done.
 5. When the store review completes, publish the approved version manually in
    the Chrome Web Store Developer Dashboard.
 
@@ -559,6 +638,13 @@ version, uploads it with a pinned `go-webext`, and submits it for review with
 deferred publishing. It has read-only repository permissions and uses the
 `CHROME_*` secrets and variable listed in the Deployment section; deployments
 are serialized through a concurrency group so runs never interleave.
+
+The `Deploy Microsoft Edge Add-ons` workflow applies the same release-asset
+and version checks to `edge.zip`, uploads it to the configured existing
+product through API v1.1, and requests certification. Edge deployments use a
+separate concurrency group. A successful run means the package was processed
+and the submission request was accepted; certification and publication remain
+asynchronous in Partner Center.
 
 Configure
 these sensitive repository secrets:

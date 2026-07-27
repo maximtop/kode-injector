@@ -1,0 +1,199 @@
+name: Deploy Microsoft Edge Add-ons
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Published release tag to deploy (vX.Y.Z)'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Upload and submit for certification
+    if: github.event_name == 'workflow_dispatch' || !github.event.release.prerelease
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    concurrency:
+      group: edge-addons-deploy
+      cancel-in-progress: false
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GO_WEBEXT_VERSION: v0.4.2
+    steps:
+      - name: Resolve and validate release
+        id: release
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          EVENT_TAG: ${{ github.event.release.tag_name }}
+          INPUT_TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+          if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
+            RELEASE_TAG="$INPUT_TAG"
+            if [[ ! "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+              echo "Release tag must match vX.Y.Z: $RELEASE_TAG" >&2
+              exit 1
+            fi
+          else
+            RELEASE_TAG="$EVENT_TAG"
+            if [[ ! "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+              echo "::notice::Release tag $RELEASE_TAG does not match" \
+                "vX.Y.Z; skipping store deployment."
+              echo "deploy=false" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+          fi
+
+          RELEASE_JSON="$(gh release view "$RELEASE_TAG" \
+            --repo "$GITHUB_REPOSITORY" --json isDraft,isPrerelease)"
+          if [[ "$(jq -r '.isDraft' <<<"$RELEASE_JSON")" != "false" ]]; then
+            echo "Release $RELEASE_TAG is a draft;" \
+              "publish it before deploying to the store" >&2
+            exit 1
+          fi
+          if [[ "$(jq -r '.isPrerelease' <<<"$RELEASE_JSON")" != "false" ]]; then
+            echo "Release $RELEASE_TAG is a pre-release;" \
+              "store deployment ships full releases only" >&2
+            exit 1
+          fi
+
+          echo "deploy=true" >> "$GITHUB_OUTPUT"
+          echo "tag=$RELEASE_TAG" >> "$GITHUB_OUTPUT"
+          echo "version=${RELEASE_TAG#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Check store configuration
+        if: steps.release.outputs.deploy == 'true'
+        env:
+          EDGE_PRODUCT_ID: ${{ vars.EDGE_PRODUCT_ID }}
+          EDGE_CLIENT_ID: ${{ secrets.EDGE_CLIENT_ID }}
+          EDGE_API_KEY: ${{ secrets.EDGE_API_KEY }}
+        run: |
+          set -euo pipefail
+          missing=()
+          for name in EDGE_PRODUCT_ID EDGE_CLIENT_ID EDGE_API_KEY; do
+            [[ -n "${!name}" ]] || missing+=("$name")
+          done
+          if [[ "${#missing[@]}" -gt 0 ]]; then
+            echo "Missing store configuration: ${missing[*]}" >&2
+            echo "Complete the initial Partner Center publication, then" \
+              "set the variable and secrets listed in DEVELOPMENT.md." >&2
+            exit 1
+          fi
+
+      - name: Download release assets
+        if: steps.release.outputs.deploy == 'true'
+        env:
+          RELEASE_TAG: ${{ steps.release.outputs.tag }}
+        run: |
+          set -euo pipefail
+          gh release download "$RELEASE_TAG" \
+            --repo "$GITHUB_REPOSITORY" \
+            --pattern edge.zip \
+            --pattern SHA256SUMS \
+            --dir release-assets
+
+      - name: Verify asset integrity and version
+        if: steps.release.outputs.deploy == 'true'
+        working-directory: release-assets
+        env:
+          PACKAGE_VERSION: ${{ steps.release.outputs.version }}
+        run: |
+          set -euo pipefail
+          grep ' edge\.zip$' SHA256SUMS | sha256sum --check --strict -
+          ZIP_VERSION="$(unzip -p edge.zip manifest.json | jq -r '.version')"
+          if [[ "$ZIP_VERSION" != "$PACKAGE_VERSION" ]]; then
+            echo "edge.zip manifest version $ZIP_VERSION does not match" \
+              "release version $PACKAGE_VERSION" >&2
+            exit 1
+          fi
+
+      - name: Set up Go
+        if: steps.release.outputs.deploy == 'true'
+        uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6.5.0
+        with:
+          go-version: '1.26.x'
+          cache: false
+
+      - name: Install go-webext
+        if: steps.release.outputs.deploy == 'true'
+        run: |
+          set -euo pipefail
+          go install "github.com/adguardteam/go-webext@${GO_WEBEXT_VERSION}"
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+
+      - name: Upload to Microsoft Edge Add-ons
+        if: steps.release.outputs.deploy == 'true'
+        env:
+          EDGE_API_VERSION: v1.1
+          EDGE_PRODUCT_ID: ${{ vars.EDGE_PRODUCT_ID }}
+          EDGE_CLIENT_ID: ${{ secrets.EDGE_CLIENT_ID }}
+          EDGE_API_KEY: ${{ secrets.EDGE_API_KEY }}
+        run: |
+          set -euo pipefail
+          # go-webext returns only after package processing reaches Succeeded.
+          go-webext update edge \
+            -a "$EDGE_PRODUCT_ID" -f release-assets/edge.zip 2>&1 \
+            | tee "$RUNNER_TEMP/upload-output.txt"
+
+      - name: Submit for certification
+        if: steps.release.outputs.deploy == 'true'
+        id: publish
+        env:
+          EDGE_API_VERSION: v1.1
+          EDGE_PRODUCT_ID: ${{ vars.EDGE_PRODUCT_ID }}
+          EDGE_CLIENT_ID: ${{ secrets.EDGE_CLIENT_ID }}
+          EDGE_API_KEY: ${{ secrets.EDGE_API_KEY }}
+        run: |
+          set -euo pipefail
+          PUBLISH_OUTPUT="$RUNNER_TEMP/publish-output.txt"
+          go-webext publish edge -a "$EDGE_PRODUCT_ID" 2>&1 \
+            | tee "$PUBLISH_OUTPUT"
+
+          # go-webext v0.4.2 checks the publish operation only once. A zero
+          # exit with InProgress means the request was accepted and continues
+          # asynchronously; it does not mean certification has completed.
+          # v0.4.2 prints the response as an unlabeled Go struct, for example
+          # &{... Succeeded ...}, so match the status as a whitespace-delimited
+          # value rather than looking for a field label that is never printed.
+          if grep -Eq '(^|[[:space:]])Succeeded([[:space:]]|$)' "$PUBLISH_OUTPUT"; then
+            OPERATION_STATUS="Succeeded"
+          elif grep -Eq '(^|[[:space:]])InProgress([[:space:]]|$)' "$PUBLISH_OUTPUT"; then
+            OPERATION_STATUS="InProgress"
+            echo "::notice::The Edge submission was accepted and is still processing."
+          else
+            OPERATION_STATUS="Accepted (immediate status was not recognized)"
+            echo "::warning::The Edge submission was accepted, but its" \
+              "immediate operation status was not recognized."
+          fi
+          echo "operation_status=$OPERATION_STATUS" >> "$GITHUB_OUTPUT"
+
+      - name: Report deployment
+        if: steps.release.outputs.deploy == 'true'
+        env:
+          EDGE_PRODUCT_ID: ${{ vars.EDGE_PRODUCT_ID }}
+          RELEASE_TAG: ${{ steps.release.outputs.tag }}
+          PACKAGE_VERSION: ${{ steps.release.outputs.version }}
+          OPERATION_STATUS: ${{ steps.publish.outputs.operation_status }}
+        run: |
+          set -euo pipefail
+          {
+            echo "## Microsoft Edge Add-ons deployment"
+            echo
+            echo "- Release: \`$RELEASE_TAG\` (version $PACKAGE_VERSION)"
+            echo "- Package processing reached \`Succeeded\`."
+            echo "- Submission request status: \`$OPERATION_STATUS\`."
+            echo "- Certification and store publication continue" \
+              "asynchronously in Partner Center."
+            echo "- [Open the submission](https://partner.microsoft.com/en-us/dashboard/microsoftedge/$EDGE_PRODUCT_ID/packages/dashboard)."
+            echo
+            echo '```'
+            head -c 8000 "$RUNNER_TEMP/publish-output.txt"
+            echo
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
