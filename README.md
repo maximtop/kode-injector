@@ -265,5 +265,6 @@ one type, point the other field at an empty file.
 ## Documentation
 
 - [Development](DEVELOPMENT.md) — how to set up and contribute
+- [Privacy policy](PRIVACY.md) — information processed by the extension
 - [LLM agent rules](AGENTS.md) — AI-assisted development guidelines
 - [Report an issue](https://github.com/maximtop/kode-injector/issues/new)

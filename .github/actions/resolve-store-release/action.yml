@@ -1,0 +1,37 @@
+name: Resolve store release
+description: Resolve and validate the published release used by a store deployment
+
+inputs:
+  event-name:
+    description: GitHub event name
+    required: true
+  event-tag:
+    description: Tag from a release event
+    required: false
+    default: ''
+  input-tag:
+    description: Tag selected for a manual workflow dispatch
+    required: false
+    default: ''
+
+outputs:
+  deploy:
+    description: Whether this release should be deployed
+    value: ${{ steps.resolve.outputs.deploy }}
+  tag:
+    description: Validated release tag
+    value: ${{ steps.resolve.outputs.tag }}
+  version:
+    description: Package version without the v prefix
+    value: ${{ steps.resolve.outputs.version }}
+
+runs:
+  using: composite
+  steps:
+    - id: resolve
+      shell: bash
+      env:
+        EVENT_NAME: ${{ inputs.event-name }}
+        EVENT_TAG: ${{ inputs.event-tag }}
+        INPUT_TAG: ${{ inputs.input-tag }}
+      run: "$GITHUB_WORKSPACE/scripts/release/resolve-store-release.sh"
