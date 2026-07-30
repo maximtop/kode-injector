@@ -129,7 +129,7 @@ jobs:
 
   safari:
     name: Build and validate Safari app
-    runs-on: macos-latest
+    runs-on: macos-26
     permissions:
       contents: read
     steps:
@@ -150,3 +150,5 @@ jobs:
           pnpm install --frozen-lockfile
       - name: Build and validate Safari app
         run: pnpm safari:validate
+      - name: Build and validate unsigned App Store archive
+        run: pnpm safari:store:check

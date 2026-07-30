@@ -51,15 +51,17 @@ advanced alternative. Expand **Advanced** under the local-file access method in
 Kode Injector settings and choose **Use Native Host** to request the browser
 permission and switch methods.
 
-Safari for macOS is currently available as a local development app. Its
-read-only helper is embedded in the Safari extension, so it does not install a
-separate Helper. Build it with `pnpm safari:build`, copy
+Safari for macOS is not yet listed in the Mac App Store. Its read-only helper
+is embedded in the Safari extension, so it does not install a separate Helper.
+For local testing, build it with `pnpm safari:build`, copy
 `build/safari/dev/Kode Injector.app` to `/Applications`, launch the app, and
 enable **Kode Injector** in Safari Settings → Extensions. Local development may
 also require Safari's **Allow Unsigned Extensions** developer option. When a
 rule is added or saved, Safari opens the standard macOS folder authorization
 panel for the exact folder containing the configured source. That grant is
 remembered; Kode Injector does not ask again while the bookmark remains valid.
+The signed archive and App Store Connect upload flow is documented in
+[`safari/APP_STORE.md`](safari/APP_STORE.md).
 
 Options automatically links to the package for the installed extension version
 and the current operating system and architecture. **View all downloads** opens

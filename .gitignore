@@ -4,6 +4,7 @@
 /design/
 deploy.sh
 .env
+.env.1password
 .sdd/
 /native-host/dev-extension-ids.json
 /native-host/macos-helper/.build/

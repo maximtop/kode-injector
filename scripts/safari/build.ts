@@ -7,28 +7,22 @@
 import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
+import {
+    GENERATED_HELPER_PATH,
+    ROOT_PATH,
+    SAFARI_APP_NAME,
+    SAFARI_BUILD_PATH,
+    SAFARI_EXTENSION_SOURCE_PATH,
+    SAFARI_PATH,
+    SAFARI_PROJECT_PATH,
+    readPackageVersion,
+} from './config';
+import { prepareXcodeResources } from './prepare-xcode-resources';
 
-const ROOT_PATH = path.resolve(import.meta.dirname, '../..');
-const PACKAGE_PATH = path.join(ROOT_PATH, 'package.json');
-const SAFARI_PATH = path.join(ROOT_PATH, 'safari');
-const PROJECT_PATH = path.join(
-    SAFARI_PATH,
-    'macos/Kode Injector/Kode Injector.xcodeproj',
-);
-const EXTENSION_SOURCE_PATH = path.join(
-    SAFARI_PATH,
-    'macos/Kode Injector/Kode Injector Extension',
-);
-const GENERATED_HELPER_PATH = path.join(
-    EXTENSION_SOURCE_PATH,
-    'Helpers/kode-injector-native',
-);
 const WEB_EXTENSION_PATH = path.join(ROOT_PATH, 'build/dev/safari');
-const SAFARI_BUILD_PATH = path.join(ROOT_PATH, 'build/safari');
 const DERIVED_DATA_PATH = path.join(SAFARI_BUILD_PATH, 'xcode');
 const OUTPUT_PATH = path.join(SAFARI_BUILD_PATH, 'dev');
-const APP_NAME = 'Kode Injector.app';
-const APP_PATH = path.join(OUTPUT_PATH, APP_NAME);
+const APP_PATH = path.join(OUTPUT_PATH, SAFARI_APP_NAME);
 const EXTENSION_PATH = path.join(
     APP_PATH,
     'Contents/PlugIns/Kode Injector Extension.appex',
@@ -38,24 +32,7 @@ const EMBEDDED_HELPER_PATH = path.join(
     'Contents/Helpers/kode-injector-native',
 );
 
-/**
- * Package metadata needed by the Safari artifact builder.
- */
-interface PackageMetadata {
-    /**
-     * Product version embedded into every nested executable and bundle.
-     */
-    version?: unknown;
-}
-
-const packageMetadata = JSON.parse(
-    fs.readFileSync(PACKAGE_PATH, 'utf8'),
-) as PackageMetadata;
-if (typeof packageMetadata.version !== 'string'
-    || !/^\d+\.\d+\.\d+$/u.test(packageMetadata.version)) {
-    throw new Error('package.json must contain an Apple-compatible semantic version');
-}
-const PACKAGE_VERSION = packageMetadata.version;
+const PACKAGE_VERSION = readPackageVersion();
 
 /**
  * Runs one fixed build tool without invoking a shell.
@@ -92,6 +69,7 @@ fs.rmSync(DERIVED_DATA_PATH, { recursive: true, force: true });
 fs.mkdirSync(path.dirname(GENERATED_HELPER_PATH), { recursive: true });
 
 run('pnpm', ['dev', 'safari']);
+prepareXcodeResources(WEB_EXTENSION_PATH);
 run('swift', ['test', '--package-path', 'safari/native-bridge']);
 run('go', [
     'build',
@@ -106,7 +84,7 @@ run('go', [
 try {
     run('xcodebuild', [
         '-project',
-        PROJECT_PATH,
+        SAFARI_PROJECT_PATH,
         '-scheme',
         'Kode Injector',
         '-configuration',
@@ -121,22 +99,18 @@ try {
     const xcodeAppPath = path.join(
         DERIVED_DATA_PATH,
         'Build/Products/Debug',
-        APP_NAME,
+        SAFARI_APP_NAME,
     );
     fs.mkdirSync(OUTPUT_PATH, { recursive: true });
     fs.cpSync(xcodeAppPath, APP_PATH, { recursive: true });
 
-    const extensionResourcesPath = path.join(EXTENSION_PATH, 'Contents/Resources');
-    fs.mkdirSync(extensionResourcesPath, { recursive: true });
-    fs.cpSync(WEB_EXTENSION_PATH, extensionResourcesPath, { recursive: true });
-
     sign(
         EMBEDDED_HELPER_PATH,
-        path.join(EXTENSION_SOURCE_PATH, 'Kode Injector Native.entitlements'),
+        path.join(SAFARI_EXTENSION_SOURCE_PATH, 'Kode Injector Native.entitlements'),
     );
     sign(
         EXTENSION_PATH,
-        path.join(EXTENSION_SOURCE_PATH, 'Kode Injector Extension.entitlements'),
+        path.join(SAFARI_EXTENSION_SOURCE_PATH, 'Kode Injector Extension.entitlements'),
     );
     sign(
         APP_PATH,

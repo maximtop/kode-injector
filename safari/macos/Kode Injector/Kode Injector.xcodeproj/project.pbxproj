@@ -21,6 +21,8 @@
 		A20000000000000000000006 /* SafariSnapshotCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000006 /* SafariSnapshotCache.swift */; };
 		A20000000000000000000007 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = A30000000000000000000001 /* Localizable.strings */; };
 		A20000000000000000000008 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = A30000000000000000000001 /* Localizable.strings */; };
+		A20000000000000000000009 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000009 /* PrivacyInfo.xcprivacy */; };
+		A2000000000000000000000A /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000000A /* PrivacyInfo.xcprivacy */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -76,6 +78,8 @@
 		A10000000000000000000006 /* SafariSnapshotCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SafariSnapshotCache.swift; path = "../../native-bridge/Sources/SafariNativeBridge/SafariSnapshotCache.swift"; sourceTree = SOURCE_ROOT; };
 		A10000000000000000000007 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		A10000000000000000000008 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
+		A10000000000000000000009 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		A1000000000000000000000A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -122,6 +126,7 @@
 				49721D3F3019123900D9764D /* ViewController.swift */,
 				49721D413019123900D9764D /* Main.storyboard */,
 				49721D443019123A00D9764D /* Assets.xcassets */,
+				A10000000000000000000009 /* PrivacyInfo.xcprivacy */,
 				49721D463019123A00D9764D /* Info.plist */,
 			);
 			path = "Kode Injector";
@@ -137,6 +142,7 @@
 				A10000000000000000000005 /* FolderAuthorizationStore.swift */,
 				A10000000000000000000006 /* SafariSnapshotCache.swift */,
 				A10000000000000000000004 /* kode-injector-native */,
+				A1000000000000000000000A /* PrivacyInfo.xcprivacy */,
 				49721D523019123B00D9764D /* Info.plist */,
 			);
 			path = "Kode Injector Extension";
@@ -181,7 +187,9 @@
 				49721D473019123B00D9764D /* Sources */,
 				49721D483019123B00D9764D /* Frameworks */,
 				49721D493019123B00D9764D /* Resources */,
+				A60000000000000000000001 /* Copy WebExtension Resources */,
 				A40000000000000000000001 /* Copy Native Host */,
+				A60000000000000000000002 /* Sign Native Host */,
 			);
 			buildRules = (
 			);
@@ -206,9 +214,11 @@
 				TargetAttributes = {
 					49721D2F3019123900D9764D = {
 						CreatedOnToolsVersion = 26.3;
+						DevelopmentTeam = WF967PV46P;
 					};
 					49721D4A3019123B00D9764D = {
 						CreatedOnToolsVersion = 26.3;
+						DevelopmentTeam = WF967PV46P;
 					};
 				};
 			};
@@ -240,6 +250,7 @@
 			files = (
 				49721D433019123900D9764D /* Main.storyboard in Resources */,
 				49721D453019123A00D9764D /* Assets.xcassets in Resources */,
+				A20000000000000000000009 /* PrivacyInfo.xcprivacy in Resources */,
 				A20000000000000000000007 /* Localizable.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -248,11 +259,50 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A2000000000000000000000A /* PrivacyInfo.xcprivacy in Resources */,
 				A20000000000000000000008 /* Localizable.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		A60000000000000000000001 /* Copy WebExtension Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"$(KODE_INJECTOR_WEB_EXTENSION_INPUT_FILE_LIST)",
+			);
+			name = "Copy WebExtension Resources";
+			outputFileListPaths = (
+				"$(KODE_INJECTOR_WEB_EXTENSION_OUTPUT_FILE_LIST)",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/bash;
+			shellScript = "\"$SRCROOT/../copy-web-extension-resources.sh\"\n";
+		};
+		A60000000000000000000002 /* Sign Native Host */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/Kode Injector Extension/Kode Injector Native.entitlements",
+				"$(TARGET_BUILD_DIR)/$(CONTENTS_FOLDER_PATH)/Helpers/kode-injector-native",
+			);
+			name = "Sign Native Host";
+			outputPaths = (
+				"$(TARGET_BUILD_DIR)/$(CONTENTS_FOLDER_PATH)/Helpers/kode-injector-native",
+				"$(TARGET_BUILD_DIR)/$(CONTENTS_FOLDER_PATH)/Helpers/kode-injector-native.cstemp",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/bash;
+			shellScript = "\"$SRCROOT/../sign-native-helper.sh\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		49721D2C3019123900D9764D /* Sources */ = {
@@ -432,13 +482,19 @@
 				CODE_SIGN_ENTITLEMENTS = "Kode Injector Extension/Kode Injector Extension.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = WF967PV46P;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Kode Injector Extension/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Kode Injector Extension";
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2026 Maxim Topciu. All rights reserved.";
+				KODE_INJECTOR_WEB_EXTENSION_INPUT_FILE_LIST = "$(SRCROOT)/../../../build/safari/web-extension-inputs.xcfilelist";
+				KODE_INJECTOR_WEB_EXTENSION_OUTPUT_FILE_LIST = "$(SRCROOT)/../../../build/safari/web-extension-outputs.xcfilelist";
+				KODE_INJECTOR_WEB_EXTENSION_PATH = "$(SRCROOT)/../../../build/dev/safari";
+				KODE_INJECTOR_WEB_EXTENSION_RESOURCE_LIST = "$(SRCROOT)/../../../build/safari/web-extension-resources.txt";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -467,13 +523,19 @@
 				CODE_SIGN_ENTITLEMENTS = "Kode Injector Extension/Kode Injector Extension.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = WF967PV46P;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Kode Injector Extension/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Kode Injector Extension";
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2026 Maxim Topciu. All rights reserved.";
+				KODE_INJECTOR_WEB_EXTENSION_INPUT_FILE_LIST = "$(SRCROOT)/../../../build/safari/web-extension-inputs.xcfilelist";
+				KODE_INJECTOR_WEB_EXTENSION_OUTPUT_FILE_LIST = "$(SRCROOT)/../../../build/safari/web-extension-outputs.xcfilelist";
+				KODE_INJECTOR_WEB_EXTENSION_PATH = "$(SRCROOT)/../../../build/release/safari";
+				KODE_INJECTOR_WEB_EXTENSION_RESOURCE_LIST = "$(SRCROOT)/../../../build/safari/web-extension-resources.txt";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -505,6 +567,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = WF967PV46P;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = NO;
@@ -512,7 +575,9 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Kode Injector/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Kode Injector";
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2026 Maxim Topciu. All rights reserved.";
 				INFOPLIST_KEY_NSMainStoryboardFile = Main;
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -546,6 +611,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = WF967PV46P;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = NO;
@@ -553,7 +619,9 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Kode Injector/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Kode Injector";
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2026 Maxim Topciu. All rights reserved.";
 				INFOPLIST_KEY_NSMainStoryboardFile = Main;
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
 				LD_RUNPATH_SEARCH_PATHS = (

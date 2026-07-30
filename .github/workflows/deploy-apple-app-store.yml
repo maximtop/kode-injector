@@ -1,0 +1,206 @@
+name: Deploy Apple App Store
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Published release tag to upload (vX.Y.Z)'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Archive and upload for processing
+    if: github.event_name == 'workflow_dispatch' || !github.event.release.prerelease
+    runs-on: macos-26
+    timeout-minutes: 45
+    environment: apple-app-store
+    concurrency:
+      group: apple-app-store-deploy
+      cancel-in-progress: false
+    env:
+      GH_TOKEN: ${{ github.token }}
+      APPLE_TEAM_ID: WF967PV46P
+      APP_STORE_CONNECT_API_KEY_ID: ${{ vars.APP_STORE_CONNECT_API_KEY_ID }}
+      APP_STORE_CONNECT_API_ISSUER_ID: ${{ vars.APP_STORE_CONNECT_API_ISSUER_ID }}
+    steps:
+      - name: Check out deployment helpers
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+          ref: ${{ github.workflow_sha }}
+
+      - name: Resolve and validate release
+        id: release
+        uses: ./.github/actions/resolve-store-release
+        with:
+          event-name: ${{ github.event_name }}
+          event-tag: ${{ github.event.release.tag_name }}
+          input-tag: ${{ inputs.tag }}
+
+      - name: Check App Store configuration
+        if: steps.release.outputs.deploy == 'true'
+        env:
+          APPLE_APP_STORE_CERTIFICATE_P12_BASE64: >-
+            ${{ secrets.APPLE_APP_STORE_CERTIFICATE_P12_BASE64 }}
+          APPLE_APP_STORE_CERTIFICATE_PASSWORD: >-
+            ${{ secrets.APPLE_APP_STORE_CERTIFICATE_PASSWORD }}
+          APP_STORE_CONNECT_API_KEY_P8_BASE64: >-
+            ${{ secrets.APP_STORE_CONNECT_API_KEY_P8_BASE64 }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          missing=()
+          for name in \
+            APPLE_APP_STORE_CERTIFICATE_P12_BASE64 \
+            APPLE_APP_STORE_CERTIFICATE_PASSWORD \
+            APP_STORE_CONNECT_API_KEY_P8_BASE64 \
+            APP_STORE_CONNECT_API_KEY_ID \
+            APP_STORE_CONNECT_API_ISSUER_ID; do
+            [[ -n "${!name}" ]] || missing+=("$name")
+          done
+          if [[ "${#missing[@]}" -gt 0 ]]; then
+            echo "Missing App Store configuration: ${missing[*]}" >&2
+            echo "Configure the apple-app-store environment as documented" \
+              "in DEVELOPMENT.md before uploading." >&2
+            exit 1
+          fi
+
+      - name: Check out released source
+        if: steps.release.outputs.deploy == 'true'
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+          ref: ${{ steps.release.outputs.tag }}
+
+      - name: Set up Node.js
+        if: steps.release.outputs.deploy == 'true'
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '24'
+
+      - name: Set up Go
+        if: steps.release.outputs.deploy == 'true'
+        uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6.5.0
+        with:
+          go-version: '1.26.x'
+          cache-dependency-path: native-host/go.sum
+
+      - name: Verify released source version
+        if: steps.release.outputs.deploy == 'true'
+        env:
+          RELEASE_VERSION: ${{ steps.release.outputs.version }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          PACKAGE_VERSION="$(node -p "require('./package.json').version")"
+          if [[ "$PACKAGE_VERSION" != "$RELEASE_VERSION" ]]; then
+            echo "Released source version $PACKAGE_VERSION does not match" \
+              "release version $RELEASE_VERSION" >&2
+            exit 1
+          fi
+
+      - name: Install dependencies
+        if: steps.release.outputs.deploy == 'true'
+        run: |
+          corepack enable
+          pnpm install --frozen-lockfile
+
+      - name: Configure isolated Apple credentials
+        if: steps.release.outputs.deploy == 'true'
+        env:
+          APPLE_APP_STORE_CERTIFICATE_P12_BASE64: >-
+            ${{ secrets.APPLE_APP_STORE_CERTIFICATE_P12_BASE64 }}
+          APPLE_APP_STORE_CERTIFICATE_PASSWORD: >-
+            ${{ secrets.APPLE_APP_STORE_CERTIFICATE_PASSWORD }}
+          APP_STORE_CONNECT_API_KEY_P8_BASE64: >-
+            ${{ secrets.APP_STORE_CONNECT_API_KEY_P8_BASE64 }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          KEYCHAIN_PATH="$RUNNER_TEMP/kode-injector-app-store.keychain-db"
+          CERTIFICATE_PATH="$RUNNER_TEMP/kode-injector-app-store.p12"
+          API_KEY_PATH="$RUNNER_TEMP/AuthKey_${APP_STORE_CONNECT_API_KEY_ID}.p8"
+          KEYCHAIN_PASSWORD="$(openssl rand -hex 24)"
+
+          printf '%s' "$APPLE_APP_STORE_CERTIFICATE_P12_BASE64" \
+            | base64 -D > "$CERTIFICATE_PATH"
+          printf '%s' "$APP_STORE_CONNECT_API_KEY_P8_BASE64" \
+            | base64 -D > "$API_KEY_PATH"
+          chmod 600 "$CERTIFICATE_PATH" "$API_KEY_PATH"
+
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security import "$CERTIFICATE_PATH" \
+            -k "$KEYCHAIN_PATH" \
+            -P "$APPLE_APP_STORE_CERTIFICATE_PASSWORD" \
+            -T /usr/bin/codesign
+          security set-key-partition-list \
+            -S apple-tool:,apple:,codesign: \
+            -s \
+            -k "$KEYCHAIN_PASSWORD" \
+            "$KEYCHAIN_PATH"
+          security list-keychains -d user -s "$KEYCHAIN_PATH"
+          security default-keychain -d user -s "$KEYCHAIN_PATH"
+          security find-identity -v -p codesigning "$KEYCHAIN_PATH"
+
+          echo "SIGNING_KEYCHAIN_PATH=$KEYCHAIN_PATH" >> "$GITHUB_ENV"
+          echo "SIGNING_CERTIFICATE_PATH=$CERTIFICATE_PATH" >> "$GITHUB_ENV"
+          echo "APP_STORE_CONNECT_API_KEY_PATH=$API_KEY_PATH" >> "$GITHUB_ENV"
+          BUILD_ORDINAL=$((GITHUB_RUN_NUMBER * 100 + GITHUB_RUN_ATTEMPT))
+          BUILD_MAJOR=$((BUILD_ORDINAL / 10000 + 1))
+          BUILD_MINOR=$(((BUILD_ORDINAL / 100) % 100))
+          BUILD_PATCH=$((BUILD_ORDINAL % 100))
+          if [[ "$BUILD_MAJOR" -gt 9999 || "$BUILD_PATCH" -gt 99 ]]; then
+            echo "GitHub run cannot be represented as an Apple build number" >&2
+            exit 1
+          fi
+          echo "SAFARI_BUILD_NUMBER=$BUILD_MAJOR.$BUILD_MINOR.$BUILD_PATCH" \
+            >> "$GITHUB_ENV"
+
+      - name: Build signed App Store archive
+        if: steps.release.outputs.deploy == 'true'
+        run: pnpm safari:store:archive
+
+      - name: Validate signed App Store archive
+        if: steps.release.outputs.deploy == 'true'
+        run: pnpm safari:store:validate
+
+      - name: Upload build to App Store Connect
+        if: steps.release.outputs.deploy == 'true'
+        run: pnpm safari:store:upload
+
+      - name: Report upload
+        if: steps.release.outputs.deploy == 'true'
+        env:
+          RELEASE_TAG: ${{ steps.release.outputs.tag }}
+          PACKAGE_VERSION: ${{ steps.release.outputs.version }}
+        shell: bash
+        run: |
+          {
+            echo "## Apple App Store upload"
+            echo
+            echo "- Release: \`$RELEASE_TAG\` (version $PACKAGE_VERSION)"
+            echo "- Build: \`$SAFARI_BUILD_NUMBER\`"
+            echo "- Uploaded to App Store Connect for processing."
+            echo "- Selecting the build, completing metadata, and submitting" \
+              "for App Review remain manual App Store Connect steps."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Remove Apple credentials
+        if: always()
+        shell: bash
+        run: |
+          KEYCHAIN_PATH="${SIGNING_KEYCHAIN_PATH:-$RUNNER_TEMP/kode-injector-app-store.keychain-db}"
+          CERTIFICATE_PATH="${SIGNING_CERTIFICATE_PATH:-$RUNNER_TEMP/kode-injector-app-store.p12}"
+          API_KEY_PATH="${APP_STORE_CONNECT_API_KEY_PATH:-$RUNNER_TEMP/AuthKey_${APP_STORE_CONNECT_API_KEY_ID:-unknown}.p8}"
+          security delete-keychain "$KEYCHAIN_PATH" || true
+          rm -f \
+            "$CERTIFICATE_PATH" \
+            "$API_KEY_PATH"

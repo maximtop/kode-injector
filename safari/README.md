@@ -16,3 +16,13 @@ The result is `build/safari/dev/Kode Injector.app`. Copy it to `/Applications`
 manually, launch it, and enable the extension in Safari Settings. See
 [`DEVELOPMENT.md`](../DEVELOPMENT.md#testing-safari-locally) for the end-to-end
 fixture workflow.
+
+Build and validate the unsigned universal Mac App Store candidate:
+
+```sh
+pnpm safari:store:check
+```
+
+Signed archive and upload commands are intentionally separate. See
+[`APP_STORE.md`](APP_STORE.md) for the one-time Apple setup, credential names,
+local commands, CI workflow, and final App Review gate.

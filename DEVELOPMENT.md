@@ -58,6 +58,10 @@ pnpm dev safari # build shared Safari WebExtension resources only
 pnpm safari:build # build Swift tests, current-arch helper, and ad-hoc Safari app
 pnpm safari:validate # build and validate the Safari bundle and entitlements
 pnpm safari:fixture # create JS/CSS fixtures and serve a localhost target
+pnpm safari:store:check # build and validate an unsigned universal App Store archive
+pnpm safari:store:archive # build a signed App Store archive
+pnpm safari:store:validate # validate the existing signed archive
+pnpm safari:store:upload # explicitly upload the signed archive to App Store Connect
 ```
 
 ## Build channels and browser targets
@@ -82,6 +86,11 @@ Safari WebExtension resources are emitted under `build/dev/safari/`. They are
 not a complete installable artifact until `pnpm safari:build` embeds them in
 `build/safari/dev/Kode Injector.app` together with the native extension and
 current-architecture Go helper.
+
+Release resources are embedded by Xcode before signing. The Mac App Store build
+uses a universal helper and an inside-out signature order; generated resources
+or executables are never added to a signed archive afterward. Full setup and
+release instructions are in [`safari/APP_STORE.md`](safari/APP_STORE.md).
 
 ### Testing Safari locally
 
@@ -559,6 +568,19 @@ Edge failure playbook:
   email after the workflow finishes. Address the feedback, then submit a fixed
   release or metadata update.
 
+Mac App Store uploads are automated by the separate `Deploy Apple App Store`
+workflow. It runs on the Xcode 26 macOS image, builds a universal signed
+archive directly from the published tag, verifies its nested layout and
+metadata, then uploads the build to App Store Connect. Uploading does not
+submit a version for App Review.
+
+The one-time app record, explicit identifiers, listing and privacy metadata,
+Apple Distribution certificate, protected GitHub Environment, and API-key
+configuration are documented in
+[`safari/APP_STORE.md`](safari/APP_STORE.md). These credentials are separate
+from the Developer ID and notarization credentials used for the downloadable
+Kode Injector Helper app.
+
 ## Releases
 
 1. Bump the `version` field in `package.json`.
@@ -568,9 +590,10 @@ Edge failure playbook:
    the same store-ready `chrome.zip`, `edge.zip`, `firefox.zip`, `source.zip`,
    and `approval-notes.txt` artifacts.
 4. After checking the draft assets, publish the GitHub Release. Publishing
-   triggers the Chrome Web Store, Firefox Add-ons, and Microsoft Edge Add-ons
-   deployment workflows automatically. Edge automation starts only after its
-   one-time Partner Center publication and repository configuration are done.
+   triggers the Chrome Web Store, Firefox Add-ons, Microsoft Edge Add-ons, and
+   Apple App Store deployment workflows automatically. Edge and Apple
+   automation start only after their one-time store setup and repository
+   configuration are complete.
 5. When the store review completes, publish the approved version manually in
    the Chrome Web Store Developer Dashboard.
 
@@ -684,6 +707,18 @@ product through API v1.1, and requests certification. Edge deployments use a
 separate concurrency group. A successful run means the package was processed
 and the submission request was accepted; certification and publication remain
 asynchronous in Partner Center.
+
+The `Deploy Apple App Store` workflow independently rebuilds the published tag
+on `macos-26`, creates and validates a universal Xcode archive, and uploads the
+build for App Store Connect processing. The protected `apple-app-store`
+environment contains the Apple Distribution certificate and App Store Connect
+API key. App Review submission remains manual.
+
+For the canonical 1Password item layout, current field names, and migration
+mapping from older `.env` names, see
+[`scripts/release/ONEPASSWORD.md`](scripts/release/ONEPASSWORD.md). The checked-in
+[`1password.env.example`](scripts/release/1password.env.example) contains only
+`op://` references and no credentials.
 
 Configure
 these sensitive repository secrets:
