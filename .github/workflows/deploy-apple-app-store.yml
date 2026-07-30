@@ -50,6 +50,8 @@ jobs:
             ${{ secrets.APPLE_APP_STORE_CERTIFICATE_P12_BASE64 }}
           APPLE_APP_STORE_CERTIFICATE_PASSWORD: >-
             ${{ secrets.APPLE_APP_STORE_CERTIFICATE_PASSWORD }}
+          APPLE_APP_STORE_INSTALLER_CERTIFICATE_P12_BASE64: >-
+            ${{ secrets.APPLE_APP_STORE_INSTALLER_CERTIFICATE_P12_BASE64 }}
           APP_STORE_CONNECT_API_KEY_P8_BASE64: >-
             ${{ secrets.APP_STORE_CONNECT_API_KEY_P8_BASE64 }}
         shell: bash
@@ -59,6 +61,7 @@ jobs:
           for name in \
             APPLE_APP_STORE_CERTIFICATE_P12_BASE64 \
             APPLE_APP_STORE_CERTIFICATE_PASSWORD \
+            APPLE_APP_STORE_INSTALLER_CERTIFICATE_P12_BASE64 \
             APP_STORE_CONNECT_API_KEY_P8_BASE64 \
             APP_STORE_CONNECT_API_KEY_ID \
             APP_STORE_CONNECT_API_ISSUER_ID; do
@@ -118,6 +121,8 @@ jobs:
             ${{ secrets.APPLE_APP_STORE_CERTIFICATE_P12_BASE64 }}
           APPLE_APP_STORE_CERTIFICATE_PASSWORD: >-
             ${{ secrets.APPLE_APP_STORE_CERTIFICATE_PASSWORD }}
+          APPLE_APP_STORE_INSTALLER_CERTIFICATE_P12_BASE64: >-
+            ${{ secrets.APPLE_APP_STORE_INSTALLER_CERTIFICATE_P12_BASE64 }}
           APP_STORE_CONNECT_API_KEY_P8_BASE64: >-
             ${{ secrets.APP_STORE_CONNECT_API_KEY_P8_BASE64 }}
         shell: bash
@@ -125,14 +130,20 @@ jobs:
           set -euo pipefail
           KEYCHAIN_PATH="$RUNNER_TEMP/kode-injector-app-store.keychain-db"
           CERTIFICATE_PATH="$RUNNER_TEMP/kode-injector-app-store.p12"
+          INSTALLER_CERTIFICATE_PATH="$RUNNER_TEMP/kode-injector-app-store-installer.p12"
           API_KEY_PATH="$RUNNER_TEMP/AuthKey_${APP_STORE_CONNECT_API_KEY_ID}.p8"
           KEYCHAIN_PASSWORD="$(openssl rand -hex 24)"
 
           printf '%s' "$APPLE_APP_STORE_CERTIFICATE_P12_BASE64" \
             | base64 -D > "$CERTIFICATE_PATH"
+          printf '%s' "$APPLE_APP_STORE_INSTALLER_CERTIFICATE_P12_BASE64" \
+            | base64 -D > "$INSTALLER_CERTIFICATE_PATH"
           printf '%s' "$APP_STORE_CONNECT_API_KEY_P8_BASE64" \
             | base64 -D > "$API_KEY_PATH"
-          chmod 600 "$CERTIFICATE_PATH" "$API_KEY_PATH"
+          chmod 600 \
+            "$CERTIFICATE_PATH" \
+            "$INSTALLER_CERTIFICATE_PATH" \
+            "$API_KEY_PATH"
 
           security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
           security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
@@ -141,6 +152,12 @@ jobs:
             -k "$KEYCHAIN_PATH" \
             -P "$APPLE_APP_STORE_CERTIFICATE_PASSWORD" \
             -T /usr/bin/codesign
+          security import "$INSTALLER_CERTIFICATE_PATH" \
+            -k "$KEYCHAIN_PATH" \
+            -P "$APPLE_APP_STORE_CERTIFICATE_PASSWORD" \
+            -T /usr/bin/productbuild \
+            -T /usr/bin/productsign \
+            -T /usr/bin/xcodebuild
           security set-key-partition-list \
             -S apple-tool:,apple:,codesign: \
             -s \
@@ -149,9 +166,13 @@ jobs:
           security list-keychains -d user -s "$KEYCHAIN_PATH"
           security default-keychain -d user -s "$KEYCHAIN_PATH"
           security find-identity -v -p codesigning "$KEYCHAIN_PATH"
+          security find-identity -v "$KEYCHAIN_PATH" \
+            | grep -F '3rd Party Mac Developer Installer: Maxim Topciu (WF967PV46P)'
 
           echo "SIGNING_KEYCHAIN_PATH=$KEYCHAIN_PATH" >> "$GITHUB_ENV"
           echo "SIGNING_CERTIFICATE_PATH=$CERTIFICATE_PATH" >> "$GITHUB_ENV"
+          echo "INSTALLER_SIGNING_CERTIFICATE_PATH=$INSTALLER_CERTIFICATE_PATH" \
+            >> "$GITHUB_ENV"
           echo "APP_STORE_CONNECT_API_KEY_PATH=$API_KEY_PATH" >> "$GITHUB_ENV"
           BUILD_ORDINAL=$((GITHUB_RUN_NUMBER * 100 + GITHUB_RUN_ATTEMPT))
           BUILD_MAJOR=$((BUILD_ORDINAL / 10000 + 1))
@@ -163,6 +184,10 @@ jobs:
           fi
           echo "SAFARI_BUILD_NUMBER=$BUILD_MAJOR.$BUILD_MINOR.$BUILD_PATCH" \
             >> "$GITHUB_ENV"
+
+      - name: Install App Store provisioning profiles
+        if: steps.release.outputs.deploy == 'true'
+        run: pnpm safari:store:profiles
 
       - name: Build signed App Store archive
         if: steps.release.outputs.deploy == 'true'
@@ -199,8 +224,10 @@ jobs:
         run: |
           KEYCHAIN_PATH="${SIGNING_KEYCHAIN_PATH:-$RUNNER_TEMP/kode-injector-app-store.keychain-db}"
           CERTIFICATE_PATH="${SIGNING_CERTIFICATE_PATH:-$RUNNER_TEMP/kode-injector-app-store.p12}"
+          INSTALLER_CERTIFICATE_PATH="${INSTALLER_SIGNING_CERTIFICATE_PATH:-$RUNNER_TEMP/kode-injector-app-store-installer.p12}"
           API_KEY_PATH="${APP_STORE_CONNECT_API_KEY_PATH:-$RUNNER_TEMP/AuthKey_${APP_STORE_CONNECT_API_KEY_ID:-unknown}.p8}"
           security delete-keychain "$KEYCHAIN_PATH" || true
           rm -f \
             "$CERTIFICATE_PATH" \
+            "$INSTALLER_CERTIFICATE_PATH" \
             "$API_KEY_PATH"

@@ -28,10 +28,15 @@ questions, or submit the version for App Review.
    required regional business information, description, keywords, and macOS
    screenshots. The maintained behavior and disclosure source is
    [`PRIVACY.md`](../PRIVACY.md).
-5. Create an Apple Distribution certificate and export it as a password-protected
-   PKCS#12 file. Do not reuse the Developer ID Application certificate used for
-   the separately distributed Helper app.
-6. Create an App Store Connect API key that can upload builds and manage signing
+5. Create both an Apple Distribution certificate and a Mac Installer
+   Distribution certificate. Export each as a password-protected PKCS#12 file
+   using the same release password. Do not reuse the Developer ID Application
+   certificate used for the separately distributed Helper app.
+6. Create these `Mac App Store` provisioning profiles, using the Apple
+   Distribution certificate:
+   - `Kode Injector Mac App Store` for the containing app;
+   - `Kode Injector Safari Extension Mac App Store` for the extension.
+7. Create an App Store Connect API key that can upload builds and manage signing
    assets. Record its key ID and issuer ID, and download its `.p8` file once.
 
 The app and extension include privacy manifests declaring no tracking or data
@@ -56,17 +61,18 @@ number higher than every build previously uploaded to App Store Connect, and
 run:
 
 ```sh
+pnpm safari:store:profiles
 SAFARI_BUILD_NUMBER=1.1.1 pnpm safari:store:archive
 SAFARI_BUILD_NUMBER=1.1.1 pnpm safari:store:validate
 ```
 
 The result is `build/safari/store/Kode Injector.xcarchive`. The archive command
 builds release WebExtension resources, runs Swift and Go tests, creates a
-universal `arm64 + x86_64` Go helper, and lets Xcode sign the helper before the
-extension and containing app. The archive has a verified Apple-team signature;
-the explicit upload step performs the standard Xcode export that applies the
-App Store distribution signature and provisioning profiles. The flow never
-uses `codesign --deep`.
+universal `arm64 + x86_64` Go helper, and signs the helper before the extension
+and containing app with the explicit Mac App Store profiles. The archive has a
+verified Apple-team signature; the explicit upload step performs a manual Xcode
+export with the same profiles and the Mac Installer Distribution certificate.
+The flow never uses `codesign --deep` and does not require Cloud Signing access.
 
 For API-key authentication instead of the Xcode account, configure all three
 values together:
@@ -95,6 +101,7 @@ environment secrets:
 
 - `APPLE_APP_STORE_CERTIFICATE_P12_BASE64`
 - `APPLE_APP_STORE_CERTIFICATE_PASSWORD`
+- `APPLE_APP_STORE_INSTALLER_CERTIFICATE_P12_BASE64`
 - `APP_STORE_CONNECT_API_KEY_P8_BASE64`
 
 Configure these environment variables:
@@ -106,12 +113,14 @@ Encode the binary credential files without line wrapping, for example:
 
 ```sh
 base64 < distribution-certificate.p12 | tr -d '\n'
+base64 < installer-distribution-certificate.p12 | tr -d '\n'
 base64 < AuthKey_KEYID.p8 | tr -d '\n'
 ```
 
-The `Deploy Apple App Store` workflow runs on Xcode 26, imports credentials into
-a temporary keychain, archives the published tag, validates the complete signed
-layout, and uploads it. The build number is
+The `Deploy Apple App Store` workflow runs on Xcode 26, imports both signing
+identities into a temporary keychain, downloads the two named profiles through
+the App Store Connect API, archives the published tag, validates the complete
+signed layout, and uploads it. The build number is
 derived monotonically from the workflow run number and attempt while respecting
 Apple's `four digits.two digits.two digits` limits, so a retry receives a new
 number. The workflow removes the keychain, certificate, and API key even after

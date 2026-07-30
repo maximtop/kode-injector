@@ -33,6 +33,8 @@ export const SAFARI_APP_BUNDLE_IDENTIFIER = 'dev.maximtop.kode-injector.safari';
 export const SAFARI_EXTENSION_BUNDLE_IDENTIFIER = 'dev.maximtop.kode-injector.safari.Extension';
 export const SAFARI_APP_CATEGORY = 'public.app-category.developer-tools';
 export const APPLE_TEAM_IDENTIFIER = 'WF967PV46P';
+export const SAFARI_APP_STORE_APP_PROFILE = 'Kode Injector Mac App Store';
+export const SAFARI_APP_STORE_EXTENSION_PROFILE = 'Kode Injector Safari Extension Mac App Store';
 
 /**
  * Package metadata consumed by the native build scripts.

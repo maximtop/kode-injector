@@ -8,7 +8,11 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {
     SAFARI_APP_NAME,
+    SAFARI_APP_BUNDLE_IDENTIFIER,
     SAFARI_ARCHIVE_PATH,
+    SAFARI_APP_STORE_APP_PROFILE,
+    SAFARI_APP_STORE_EXTENSION_PROFILE,
+    SAFARI_EXTENSION_BUNDLE_IDENTIFIER,
     SAFARI_STORE_PATH,
     appStoreConnectAuthenticationArgs,
     readAppleTeamIdentifier,
@@ -34,7 +38,7 @@ validateSafariArtifact({
     expectedBuildNumber,
     requireUniversalHelper: true,
     verifySignatures: true,
-    requireProvisioningProfiles: false,
+    requireProvisioningProfiles: true,
     requireAppleTeamSignature: true,
 });
 
@@ -51,7 +55,18 @@ const exportOptions = `<?xml version="1.0" encoding="UTF-8"?>
     <key>method</key>
     <string>app-store-connect</string>
     <key>signingStyle</key>
-    <string>automatic</string>
+    <string>manual</string>
+    <key>signingCertificate</key>
+    <string>Apple Distribution</string>
+    <key>installerSigningCertificate</key>
+    <string>3rd Party Mac Developer Installer</string>
+    <key>provisioningProfiles</key>
+    <dict>
+        <key>${SAFARI_APP_BUNDLE_IDENTIFIER}</key>
+        <string>${SAFARI_APP_STORE_APP_PROFILE}</string>
+        <key>${SAFARI_EXTENSION_BUNDLE_IDENTIFIER}</key>
+        <string>${SAFARI_APP_STORE_EXTENSION_PROFILE}</string>
+    </dict>
     <key>stripSwiftSymbols</key>
     <true/>
     <key>teamID</key>
@@ -72,7 +87,6 @@ run('xcodebuild', [
     exportPath,
     '-exportOptionsPlist',
     exportOptionsPath,
-    '-allowProvisioningUpdates',
     ...appStoreConnectAuthenticationArgs(),
 ]);
 

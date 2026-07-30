@@ -36,6 +36,7 @@
         "safari:validate": "pnpm safari:build && tsx scripts/safari/validate.ts",
         "safari:fixture": "tsx scripts/safari/fixture.ts",
         "safari:store:archive": "tsx scripts/safari/archive.ts",
+        "safari:store:profiles": "tsx scripts/safari/install-profiles.ts",
         "safari:store:validate": "tsx scripts/safari/store-validate.ts",
         "safari:store:check": "tsx scripts/safari/archive.ts --unsigned && tsx scripts/safari/store-validate.ts --unsigned",
         "safari:store:upload": "tsx scripts/safari/upload.ts",

@@ -30,14 +30,16 @@ Used only for the Mac App Store Safari application:
 
 - `APPLE_APP_STORE_CERTIFICATE_P12_BASE64`
 - `APPLE_APP_STORE_CERTIFICATE_PASSWORD`
+- `APPLE_APP_STORE_INSTALLER_CERTIFICATE_P12_BASE64`
 - `APP_STORE_CONNECT_API_KEY_P8_BASE64`
 - `APP_STORE_CONNECT_API_KEY_ID`
 - `APP_STORE_CONNECT_API_ISSUER_ID`
 
-The certificate must be an **Apple Distribution** certificate. Do not copy the
-Developer ID certificate into these fields. The API key must have access to
-upload builds and to Certificates, Identifiers & Profiles if CI should create
-or refresh provisioning profiles.
+The first P12 must contain an **Apple Distribution** identity and the installer
+P12 must contain a **Mac Installer Distribution** identity. Both P12 files use
+`APPLE_APP_STORE_CERTIFICATE_PASSWORD`. Do not copy the Developer ID certificate
+into these fields. The API key must be able to upload builds and read
+Certificates, Identifiers & Profiles so CI can download the named profiles.
 
 ### Chrome Web Store
 

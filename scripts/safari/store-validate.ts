@@ -36,7 +36,7 @@ validateSafariArtifact({
     expectedBuildNumber,
     requireUniversalHelper: true,
     verifySignatures: !unsigned,
-    requireProvisioningProfiles: false,
+    requireProvisioningProfiles: !unsigned,
     requireAppleTeamSignature: !unsigned,
 });
 

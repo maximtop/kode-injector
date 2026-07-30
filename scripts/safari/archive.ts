@@ -12,7 +12,6 @@ import {
     SAFARI_ARCHIVE_PATH,
     SAFARI_PROJECT_PATH,
     SAFARI_STORE_PATH,
-    appStoreConnectAuthenticationArgs,
     readAppleTeamIdentifier,
     readPackageVersion,
     run,
@@ -86,10 +85,13 @@ fs.chmodSync(GENERATED_HELPER_PATH, 0o755);
 
 try {
     const signingArgs = unsigned
-        ? ['CODE_SIGNING_ALLOWED=NO', 'CODE_SIGNING_REQUIRED=NO']
+        ? [
+            'CODE_SIGNING_ALLOWED=NO',
+            'CODE_SIGNING_REQUIRED=NO',
+        ]
         : [
-            '-allowProvisioningUpdates',
-            ...appStoreConnectAuthenticationArgs(),
+            'CODE_SIGN_STYLE=Manual',
+            'CODE_SIGN_IDENTITY=Apple Distribution',
         ];
     run('xcodebuild', [
         '-quiet',
@@ -106,7 +108,6 @@ try {
         `MARKETING_VERSION=${packageVersion}`,
         `CURRENT_PROJECT_VERSION=${buildNumber}`,
         `DEVELOPMENT_TEAM=${teamIdentifier}`,
-        'CODE_SIGN_STYLE=Automatic',
         'ARCHS=arm64 x86_64',
         'ONLY_ACTIVE_ARCH=NO',
         ...signingArgs,
