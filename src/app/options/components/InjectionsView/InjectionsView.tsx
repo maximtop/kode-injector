@@ -30,6 +30,8 @@ interface InjectionsViewProps {
 
     /**
      * Opens the rule editor for an existing rule.
+     *
+     * @param rule Rule selected for editing.
      */
     onEdit: (rule: InjectionRule) => void;
 

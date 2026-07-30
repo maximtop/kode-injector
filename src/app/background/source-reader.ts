@@ -7,8 +7,7 @@
 import { log } from '../common/log';
 import { LocalSourceAccessMethod } from '../common/contracts';
 import { NativeErrorCode } from '../common/native-host-protocol';
-
-const FILE_URL_PREFIX = 'file://';
+import { urlUtils } from '../common/url-utils';
 
 export enum SourceReadErrorCode {
     FetchFailed = 'FETCH_FAILED',
@@ -22,6 +21,18 @@ export type SourceReadResult = {
     ok: false;
     errorCode: SourceReadErrorCode | NativeErrorCode;
 };
+
+/**
+ * Identifies transport failures that affect the native channel itself rather
+ * than one configured file.
+ *
+ * @param errorCode Source read failure.
+ *
+ * @returns Whether global native-host readiness should be degraded.
+ */
+export const isNativeHostWideFailure = (
+    errorCode: SourceReadErrorCode | NativeErrorCode,
+): boolean => errorCode === SourceReadErrorCode.NativeFailed;
 
 interface NativeFileReader {
     readFile(fileUrl: string): Promise<string>;
@@ -39,7 +50,7 @@ export class SourceReader {
     ) {}
 
     public read = async (url: string): Promise<SourceReadResult> => {
-        if (url.startsWith(FILE_URL_PREFIX)
+        if (urlUtils.isFileUrl(url)
             && this.getLocalSourceAccessMethod() === LocalSourceAccessMethod.NativeHost) {
             return this.readNative(url);
         }

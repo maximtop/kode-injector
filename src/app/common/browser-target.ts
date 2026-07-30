@@ -3,6 +3,7 @@
  */
 
 const FIREFOX_EXTENSION_PROTOCOL = 'moz-extension:';
+const SAFARI_EXTENSION_PROTOCOL = 'safari-web-extension:';
 const EDGE_USER_AGENT_PATTERN = /\bEdg\//u;
 
 /**
@@ -12,6 +13,7 @@ export enum BrowserTarget {
     Chrome = 'chrome',
     Edge = 'edge',
     Firefox = 'firefox',
+    Safari = 'safari',
 }
 
 const EXTENSION_SETTINGS_SCHEMES: Partial<Record<BrowserTarget, string>> = {
@@ -33,6 +35,10 @@ export const detectBrowserTarget = (
 ): BrowserTarget => {
     if (protocol === FIREFOX_EXTENSION_PROTOCOL) {
         return BrowserTarget.Firefox;
+    }
+
+    if (protocol === SAFARI_EXTENSION_PROTOCOL) {
+        return BrowserTarget.Safari;
     }
 
     if (EDGE_USER_AGENT_PATTERN.test(userAgent)) {

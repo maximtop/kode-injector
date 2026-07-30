@@ -49,7 +49,7 @@ const createTestProgram = (buildEnv: typeof CHANNEL_ENVS[keyof typeof CHANNEL_EN
 };
 
 test.each([CHANNEL_ENVS.DEV, CHANNEL_ENVS.RELEASE])(
-    '%s builds all browsers by default',
+    '%s keeps the three store extension targets as the default build',
     async (buildEnv) => {
         const { program, calls } = createTestProgram(buildEnv);
 
@@ -70,6 +70,7 @@ test.each([
     BROWSER_TARGETS.CHROME,
     BROWSER_TARGETS.EDGE,
     BROWSER_TARGETS.FIREFOX,
+    BROWSER_TARGETS.SAFARI,
 ])('builds only the selected %s target', async (target) => {
     const { program, calls } = createTestProgram(CHANNEL_ENVS.DEV);
 
@@ -113,7 +114,7 @@ test('rejects unknown browser commands and options', async () => {
     const unknownCommand = createTestProgram(CHANNEL_ENVS.DEV);
     const unknownOption = createTestProgram(CHANNEL_ENVS.DEV);
 
-    await expect(unknownCommand.program.parseAsync(['node', 'bundle', 'safari']))
+    await expect(unknownCommand.program.parseAsync(['node', 'bundle', 'opera']))
         .rejects.toMatchObject({ code: 'commander.excessArguments' });
     await expect(unknownOption.program.parseAsync(['node', 'bundle', '--unknown']))
         .rejects.toMatchObject({ code: 'commander.unknownOption' });

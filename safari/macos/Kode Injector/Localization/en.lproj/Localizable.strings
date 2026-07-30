@@ -1,0 +1,11 @@
+"app.version_format" = "Version %@";
+"app.explanation" = "Enable the extension in Safari Settings. When you save a rule, Kode Injector asks for read-only access to the exact folder containing each local source.";
+"app.open_settings" = "Open Safari Extension Settings";
+"app.refresh" = "Refresh";
+"app.status.checking" = "Checking extension status…";
+"app.status.unavailable" = "Extension status unavailable";
+"app.status.enabled" = "Safari extension is enabled";
+"app.status.disabled" = "Safari extension is not enabled";
+"authorization.button" = "Authorize";
+"authorization.message_format" = "Authorize read-only access to “%@”.";
+"authorization.validation_format" = "Authorize the “%@” folder shown by Kode Injector.";

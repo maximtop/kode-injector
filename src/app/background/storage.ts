@@ -10,6 +10,9 @@ import browser from 'webextension-polyfill';
 class Storage {
     /**
      * Persists a value under a storage key.
+     *
+     * @param key Storage key to update.
+     * @param value Value to persist.
      */
     set = async <TValue>(key: string, value: TValue): Promise<void> => {
         await browser.storage.local.set({ [key]: value });
@@ -17,6 +20,8 @@ class Storage {
 
     /**
      * Reads a value from a storage key.
+     *
+     * @param key Storage key to read.
      */
     get = async <TValue>(key: string): Promise<TValue | undefined> => {
         const result = await browser.storage.local.get([key]);

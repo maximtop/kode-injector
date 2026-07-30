@@ -15,8 +15,9 @@ code is injected automatically when those sites are visited.
 
 ## Target Platform
 
-Browser extension running on Chrome, Firefox, and Edge. Chrome and Edge use a
-Manifest V3 service worker; Firefox uses a Manifest V3 background page.
+Browser extension running on Chrome, Firefox, Edge, and macOS Safari. Chrome,
+Edge, and Safari use a Manifest V3 service worker; Firefox uses a Manifest V3
+background page. Safari is wrapped in a containing macOS app.
 
 ## Project Type
 
@@ -31,7 +32,7 @@ See [DEVELOPMENT.md — Tech stack](DEVELOPMENT.md#tech-stack) and
 
 - **Background runtime** holds the single source of truth: an in-memory
   `injections` list and `settings`, both persisted to `chrome.storage`. It runs
-  as a service worker in Chromium and a background page in Firefox.
+  as a service worker in Chromium and Safari and a background page in Firefox.
 - **Content script** runs at `document_start` on `<all_urls>`. On load it sends
   a `GET_INJECTIONS_CODE` message to the background, receives matching JS/CSS,
   and executes them on the page.
@@ -82,6 +83,11 @@ Native Host-only and declares `nativeMessaging` as required. Never silently
 fall back between the selected methods. Chromium may offer an explicit popup
 action to return an unavailable Native Host selection to browser access; that
 action must persist the method before removing the unused optional permission.
+
+Safari is Native Host-only and uses the read-only Go host embedded in its app
+extension. It requests exact-folder authorization only from an explicit rule
+Add/Save action, persists read-only app-scoped bookmarks, and never installs a
+separate Safari helper, daemon, login item, or hidden host copy.
 
 ## Native Host Safety
 

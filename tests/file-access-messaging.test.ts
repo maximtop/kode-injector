@@ -34,6 +34,8 @@ vi.mock('../src/app/background/injections', () => ({
         addInjection: vi.fn(),
         updateInjection: vi.fn(),
         setInjectionFileEnabled: vi.fn(),
+        getPageInjections: vi.fn().mockResolvedValue([]),
+        clearSourceCache: vi.fn(),
     },
 }));
 
@@ -52,6 +54,7 @@ vi.mock('../src/app/background/settings', () => ({
 }));
 
 beforeEach(() => {
+    vi.clearAllMocks();
     vi.mocked(localSourceAccess.getState).mockReset();
     vi.mocked(localSourceAccess.methodChanged).mockReset();
     vi.mocked(settings.setLocalSourceAccessMethod).mockReset();
@@ -145,6 +148,39 @@ test('set-injection-file-enabled rejects an unknown field', async () => {
         type: MESSAGE_TYPES.SET_INJECTION_FILE_ENABLED,
         data: { id: 'rule-1', field: 'bogus' as never, enabled: false },
     }, {})).rejects.toThrow();
+});
+
+test('injection-code request binds JavaScript execution to its document token', async () => {
+    const { injections } = await import('../src/app/background/injections');
+    const documentToken = '00112233445566778899aabbccddeeff';
+
+    await messageHandler.messageHandler({
+        type: MESSAGE_TYPES.GET_INJECTIONS_CODE,
+        data: { documentToken },
+    }, {
+        url: 'https://example.com/page',
+        tab: { id: 7 },
+    });
+
+    expect(injections.getPageInjections).toHaveBeenCalledWith(
+        'https://example.com/page',
+        7,
+        documentToken,
+    );
+});
+
+test('injection-code request rejects an invalid document token', async () => {
+    const { injections } = await import('../src/app/background/injections');
+
+    await expect(messageHandler.messageHandler({
+        type: MESSAGE_TYPES.GET_INJECTIONS_CODE,
+        data: { documentToken: 'invalid' },
+    }, {
+        url: 'https://example.com/page',
+        tab: { id: 7 },
+    })).resolves.toBeNull();
+
+    expect(injections.getPageInjections).not.toHaveBeenCalled();
 });
 
 test('local-source status message returns a fresh result', async () => {

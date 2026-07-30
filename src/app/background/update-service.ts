@@ -128,6 +128,8 @@ class UpdateService {
 
     /**
      * Handles extension installation and update events.
+     *
+     * @param details Browser-provided installation event details.
      */
     onInstalled = async (
         details: browser.Runtime.OnInstalledDetailsType,

@@ -56,6 +56,14 @@ test('firefox locks the method to the helper without radio inputs', () => {
     expect(html).not.toContain('type="radio"');
 });
 
+test('safari shows the fixed embedded read-only helper without radio inputs', () => {
+    const html = renderCards(BrowserTarget.Safari, LocalSourceAccessMethod.NativeHost);
+
+    expect(html).toContain('settings_safari_helper_locked');
+    expect(html).toContain('native_host_read_only');
+    expect(html).not.toContain('type="radio"');
+});
+
 test('disabled selector disables both radio inputs', () => {
     const html = renderCards(BrowserTarget.Chrome, LocalSourceAccessMethod.Browser, true);
 

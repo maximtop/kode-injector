@@ -4,6 +4,8 @@
 
 /**
  * Transforms stored state from one schema version to the next.
+ *
+ * @param state Persisted state at the migration's source version.
  */
 export type StorageMigration = (state: Record<string, unknown>) => Record<string, unknown>;
 

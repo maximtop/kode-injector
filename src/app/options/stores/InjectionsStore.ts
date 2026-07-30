@@ -344,6 +344,8 @@ export class InjectionsStore {
 
     /**
      * Removes an injection rule and refreshes options data.
+     *
+     * @param id Identifier of the rule to remove.
      */
     removeInjection = async (id: string): Promise<void> => {
         try {
@@ -358,6 +360,8 @@ export class InjectionsStore {
 
     /**
      * Toggles an injection rule and refreshes options data.
+     *
+     * @param id Identifier of the rule to toggle.
      */
     toggleInjection = async (id: string): Promise<void> => {
         const injection = find(this.injections, { id });

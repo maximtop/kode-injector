@@ -6,6 +6,7 @@ import React from 'react';
 import classNames from 'classnames';
 
 import { BrowserTarget } from '../../../common/browser-target';
+import { getBrowserCapabilities } from '../../../common/browser-capabilities';
 import { LocalSourceAccessMethod } from '../../../common/contracts';
 import { translator } from '../../../common/translator';
 
@@ -30,6 +31,8 @@ interface AccessMethodCardsProps {
 
     /**
      * Applies a newly selected method.
+     *
+     * @param method Local-source access method selected by the user.
      */
     onChange: (method: LocalSourceAccessMethod) => void;
 }
@@ -50,11 +53,15 @@ export const AccessMethodCards = ({
     disabled,
     onChange,
 }: AccessMethodCardsProps): React.JSX.Element => {
-    if (browserTarget === BrowserTarget.Firefox) {
+    if (getBrowserCapabilities(browserTarget).localSourceAccessMethodIsFixed) {
         return (
             <div className="firefox-method-note">
                 <strong>{translator.getMessage('local_source_method_native_host')}</strong>
-                <span>{translator.getMessage('settings_firefox_helper_locked')}</span>
+                <span>
+                    {browserTarget === BrowserTarget.Safari
+                        ? translator.getMessage('settings_safari_helper_locked')
+                        : translator.getMessage('settings_firefox_helper_locked')}
+                </span>
                 <span>{translator.getMessage('native_host_read_only')}</span>
             </div>
         );

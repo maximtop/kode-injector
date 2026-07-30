@@ -1,0 +1,3 @@
+native-bridge/.build/
+macos/**/Helpers/kode-injector-native
+macos/**/xcuserdata/

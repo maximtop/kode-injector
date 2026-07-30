@@ -2,12 +2,15 @@
  * @file
  */
 
+/* eslint-disable jsdoc/multiline-blocks */
+
 import React, {
     useContext,
     useEffect,
     useLayoutEffect,
     useState,
 } from 'react';
+import browser from 'webextension-polyfill';
 import { observer } from 'mobx-react';
 import { Tabs } from '@mantine/core';
 
@@ -26,6 +29,7 @@ import { log } from '../../../common/log';
 import { tabs } from '../../../common/tabs';
 import { subscribeLocalSourceAccessRefreshOnFocus } from '../../local-source-access-focus';
 import {
+    InjectionField,
     NATIVE_HOST_ALL_DOWNLOADS_URL,
     OPTIONS_TABS,
 } from '../../../common/constants';
@@ -33,6 +37,7 @@ import {
     BrowserTarget,
     getCurrentBrowserTarget,
 } from '../../../common/browser-target';
+import { getBrowserCapabilities } from '../../../common/browser-capabilities';
 import {
     LocalSourceAccessMethod,
     type InjectionRule,
@@ -49,6 +54,17 @@ import {
     getPrefillSiteFromSearch,
     getRequestedTabFromSearch,
 } from '../../options-url-params';
+import {
+    NativeErrorCode,
+} from '../../../common/native-host-protocol';
+import {
+    SafariNativeClient,
+    type SafariNativeMessenger,
+} from '../../../common/safari-native-client';
+import {
+    SafariRuleAuthorizationError,
+    saveRuleWithSafariAuthorization,
+} from '../../safari-rule-authorization';
 
 import './options-app.pcss';
 
@@ -81,18 +97,38 @@ const EDITOR_CLOSED: EditorState = {
     prefillSite: null,
 };
 
+let safariNativeClient: SafariNativeClient | undefined;
+
+const safariFolderAuthorizer = {
+    /**
+     * Requests the native exact-folder grant from the Save event.
+     *
+     * @param fileUrl Local source URL whose containing folder needs authorization.
+     */
+    authorizeFolder: (fileUrl: string): Promise<void> => {
+        if (!safariNativeClient) {
+            safariNativeClient = new SafariNativeClient(
+                browser.runtime.sendNativeMessage.bind(browser.runtime) as SafariNativeMessenger,
+            );
+        }
+        return safariNativeClient.authorizeFolder(fileUrl);
+    },
+};
+
 export const OptionsApp = observer(() => {
     const { injectionsStore, translationStore } = useContext(rootStore);
     const { getOptionsData, refreshLocalSourceAccess } = injectionsStore;
     const browserTarget = getCurrentBrowserTarget();
+    const browserCapabilities = getBrowserCapabilities(browserTarget);
     const [activeTab, setActiveTab] = useState<string>(OPTIONS_TABS.INJECTIONS);
     const [editorState, setEditorState] = useState<EditorState>(EDITOR_CLOSED);
+    const [editorSaveError, setEditorSaveError] = useState<string | null>(null);
     const [nativeHostDownload, setNativeHostDownload] = useState<NativeHostDownload>({
         kind: NativeHostDownloadKind.AllDownloads,
         url: NATIVE_HOST_ALL_DOWNLOADS_URL,
     });
 
-    const openBrowserExtensionSettings = browserTarget === BrowserTarget.Firefox
+    const openBrowserExtensionSettings = !browserCapabilities.canOpenFileAccessSettings
         ? undefined
         : (): void => {
             tabs.openBrowserExtensionSettings(browserTarget).catch(log.error);
@@ -145,6 +181,8 @@ export const OptionsApp = observer(() => {
 
                 /**
                  * Records optional permission API failures.
+                 *
+                 * @param error Permission API failure to record.
                  */
                 logPermissionError: (error) => {
                     log.error('Native messaging permission operation failed', error);
@@ -172,11 +210,43 @@ export const OptionsApp = observer(() => {
         data: NewInjectionData,
         ruleId: string | null,
     ): Promise<boolean> => {
-        if (ruleId) {
-            return Boolean(await injectionsStore.updateInjection(ruleId, data));
+        setEditorSaveError(null);
+        try {
+            return await saveRuleWithSafariAuthorization(
+                browserTarget,
+                data,
+                safariFolderAuthorizer,
+                async () => {
+                    if (ruleId) {
+                        return Boolean(await injectionsStore.updateInjection(ruleId, data));
+                    }
+                    return Boolean(await injectionsStore.addInjection(data));
+                },
+            );
+        } catch (error) {
+            if (error instanceof SafariRuleAuthorizationError) {
+                const file = error.field === InjectionField.JsPath
+                    ? translator.getMessage('editor_js_label')
+                    : translator.getMessage('editor_css_label');
+                if (error.code === NativeErrorCode.AuthorizationCancelled) {
+                    setEditorSaveError(
+                        translator.getMessage('editor_safari_authorization_cancelled'),
+                    );
+                } else if (error.code === NativeErrorCode.AuthorizationTargetNotFound) {
+                    setEditorSaveError(translator.getMessage(
+                        'editor_safari_folder_not_found',
+                        { file },
+                    ));
+                } else {
+                    setEditorSaveError(translator.getMessage(
+                        'editor_safari_authorization_failed',
+                        { file },
+                    ));
+                }
+                return false;
+            }
+            throw error;
         }
-
-        return Boolean(await injectionsStore.addInjection(data));
     };
 
     useEffect(() => {
@@ -209,6 +279,10 @@ export const OptionsApp = observer(() => {
     useEffect(() => {
         let active = true;
 
+        if (!browserCapabilities.canDownloadExternalHelper) {
+            return undefined;
+        }
+
         resolveCurrentNativeHostDownload()
             .then((download) => {
                 if (active) {
@@ -222,7 +296,7 @@ export const OptionsApp = observer(() => {
         return () => {
             active = false;
         };
-    }, []);
+    }, [browserCapabilities.canDownloadExternalHelper]);
 
     useEffect(() => {
         return browserLanguageChannel.subscribe((language) => {
@@ -294,9 +368,11 @@ export const OptionsApp = observer(() => {
                         <Tabs.Panel value={OPTIONS_TABS.INJECTIONS}>
                             <InjectionsView
                                 onCreate={() => {
+                                    setEditorSaveError(null);
                                     setEditorState({ opened: true, rule: null, prefillSite: null });
                                 }}
                                 onEdit={(rule) => {
+                                    setEditorSaveError(null);
                                     setEditorState({ opened: true, rule, prefillSite: null });
                                 }}
                                 onOpenSettingsTab={() => setActiveTab(OPTIONS_TABS.SETTINGS)}
@@ -320,8 +396,12 @@ export const OptionsApp = observer(() => {
                     opened={editorState.opened}
                     rule={editorState.rule}
                     prefillSite={editorState.prefillSite}
-                    onClose={() => setEditorState(EDITOR_CLOSED)}
+                    onClose={() => {
+                        setEditorSaveError(null);
+                        setEditorState(EDITOR_CLOSED);
+                    }}
                     onSave={handleEditorSave}
+                    saveError={editorSaveError}
                 />
             </div>
         </AppProviders>

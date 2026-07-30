@@ -72,6 +72,17 @@ test('broken native host offers helper installation on Firefox', () => {
     });
 });
 
+test('broken embedded host offers Safari settings without helper installation', () => {
+    expect(getAccessBlockState(
+        nativeState(NativeHostStatus.NotInstalled),
+        BrowserTarget.Safari,
+    )).toEqual({
+        message: 'popup_safari_native_host_unavailable',
+        actionLabel: 'popup_open_settings',
+        action: 'openSettings',
+    });
+});
+
 test('missing native permission renders a notice even when the host is ready', () => {
     expect(getAccessBlockState(
         nativeState(NativeHostStatus.Ready, false),

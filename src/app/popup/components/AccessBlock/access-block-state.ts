@@ -3,6 +3,7 @@
  */
 
 import { BrowserTarget } from '../../../common/browser-target';
+import { getBrowserCapabilities } from '../../../common/browser-capabilities';
 import {
     LocalSourceAccessMethod,
     type LocalSourceAccessState,
@@ -66,7 +67,16 @@ export const getAccessBlockState = (
         return null;
     }
 
-    if (browserTarget === BrowserTarget.Firefox) {
+    const capabilities = getBrowserCapabilities(browserTarget);
+    if (capabilities.localSourceAccessMethodIsFixed) {
+        if (capabilities.usesEmbeddedNativeHost) {
+            return {
+                message: translator.getMessage('popup_safari_native_host_unavailable'),
+                actionLabel: translator.getMessage('popup_open_settings'),
+                action: 'openSettings',
+            };
+        }
+
         return {
             message: translator.getMessage('popup_native_host_unavailable'),
             actionLabel: translator.getMessage('popup_install_helper'),

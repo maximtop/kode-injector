@@ -32,6 +32,9 @@
         "native:macos:test": "swift test --package-path native-host/macos-helper",
         "native:macos:validate": "pnpm native:macos:test && vitest run scripts/native-host && tsx scripts/native-host/package.ts --validation",
         "native:validate": "pnpm native:test && vitest run scripts/native-host && tsx scripts/native-host/package.ts --validation",
+        "safari:build": "tsx scripts/safari/build.ts",
+        "safari:validate": "pnpm safari:build && tsx scripts/safari/validate.ts",
+        "safari:fixture": "tsx scripts/safari/fixture.ts",
         "validate": "pnpm test && pnpm locales:validate && pnpm lint && pnpm typecheck",
         "lint": "eslint --ext .js,.jsx,.ts,.tsx src scripts tests rspack.config.ts",
         "typecheck": "tsc --noEmit"

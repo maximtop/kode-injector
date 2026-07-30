@@ -24,6 +24,7 @@ import { tabs } from '../common/tabs';
 import { app } from './app';
 import { gateMessageHandler } from './message-readiness';
 import { localSourceAccess } from './local-source-access';
+import { isDocumentToken } from '../common/document-injection';
 
 /**
  * Values returned by background runtime message handlers.
@@ -47,6 +48,9 @@ type MessageResponse =
 class MessageHandler {
     /**
      * Handles a runtime message and returns its response.
+     *
+     * @param message Validated runtime message to route.
+     * @param sender Browser context that sent the message.
      */
     messageHandler = async (
         message: RuntimeMessage,
@@ -75,6 +79,7 @@ class MessageHandler {
                 }
                 await settings.setLocalSourceAccessMethod(method);
                 const selectedMethod = settings.getLocalSourceAccessMethod();
+                injections.clearSourceCache();
                 localSourceAccess.methodChanged(selectedMethod);
                 return selectedMethod;
             }
@@ -118,6 +123,7 @@ class MessageHandler {
                 return popupData;
             }
             case MESSAGE_TYPES.DISABLE_APP: {
+                injections.clearSourceCache();
                 return app.disable();
             }
             case MESSAGE_TYPES.ENABLE_APP: {
@@ -127,10 +133,17 @@ class MessageHandler {
                 return tabs.openSettings();
             }
             case MESSAGE_TYPES.GET_INJECTIONS_CODE: {
+                const documentToken = data?.documentToken;
+                if (!isDocumentToken(documentToken)) {
+                    return null;
+                }
                 const senderUrl = sender.url || '';
                 const senderTabId = sender.tab?.id;
-                injections.injectJs(senderUrl, senderTabId);
-                return injections.getCssInjection(senderUrl);
+                return injections.getPageInjections(
+                    senderUrl,
+                    senderTabId,
+                    documentToken,
+                );
             }
             case MESSAGE_TYPES.ENABLE_INJECTIONS_FOR_SITE: {
                 const { tab } = data;

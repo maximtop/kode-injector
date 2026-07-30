@@ -126,5 +126,10 @@
     "rule_tag_file_issue": { "message": "ปัญหาไฟล์" },
     "rule_open_file": { "message": "เปิดไฟล์" },
     "injection_disable_for": { "message": "ปิดกฎสำหรับ %host%" },
-    "injection_enable_for": { "message": "เปิดกฎสำหรับ %host%" }
+    "injection_enable_for": { "message": "เปิดกฎสำหรับ %host%" },
+    "settings_safari_helper_locked": { "message": "Safari uses the read-only Helper embedded in Kode Injector. Folder access is granted only when you save a rule." },
+    "editor_safari_authorization_cancelled": { "message": "Folder access was not granted. The rule was not saved." },
+    "editor_safari_folder_not_found": { "message": "The folder for %file% does not exist. Create it and try again." },
+    "editor_safari_authorization_failed": { "message": "Could not authorize the folder for %file%. The rule was not saved." },
+    "popup_safari_native_host_unavailable": { "message": "Safari could not reach the embedded read-only Helper. Open Settings and check again." }
 }

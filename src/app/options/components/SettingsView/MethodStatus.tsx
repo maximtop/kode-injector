@@ -22,6 +22,7 @@ const FILE_ACCESS_IMAGES: Record<BrowserTarget, string> = {
     [BrowserTarget.Chrome]: 'assets/img/chrome-local-file-access.png',
     [BrowserTarget.Edge]: 'assets/img/edge-local-file-access.png',
     [BrowserTarget.Firefox]: 'assets/img/firefox-local-file-access.png',
+    [BrowserTarget.Safari]: 'assets/img/firefox-local-file-access.png',
 };
 
 /**

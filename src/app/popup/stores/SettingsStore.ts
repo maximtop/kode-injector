@@ -152,6 +152,8 @@ export class SettingsStore {
 
                 /**
                  * Persists browser access and rejects target coercion.
+                 *
+                 * @param method Browser-managed method requested by this transition.
                  */
                 setMethod: async (method) => {
                     const selectedMethod = await messenger.setLocalSourceAccessMethod(method);
@@ -167,6 +169,8 @@ export class SettingsStore {
 
                 /**
                  * Records cleanup failures without undoing the saved method.
+                 *
+                 * @param error Optional-permission cleanup failure to record.
                  */
                 logPermissionError: (error) => {
                     log.error('Native messaging permission operation failed', error);

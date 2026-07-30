@@ -44,9 +44,17 @@ interface RuleEditorModalProps {
     /**
      * Persists the form values.
      *
+     * @param data Validated replacement rule data.
+     * @param ruleId Existing rule identifier, or null when creating a rule.
+     *
      * @returns Whether saving succeeded and the modal may close.
      */
     onSave: (data: NewInjectionData, ruleId: string | null) => Promise<boolean>;
+
+    /**
+     * Save-time error that is not part of input syntax validation.
+     */
+    saveError: string | null;
 }
 
 /**
@@ -90,6 +98,7 @@ export const RuleEditorModal = ({
     prefillSite,
     onClose,
     onSave,
+    saveError = null,
 }: RuleEditorModalProps): React.JSX.Element => {
     const [form, setForm] = useState<NewInjectionData>(EMPTY_FORM);
     const [errors, setErrors] = useState<InjectionInputErrors>({});
@@ -122,6 +131,8 @@ export const RuleEditorModal = ({
 
     /**
      * Validates and saves the form.
+     *
+     * @param event Form submission event to consume.
      */
     const handleSubmit = async (event: React.FormEvent): Promise<void> => {
         event.preventDefault();
@@ -232,6 +243,11 @@ export const RuleEditorModal = ({
                     {errors.missingSource && (
                         <p className="editor-form-error" role="alert">
                             {translator.getMessage('editor_at_least_one_error')}
+                        </p>
+                    )}
+                    {saveError && (
+                        <p className="editor-form-error" role="alert" data-testid="editor-save-error">
+                            {saveError}
                         </p>
                     )}
                 </div>

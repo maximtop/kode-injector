@@ -1,0 +1,614 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		49721D343019123900D9764D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49721D333019123900D9764D /* AppDelegate.swift */; };
+		49721D403019123900D9764D /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49721D3F3019123900D9764D /* ViewController.swift */; };
+		49721D433019123900D9764D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 49721D413019123900D9764D /* Main.storyboard */; };
+		49721D453019123A00D9764D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 49721D443019123A00D9764D /* Assets.xcassets */; };
+		49721D4C3019123B00D9764D /* Kode Injector Extension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 49721D4B3019123B00D9764D /* Kode Injector Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		49721D513019123B00D9764D /* SafariWebExtensionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49721D503019123B00D9764D /* SafariWebExtensionHandler.swift */; };
+		A20000000000000000000001 /* NativeMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000001 /* NativeMessage.swift */; };
+		A20000000000000000000002 /* GoNativeHostProcess.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000002 /* GoNativeHostProcess.swift */; };
+		A20000000000000000000003 /* SafariNativeBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000003 /* SafariNativeBridge.swift */; };
+		A20000000000000000000004 /* kode-injector-native in Copy Native Host */ = {isa = PBXBuildFile; fileRef = A10000000000000000000004 /* kode-injector-native */; };
+		A20000000000000000000005 /* FolderAuthorizationStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000005 /* FolderAuthorizationStore.swift */; };
+		A20000000000000000000006 /* SafariSnapshotCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000006 /* SafariSnapshotCache.swift */; };
+		A20000000000000000000007 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = A30000000000000000000001 /* Localizable.strings */; };
+		A20000000000000000000008 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = A30000000000000000000001 /* Localizable.strings */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		49721D4D3019123B00D9764D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 49721D283019123900D9764D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 49721D4A3019123B00D9764D;
+			remoteInfo = "Kode Injector Extension";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		49721D583019123B00D9764D /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				49721D4C3019123B00D9764D /* Kode Injector Extension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A40000000000000000000001 /* Copy Native Host */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = Contents/Helpers;
+			dstSubfolderSpec = 1;
+			files = (
+				A20000000000000000000004 /* kode-injector-native in Copy Native Host */,
+			);
+			name = "Copy Native Host";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		49721D303019123900D9764D /* Kode Injector.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Kode Injector.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		49721D333019123900D9764D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		49721D3F3019123900D9764D /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		49721D423019123900D9764D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		49721D443019123A00D9764D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		49721D463019123A00D9764D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		49721D4B3019123B00D9764D /* Kode Injector Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Kode Injector Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		49721D503019123B00D9764D /* SafariWebExtensionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafariWebExtensionHandler.swift; sourceTree = "<group>"; };
+		49721D523019123B00D9764D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A10000000000000000000001 /* NativeMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = NativeMessage.swift; path = "../../native-bridge/Sources/SafariNativeBridge/NativeMessage.swift"; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000002 /* GoNativeHostProcess.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = GoNativeHostProcess.swift; path = "../../native-bridge/Sources/SafariNativeBridge/GoNativeHostProcess.swift"; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000003 /* SafariNativeBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SafariNativeBridge.swift; path = "../../native-bridge/Sources/SafariNativeBridge/SafariNativeBridge.swift"; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000004 /* kode-injector-native */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "kode-injector-native"; path = "Kode Injector Extension/Helpers/kode-injector-native"; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000005 /* FolderAuthorizationStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = FolderAuthorizationStore.swift; path = "../../native-bridge/Sources/SafariNativeBridge/FolderAuthorizationStore.swift"; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000006 /* SafariSnapshotCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SafariSnapshotCache.swift; path = "../../native-bridge/Sources/SafariNativeBridge/SafariSnapshotCache.swift"; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000007 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		A10000000000000000000008 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		49721D2D3019123900D9764D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		49721D483019123B00D9764D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		49721D273019123900D9764D = {
+			isa = PBXGroup;
+			children = (
+				49721D323019123900D9764D /* Kode Injector */,
+				49721D4F3019123B00D9764D /* Kode Injector Extension */,
+				A50000000000000000000001 /* Localization */,
+				49721D313019123900D9764D /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		49721D313019123900D9764D /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				49721D303019123900D9764D /* Kode Injector.app */,
+				49721D4B3019123B00D9764D /* Kode Injector Extension.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		49721D323019123900D9764D /* Kode Injector */ = {
+			isa = PBXGroup;
+			children = (
+				49721D333019123900D9764D /* AppDelegate.swift */,
+				49721D3F3019123900D9764D /* ViewController.swift */,
+				49721D413019123900D9764D /* Main.storyboard */,
+				49721D443019123A00D9764D /* Assets.xcassets */,
+				49721D463019123A00D9764D /* Info.plist */,
+			);
+			path = "Kode Injector";
+			sourceTree = "<group>";
+		};
+		49721D4F3019123B00D9764D /* Kode Injector Extension */ = {
+			isa = PBXGroup;
+			children = (
+				49721D503019123B00D9764D /* SafariWebExtensionHandler.swift */,
+				A10000000000000000000001 /* NativeMessage.swift */,
+				A10000000000000000000002 /* GoNativeHostProcess.swift */,
+				A10000000000000000000003 /* SafariNativeBridge.swift */,
+				A10000000000000000000005 /* FolderAuthorizationStore.swift */,
+				A10000000000000000000006 /* SafariSnapshotCache.swift */,
+				A10000000000000000000004 /* kode-injector-native */,
+				49721D523019123B00D9764D /* Info.plist */,
+			);
+			path = "Kode Injector Extension";
+			sourceTree = "<group>";
+		};
+		A50000000000000000000001 /* Localization */ = {
+			isa = PBXGroup;
+			children = (
+				A30000000000000000000001 /* Localizable.strings */,
+			);
+			path = Localization;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		49721D2F3019123900D9764D /* Kode Injector */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 49721D593019123B00D9764D /* Build configuration list for PBXNativeTarget "Kode Injector" */;
+			buildPhases = (
+				49721D2C3019123900D9764D /* Sources */,
+				49721D2D3019123900D9764D /* Frameworks */,
+				49721D2E3019123900D9764D /* Resources */,
+				49721D583019123B00D9764D /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				49721D4E3019123B00D9764D /* PBXTargetDependency */,
+			);
+			name = "Kode Injector";
+			packageProductDependencies = (
+			);
+			productName = "Kode Injector";
+			productReference = 49721D303019123900D9764D /* Kode Injector.app */;
+			productType = "com.apple.product-type.application";
+		};
+		49721D4A3019123B00D9764D /* Kode Injector Extension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 49721D553019123B00D9764D /* Build configuration list for PBXNativeTarget "Kode Injector Extension" */;
+			buildPhases = (
+				49721D473019123B00D9764D /* Sources */,
+				49721D483019123B00D9764D /* Frameworks */,
+				49721D493019123B00D9764D /* Resources */,
+				A40000000000000000000001 /* Copy Native Host */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Kode Injector Extension";
+			packageProductDependencies = (
+			);
+			productName = "Kode Injector Extension";
+			productReference = 49721D4B3019123B00D9764D /* Kode Injector Extension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		49721D283019123900D9764D /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2630;
+				LastUpgradeCheck = 2630;
+				TargetAttributes = {
+					49721D2F3019123900D9764D = {
+						CreatedOnToolsVersion = 26.3;
+					};
+					49721D4A3019123B00D9764D = {
+						CreatedOnToolsVersion = 26.3;
+					};
+				};
+			};
+			buildConfigurationList = 49721D2B3019123900D9764D /* Build configuration list for PBXProject "Kode Injector" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				ru,
+				Base,
+			);
+			mainGroup = 49721D273019123900D9764D;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 49721D313019123900D9764D /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				49721D2F3019123900D9764D /* Kode Injector */,
+				49721D4A3019123B00D9764D /* Kode Injector Extension */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		49721D2E3019123900D9764D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				49721D433019123900D9764D /* Main.storyboard in Resources */,
+				49721D453019123A00D9764D /* Assets.xcassets in Resources */,
+				A20000000000000000000007 /* Localizable.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		49721D493019123B00D9764D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A20000000000000000000008 /* Localizable.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		49721D2C3019123900D9764D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				49721D403019123900D9764D /* ViewController.swift in Sources */,
+				49721D343019123900D9764D /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		49721D473019123B00D9764D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				49721D513019123B00D9764D /* SafariWebExtensionHandler.swift in Sources */,
+				A20000000000000000000001 /* NativeMessage.swift in Sources */,
+				A20000000000000000000002 /* GoNativeHostProcess.swift in Sources */,
+				A20000000000000000000003 /* SafariNativeBridge.swift in Sources */,
+				A20000000000000000000005 /* FolderAuthorizationStore.swift in Sources */,
+				A20000000000000000000006 /* SafariSnapshotCache.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		49721D4E3019123B00D9764D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 49721D4A3019123B00D9764D /* Kode Injector Extension */;
+			targetProxy = 49721D4D3019123B00D9764D /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		49721D413019123900D9764D /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				49721D423019123900D9764D /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		A30000000000000000000001 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				A10000000000000000000007 /* en */,
+				A10000000000000000000008 /* ru */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		49721D533019123B00D9764D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		49721D543019123B00D9764D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		49721D563019123B00D9764D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "Kode Injector Extension/Kode Injector Extension.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_USER_SELECTED_FILES = readonly;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Kode Injector Extension/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Kode Injector Extension";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MARKETING_VERSION = 0.9.1;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "dev.maximtop.kode-injector.safari.Extension";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		49721D573019123B00D9764D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "Kode Injector Extension/Kode Injector Extension.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_USER_SELECTED_FILES = readonly;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Kode Injector Extension/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Kode Injector Extension";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MARKETING_VERSION = 0.9.1;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "dev.maximtop.kode-injector.safari.Extension";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		49721D5A3019123B00D9764D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "Kode Injector/Kode Injector.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = NO;
+				ENABLE_USER_SELECTED_FILES = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Kode Injector/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Kode Injector";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSMainStoryboardFile = Main;
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MARKETING_VERSION = 0.9.1;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "dev.maximtop.kode-injector.safari";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = NO;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		49721D5B3019123B00D9764D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "Kode Injector/Kode Injector.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = NO;
+				ENABLE_USER_SELECTED_FILES = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Kode Injector/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Kode Injector";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSMainStoryboardFile = Main;
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MARKETING_VERSION = 0.9.1;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "dev.maximtop.kode-injector.safari";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = NO;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		49721D2B3019123900D9764D /* Build configuration list for PBXProject "Kode Injector" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				49721D533019123B00D9764D /* Debug */,
+				49721D543019123B00D9764D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		49721D553019123B00D9764D /* Build configuration list for PBXNativeTarget "Kode Injector Extension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				49721D563019123B00D9764D /* Debug */,
+				49721D573019123B00D9764D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		49721D593019123B00D9764D /* Build configuration list for PBXNativeTarget "Kode Injector" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				49721D5A3019123B00D9764D /* Debug */,
+				49721D5B3019123B00D9764D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 49721D283019123900D9764D /* Project object */;
+}

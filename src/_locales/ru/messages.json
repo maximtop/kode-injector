@@ -126,5 +126,10 @@
     "rule_tag_file_issue": { "message": "Проблема с файлом" },
     "rule_open_file": { "message": "Открыть файл" },
     "injection_disable_for": { "message": "Отключить правило для %host%" },
-    "injection_enable_for": { "message": "Включить правило для %host%" }
+    "injection_enable_for": { "message": "Включить правило для %host%" },
+    "settings_safari_helper_locked": { "message": "Safari использует встроенный в Kode Injector Helper только для чтения. Доступ к папке запрашивается при сохранении правила." },
+    "editor_safari_authorization_cancelled": { "message": "Доступ к папке не предоставлен. Правило не сохранено." },
+    "editor_safari_folder_not_found": { "message": "Папка для файла «%file%» не существует. Создайте папку и повторите попытку." },
+    "editor_safari_authorization_failed": { "message": "Не удалось предоставить доступ к папке для файла «%file%». Правило не сохранено." },
+    "popup_safari_native_host_unavailable": { "message": "Safari не удалось подключиться к встроенному Helper только для чтения. Откройте Настройки и повторите проверку." }
 }

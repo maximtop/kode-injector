@@ -51,6 +51,16 @@ advanced alternative. Expand **Advanced** under the local-file access method in
 Kode Injector settings and choose **Use Native Host** to request the browser
 permission and switch methods.
 
+Safari for macOS is currently available as a local development app. Its
+read-only helper is embedded in the Safari extension, so it does not install a
+separate Helper. Build it with `pnpm safari:build`, copy
+`build/safari/dev/Kode Injector.app` to `/Applications`, launch the app, and
+enable **Kode Injector** in Safari Settings → Extensions. Local development may
+also require Safari's **Allow Unsigned Extensions** developer option. When a
+rule is added or saved, Safari opens the standard macOS folder authorization
+panel for the exact folder containing the configured source. That grant is
+remembered; Kode Injector does not ask again while the bookmark remains valid.
+
 Options automatically links to the package for the installed extension version
 and the current operating system and architecture. **View all downloads** opens
 the complete [GitHub Releases page](https://github.com/maximtop/kode-injector/releases)
@@ -125,6 +135,11 @@ ID is configured for a release, production registration contains the Chrome
 Store origin only; unpacked Edge remains supported through the explicit
 development-registration flow.
 
+For Safari on macOS, run `pnpm safari:build` and use the containing application
+flow described above. `pnpm dev` and `pnpm release` intentionally continue to
+build only Chrome, Edge, and Firefox; `pnpm dev safari` builds just the shared
+Safari WebExtension resources.
+
 See [DEVELOPMENT.md](DEVELOPMENT.md) for full setup details.
 
 ## Quick Start
@@ -168,6 +183,19 @@ directly load arbitrary local files. The host is read-only and uses the same con
 `file:///` paths; no rule migration is needed when changing methods in Chrome
 or Edge.
 
+Safari always uses the read-only helper embedded in its containing app. It has
+no browser/native selector and no external Helper download. macOS requires an
+explicit system folder grant for arbitrary local paths. Kode Injector requests
+that grant during Add/Save, scopes it to the immediate containing folder, and
+stores a read-only security-scoped bookmark locally in the native extension.
+
+After the first successful read, Safari keeps the last complete JavaScript/CSS
+snapshot for a rule in extension memory and injects it immediately while it
+refreshes the files in the background. As a result, the first reload after an
+external file edit can still use the previous snapshot; the following reload
+uses the refreshed files. Editing or toggling the rule clears its snapshot, and
+Safari process suspension or restart can clear the memory cache at any time.
+
 ### Manage injections
 
 Open the options page to view all your injection rules in a table. From there
@@ -208,7 +236,7 @@ interface only.
 | `storage` | All browsers | Save injection rules, settings, and the per-site blocklist |
 | `scripting` | All browsers | Inject JavaScript and CSS into web pages |
 | `activeTab` | All browsers | Read the current tab's URL to match injection rules |
-| `nativeMessaging` | Required in Firefox; optional in Chrome and Edge | Ask the separately installed read-only helper to read configured local files |
+| `nativeMessaging` | Required in Firefox and Safari; optional in Chrome and Edge | Ask the read-only external or embedded helper to read configured local files |
 | `<all_urls>` (host permission) | All browsers | Run the content script and apply injections on any website |
 
 ---
@@ -236,6 +264,12 @@ Options. In Firefox or Native Host mode, install or update **Kode Injector
 Helper** and check again. The helper only reads explicitly requested local
 regular files up to 5 MiB. It cannot write files, execute programs, list
 directories, or access the network.
+
+In Safari, edit the affected rule and press **Save changes** again. If the
+stored folder grant is missing or stale, macOS asks you to authorize the exact
+containing folder. Cancelling leaves the rule unchanged. If the source file is
+not created yet, its immediate folder must already exist before it can be
+authorized.
 
 Helper updates are manual. Options links to the package matching the installed
 extension; copy the newer **Kode Injector Helper** to Applications, open it,

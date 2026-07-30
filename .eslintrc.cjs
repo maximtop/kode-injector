@@ -95,16 +95,18 @@ module.exports = {
         'jsdoc/require-returns-type': 'off',
         'jsdoc/require-throws': 'error',
         'jsdoc/require-file-overview': 'error',
-        'jsdoc/require-param-description': 'off',
-        'jsdoc/require-property-description': 'off',
+        'jsdoc/require-param-description': 'error',
+        'jsdoc/require-property-description': 'error',
         'jsdoc/require-returns-description': 'off',
         'jsdoc/require-returns': 'off',
         'jsdoc/require-param': ['error', {
             checkDestructured: false,
             contexts: [
+                'ArrowFunctionExpression',
                 'FunctionDeclaration',
                 'FunctionExpression',
                 'MethodDefinition',
+                'TSFunctionType',
             ],
         }],
         'jsdoc/check-param-names': ['error', {

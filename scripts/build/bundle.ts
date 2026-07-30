@@ -21,6 +21,9 @@ const buildEnv = channelEnv as BuildEnv;
 
 /**
  * Builds the browser configurations selected by the command line.
+ *
+ * @param targets Browser targets selected for this build.
+ * @param watch Whether to keep rebuilding changed inputs.
  */
 const build: BuildCommandHandler = async (targets, watch) => {
     const configurations = targets.map((target) => createRspackConfig(target, buildEnv));

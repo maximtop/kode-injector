@@ -510,5 +510,25 @@
     "injection_enable_for": {
         "message": "Turn on rule for %host%",
         "description": "Accessible label of a rule switch that is off. %host% is a hostname."
+    },
+    "settings_safari_helper_locked": {
+        "message": "Safari uses the read-only Helper embedded in Kode Injector. Folder access is granted only when you save a rule.",
+        "description": "Explains the fixed embedded local-source method used by Safari."
+    },
+    "editor_safari_authorization_cancelled": {
+        "message": "Folder access was not granted. The rule was not saved.",
+        "description": "Rule editor error after cancelling Safari folder authorization."
+    },
+    "editor_safari_folder_not_found": {
+        "message": "The folder for %file% does not exist. Create it and try again.",
+        "description": "Rule editor error when the immediate source folder does not exist. %file% is the source field label."
+    },
+    "editor_safari_authorization_failed": {
+        "message": "Could not authorize the folder for %file%. The rule was not saved.",
+        "description": "Rule editor error when Safari folder authorization fails. %file% is the source field label."
+    },
+    "popup_safari_native_host_unavailable": {
+        "message": "Safari could not reach the embedded read-only Helper. Open Settings and check again.",
+        "description": "Popup recovery message when Safari cannot reach the Helper embedded in its app extension."
     }
 }

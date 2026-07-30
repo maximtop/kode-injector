@@ -11,9 +11,12 @@ import {
 } from 'vitest';
 
 import { injections } from '../src/app/background/injections';
+import { executeScript } from '../src/app/background/execute-script';
 import { sourceReader } from '../src/app/background/native-host';
 import { InjectionField } from '../src/app/common/constants';
 import { log } from '../src/app/common/log';
+
+const documentToken = '00112233445566778899aabbccddeeff';
 
 vi.mock('webextension-polyfill', () => ({
     default: {
@@ -31,7 +34,7 @@ vi.mock('../src/app/background/app', () => ({
 }));
 
 vi.mock('../src/app/background/execute-script', () => ({
-    executeScript: vi.fn(),
+    executeScript: vi.fn().mockResolvedValue(undefined),
 }));
 
 vi.mock('../src/app/background/local-source-access', () => ({
@@ -48,6 +51,7 @@ vi.mock('../src/app/background/storage', () => ({
 
 beforeEach(() => {
     vi.clearAllMocks();
+    injections.clearSourceCache();
     injections.injections = [];
     injections.blocklist = [];
 });
@@ -196,28 +200,54 @@ test('updateInjection rejects invalid data and keeps the original rule', () => {
     expect(injections.injections).toEqual([created]);
 });
 
-test('injectJs never reads the source of a rule without a JS path', async () => {
+test('page injection never reads an empty JS path', async () => {
     injections.addInjection({
         site: 'example.com',
         jsPath: '',
         cssPath: 'file:///a.css',
     });
+    vi.mocked(sourceReader.read).mockResolvedValue({ ok: true, content: 'body{}' });
 
-    await injections.injectJs('https://example.com', 1);
+    await injections.getPageInjections('https://example.com', 1, documentToken);
 
-    expect(sourceReader.read).not.toHaveBeenCalled();
+    expect(sourceReader.read).toHaveBeenCalledOnce();
+    expect(sourceReader.read).toHaveBeenCalledWith('file:///a.css');
 });
 
-test('getCssInjection skips rules without a CSS path', async () => {
+test('page injection returns no CSS for a rule without a CSS path', async () => {
     injections.addInjection({
         site: 'example.com',
         jsPath: 'file:///a.js',
         cssPath: '',
     });
+    vi.mocked(sourceReader.read).mockResolvedValue({ ok: true, content: 'run()' });
 
-    await expect(injections.getCssInjection('https://example.com')).resolves.toEqual([]);
+    await expect(injections.getPageInjections(
+        'https://example.com',
+        1,
+        documentToken,
+    )).resolves.toEqual([]);
 
-    expect(sourceReader.read).not.toHaveBeenCalled();
+    expect(sourceReader.read).toHaveBeenCalledOnce();
+    expect(sourceReader.read).toHaveBeenCalledWith('file:///a.js');
+});
+
+test('non-Safari page injections keep reading the current source before execution', async () => {
+    injections.addInjection({
+        site: 'example.com',
+        jsPath: 'file:///a.js',
+        cssPath: '',
+    });
+    vi.mocked(sourceReader.read)
+        .mockResolvedValueOnce({ ok: true, content: 'version-one' })
+        .mockResolvedValueOnce({ ok: true, content: 'version-two' });
+
+    await injections.getPageInjections('https://example.com', 1, documentToken);
+    await injections.getPageInjections('https://example.com', 1, documentToken);
+
+    expect(sourceReader.read).toHaveBeenCalledTimes(2);
+    expect(vi.mocked(executeScript).mock.calls.map(([script]) => script))
+        .toEqual(['version-one', 'version-two']);
 });
 
 test('setInjectionFileEnabled flips only the targeted flag', () => {
@@ -252,7 +282,7 @@ test('setInjectionFileEnabled returns null for an empty-path field', () => {
     expect(result).toBeNull();
 });
 
-test('injectJs skips a rule whose JS file is individually disabled', async () => {
+test('page injection skips a rule whose only file is individually disabled', async () => {
     const created = injections.addInjection({
         site: 'example.com',
         jsPath: 'file:///a.js',
@@ -260,12 +290,12 @@ test('injectJs skips a rule whose JS file is individually disabled', async () =>
     });
     injections.setInjectionFileEnabled(created!.id, InjectionField.JsPath, false);
 
-    await injections.injectJs('https://example.com', 1);
+    await injections.getPageInjections('https://example.com', 1, documentToken);
 
     expect(sourceReader.read).not.toHaveBeenCalled();
 });
 
-test('getCssInjection ignores the JS flag and applies an enabled CSS file', async () => {
+test('page injection ignores the JS flag and applies an enabled CSS file', async () => {
     const created = injections.addInjection({
         site: 'example.com',
         jsPath: 'file:///a.js',
@@ -274,7 +304,11 @@ test('getCssInjection ignores the JS flag and applies an enabled CSS file', asyn
     injections.setInjectionFileEnabled(created!.id, InjectionField.JsPath, false);
     vi.mocked(sourceReader.read).mockResolvedValue({ ok: true, content: 'body{}' });
 
-    const result = await injections.getCssInjection('https://example.com');
+    const result = await injections.getPageInjections(
+        'https://example.com',
+        1,
+        documentToken,
+    );
 
     expect(result).toHaveLength(1);
     expect(sourceReader.read).toHaveBeenCalledWith('file:///a.css');

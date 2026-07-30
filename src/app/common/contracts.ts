@@ -16,6 +16,7 @@ import {
 } from 'valibot';
 
 import { BrowserTarget } from './browser-target';
+import { getBrowserCapabilities } from './browser-capabilities';
 import { InjectionField, MESSAGE_TYPES, SETTINGS } from './constants';
 import {
     localePreferenceSchema,
@@ -200,11 +201,13 @@ export type AppSettings = InferOutput<typeof appSettingsSchema>;
 
 /**
  * Default application settings used during field-level recovery.
+ *
+ * @param browserTarget Browser hosting the extension.
  */
 export const getDefaultLocalSourceAccessMethod = (
     browserTarget: BrowserTarget,
 ): LocalSourceAccessMethod => {
-    return browserTarget === BrowserTarget.Firefox
+    return getBrowserCapabilities(browserTarget).nativeHostIsDefault
         ? LocalSourceAccessMethod.NativeHost
         : LocalSourceAccessMethod.Browser;
 };
@@ -221,7 +224,7 @@ export const getSupportedLocalSourceAccessMethod = (
     method: LocalSourceAccessMethod,
     browserTarget: BrowserTarget,
 ): LocalSourceAccessMethod => {
-    return browserTarget === BrowserTarget.Firefox
+    return getBrowserCapabilities(browserTarget).localSourceAccessMethodIsFixed
         ? LocalSourceAccessMethod.NativeHost
         : method;
 };
@@ -243,6 +246,8 @@ const getDefaultAppSettings = (browserTarget: BrowserTarget): AppSettings => {
 
 /**
  * Schema that normalizes invalid settings fields independently.
+ *
+ * @param browserTarget Browser whose capability defaults should be applied.
  */
 const getNormalizedAppSettingsSchema = (browserTarget: BrowserTarget) => {
     const defaultSettings = getDefaultAppSettings(browserTarget);
@@ -329,10 +334,9 @@ export type InjectionFileIssues = Record<
  */
 export type CssInjectionCode = {
     /**
-     * CSS filename and source content.
+     * CSS source content.
      */
     css: {
-        filename: string;
         code: string;
     };
 };
@@ -357,9 +361,9 @@ export type ExecuteScriptPayload = {
     tabId?: number;
 
     /**
-     * Source filename used for diagnostic logging.
+     * Identity of the document that requested the injection.
      */
-    filePath: string;
+    documentToken: string;
 };
 
 /**
@@ -392,7 +396,10 @@ export type RuntimeMessage =
     | { type: typeof MESSAGE_TYPES.DISABLE_APP; data?: undefined }
     | { type: typeof MESSAGE_TYPES.ENABLE_APP; data?: undefined }
     | { type: typeof MESSAGE_TYPES.OPEN_SETTINGS; data?: undefined }
-    | { type: typeof MESSAGE_TYPES.GET_INJECTIONS_CODE; data?: undefined }
+    | {
+        type: typeof MESSAGE_TYPES.GET_INJECTIONS_CODE;
+        data: { documentToken: string };
+    }
     | { type: typeof MESSAGE_TYPES.OPEN_TAB; data: { url: string } }
     | {
         type: typeof MESSAGE_TYPES.DISABLE_INJECTIONS_FOR_SITE;
@@ -474,6 +481,7 @@ export const normalizeInjectionRule = (rule: StoredInjectionRule): InjectionRule
  * Normalizes persisted application settings.
  *
  * @param value Persisted settings value.
+ * @param browserTarget Browser whose capabilities constrain the stored method.
  *
  * @returns Valid settings and whether persisted storage needs repair.
  */
@@ -516,6 +524,7 @@ export const normalizeAppSettingsWithRepair = (
  * Normalizes persisted application settings.
  *
  * @param value Persisted settings value.
+ * @param browserTarget Browser whose capabilities constrain the stored method.
  *
  * @returns Valid application settings with defaults applied.
  */

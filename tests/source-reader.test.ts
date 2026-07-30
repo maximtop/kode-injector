@@ -25,6 +25,23 @@ test('routes file URLs through the native host in native-host mode', async () =>
     expect(fetchSource).not.toHaveBeenCalled();
 });
 
+test('routes case-insensitive file URL schemes through the native host', async () => {
+    const readFile = vi.fn().mockResolvedValue('local content');
+    const fetchSource = vi.fn();
+    const reader = new SourceReader(
+        { readFile },
+        fetchSource,
+        () => LocalSourceAccessMethod.NativeHost,
+    );
+
+    await expect(reader.read('FILE:///tmp/a.js')).resolves.toEqual({
+        ok: true,
+        content: 'local content',
+    });
+    expect(readFile).toHaveBeenCalledWith('FILE:///tmp/a.js');
+    expect(fetchSource).not.toHaveBeenCalled();
+});
+
 test('routes file URLs through fetch in browser mode', async () => {
     const readFile = vi.fn();
     const fetchSource = vi.fn().mockResolvedValue({ text: async () => 'local content' });

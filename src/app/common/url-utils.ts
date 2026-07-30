@@ -33,6 +33,8 @@ const URL_SCHEME_REGEX = /^[a-z][a-z0-9+.-]*:\/\//i;
 class UrlUtils {
     /**
      * Extracts a hostname from a URL.
+     *
+     * @param url URL to parse, when available.
      */
     getHostname = (url?: string): string | null => {
         if (!url) {
@@ -48,6 +50,8 @@ class UrlUtils {
 
     /**
      * Extracts a hostname and removes its www prefix.
+     *
+     * @param url URL to parse, when available.
      */
     getHostnameWithoutWww = (url?: string): string | null => {
         const hostname = this.getHostname(url);

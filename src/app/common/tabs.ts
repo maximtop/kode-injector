@@ -39,6 +39,8 @@ class Tabs {
 
     /**
      * Opens a browser tab for a URL.
+     *
+     * @param url URL to open.
      */
     openTab = (url: string): Promise<browser.Tabs.Tab> => {
         return browser.tabs.create({ active: true, url });
@@ -81,6 +83,8 @@ class Tabs {
 
     /**
      * Reloads a browser tab when an identifier is available.
+     *
+     * @param tabId Browser tab to reload, or the current tab when omitted.
      */
     reloadTab = async (tabId?: number): Promise<void> => {
         try {

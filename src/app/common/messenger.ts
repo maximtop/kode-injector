@@ -36,6 +36,9 @@ type RuntimeMessageData<TType extends RuntimeMessageType> =
 class Messenger {
     /**
      * Sends a runtime message and returns its typed response.
+     *
+     * @param type Runtime message discriminator.
+     * @param data Payload associated with the selected discriminator.
      */
     sendMessage = <TResponse, TType extends RuntimeMessageType>(
         type: TType,
@@ -105,6 +108,8 @@ class Messenger {
 
     /**
      * Requests removal of an injection rule.
+     *
+     * @param id Identifier of the rule to remove.
      */
     removeInjection = (id: string): Promise<void> => {
         return this.sendMessage(MESSAGE_TYPES.REMOVE_INJECTION, { id });
@@ -112,6 +117,8 @@ class Messenger {
 
     /**
      * Requests enabling an injection rule.
+     *
+     * @param id Identifier of the rule to enable.
      */
     enableInjection = (id: string): Promise<void> => {
         return this.sendMessage(MESSAGE_TYPES.ENABLE_INJECTION, { id });
@@ -119,6 +126,8 @@ class Messenger {
 
     /**
      * Requests disabling an injection rule.
+     *
+     * @param id Identifier of the rule to disable.
      */
     disableInjection = (id: string): Promise<void> => {
         return this.sendMessage(MESSAGE_TYPES.DISABLE_INJECTION, { id });
@@ -140,6 +149,8 @@ class Messenger {
 
     /**
      * Persists the selected local-source method and returns its fresh status.
+     *
+     * @param method Local-source access method selected by the user.
      */
     setLocalSourceAccessMethod = (
         method: LocalSourceAccessMethod,
@@ -149,6 +160,8 @@ class Messenger {
 
     /**
      * Requests data required by the popup.
+     *
+     * @param tab Current popup tab descriptor.
      */
     getPopupData = (tab: PopupTab): Promise<PopupDataResponse> => {
         return this.sendMessage(MESSAGE_TYPES.GET_POPUP_DATA, { tab });
@@ -177,6 +190,8 @@ class Messenger {
 
     /**
      * Requests opening a browser tab.
+     *
+     * @param url URL to open in the new tab.
      */
     openTab = (url: string): Promise<browser.Tabs.Tab> => {
         return this.sendMessage(MESSAGE_TYPES.OPEN_TAB, { url });
@@ -184,13 +199,17 @@ class Messenger {
 
     /**
      * Requests injection code for the current page.
+     *
+     * @param documentToken Identity of the requesting document.
      */
-    getInjectionsCode = (): Promise<InjectionsCodeResponse> => {
-        return this.sendMessage(MESSAGE_TYPES.GET_INJECTIONS_CODE);
+    getInjectionsCode = (documentToken: string): Promise<InjectionsCodeResponse> => {
+        return this.sendMessage(MESSAGE_TYPES.GET_INJECTIONS_CODE, { documentToken });
     }
 
     /**
      * Requests disabling injections for a site.
+     *
+     * @param tab Tab whose site should be disabled.
      */
     disableInjectionsForSite = (tab: PopupTab): Promise<void> => {
         return this.sendMessage(MESSAGE_TYPES.DISABLE_INJECTIONS_FOR_SITE, { tab });
@@ -198,6 +217,8 @@ class Messenger {
 
     /**
      * Requests enabling injections for a site.
+     *
+     * @param tab Tab whose site should be enabled.
      */
     enableInjectionsForSite = (tab: PopupTab): Promise<void> => {
         return this.sendMessage(MESSAGE_TYPES.ENABLE_INJECTIONS_FOR_SITE, { tab });

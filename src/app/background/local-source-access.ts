@@ -20,6 +20,8 @@ import {
 import { nativeHostClient } from './native-host';
 import { fileAccess } from './file-access';
 import { settings } from './settings';
+import { getBrowserCapabilities } from '../common/browser-capabilities';
+import { getCurrentBrowserTarget } from '../common/browser-target';
 
 interface NativeHostProbe {
     ping(): Promise<NativeHostInfo>;
@@ -175,6 +177,8 @@ const getFailureStatus = (errorMessage: string): NativeHostStatus => {
 export const localSourceAccess = new LocalSourceAccess(
     nativeHostClient,
     fileAccess,
-    nativeMessagingPermission,
+    getBrowserCapabilities(getCurrentBrowserTarget()).usesEmbeddedNativeHost
+        ? { contains: async () => true }
+        : nativeMessagingPermission,
     settings.getLocalSourceAccessMethod,
 );

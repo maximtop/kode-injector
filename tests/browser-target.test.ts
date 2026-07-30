@@ -20,6 +20,11 @@ test('detects Firefox from its extension protocol', () => {
         .toBe(BrowserTarget.Firefox);
 });
 
+test('detects Safari from its extension protocol', () => {
+    expect(detectBrowserTarget('safari-web-extension:', 'Mozilla/5.0 Safari/626.1'))
+        .toBe(BrowserTarget.Safari);
+});
+
 test('detects Edge from its Chromium user agent token', () => {
     expect(detectBrowserTarget('extension:', 'Mozilla/5.0 Chrome/152.0 Edg/152.0'))
         .toBe(BrowserTarget.Edge);
@@ -44,6 +49,9 @@ test.each([
     expect(getExtensionSettingsUrl(target, id)).toBe(expected);
 });
 
-test('does not expose an unsupported Firefox settings URL', () => {
-    expect(getExtensionSettingsUrl(BrowserTarget.Firefox, 'firefox-id')).toBeUndefined();
-});
+test.each([BrowserTarget.Firefox, BrowserTarget.Safari])(
+    'does not expose an unsupported %s settings URL',
+    (target) => {
+        expect(getExtensionSettingsUrl(target, 'extension-id')).toBeUndefined();
+    },
+);

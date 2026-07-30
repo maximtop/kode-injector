@@ -1,0 +1,203 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://raw.githubusercontent.com/maximtop/kode-injector/master/safari/native-bridge/Sources/SafariNativeBridge/Resources/safari-native-messaging.schema.json",
+    "title": "Kode Injector Safari Native Adapter Protocol v1",
+    "oneOf": [
+        { "$ref": "#/$defs/pingRequest" },
+        { "$ref": "#/$defs/readMetadataRequest" },
+        { "$ref": "#/$defs/readChunkRequest" },
+        { "$ref": "#/$defs/authorizeFolderRequest" },
+        { "$ref": "#/$defs/statusResponse" },
+        { "$ref": "#/$defs/readMetadataResponse" },
+        { "$ref": "#/$defs/readChunkResponse" },
+        { "$ref": "#/$defs/authorizationResponse" },
+        { "$ref": "#/$defs/errorResponse" }
+    ],
+    "$defs": {
+        "protocolVersion": {
+            "const": 1
+        },
+        "requestId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "baseRequest": {
+            "type": "object",
+            "properties": {
+                "protocolVersion": { "$ref": "#/$defs/protocolVersion" },
+                "requestId": { "$ref": "#/$defs/requestId" }
+            }
+        },
+        "pingRequest": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["protocolVersion", "requestId", "operation"],
+            "properties": {
+                "protocolVersion": { "$ref": "#/$defs/protocolVersion" },
+                "requestId": { "$ref": "#/$defs/requestId" },
+                "operation": { "const": "ping" }
+            }
+        },
+        "readMetadataRequest": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["protocolVersion", "requestId", "operation", "fileUrl"],
+            "properties": {
+                "protocolVersion": { "$ref": "#/$defs/protocolVersion" },
+                "requestId": { "$ref": "#/$defs/requestId" },
+                "operation": { "const": "readMetadata" },
+                "fileUrl": {
+                    "type": "string",
+                    "minLength": 8,
+                    "maxLength": 8192
+                }
+            }
+        },
+        "readChunkRequest": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["protocolVersion", "requestId", "operation", "fileUrl", "digest", "chunkIndex"],
+            "properties": {
+                "protocolVersion": { "$ref": "#/$defs/protocolVersion" },
+                "requestId": { "$ref": "#/$defs/requestId" },
+                "operation": { "const": "readChunk" },
+                "fileUrl": {
+                    "type": "string",
+                    "minLength": 8,
+                    "maxLength": 8192
+                },
+                "digest": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{64}$"
+                },
+                "chunkIndex": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9
+                }
+            }
+        },
+        "authorizeFolderRequest": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["protocolVersion", "requestId", "operation", "fileUrl"],
+            "properties": {
+                "protocolVersion": { "$ref": "#/$defs/protocolVersion" },
+                "requestId": { "$ref": "#/$defs/requestId" },
+                "operation": { "const": "authorizeFolder" },
+                "fileUrl": {
+                    "type": "string",
+                    "minLength": 8,
+                    "maxLength": 8192
+                }
+            }
+        },
+        "statusResponse": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["protocolVersion", "requestId", "type", "ok", "hostVersion"],
+            "properties": {
+                "protocolVersion": { "$ref": "#/$defs/protocolVersion" },
+                "requestId": { "$ref": "#/$defs/requestId" },
+                "type": { "const": "status" },
+                "ok": { "const": true },
+                "hostVersion": { "type": "string" }
+            }
+        },
+        "readMetadataResponse": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["protocolVersion", "requestId", "type", "ok", "totalBytes", "chunkCount", "digest", "firstChunk"],
+            "properties": {
+                "protocolVersion": { "$ref": "#/$defs/protocolVersion" },
+                "requestId": { "$ref": "#/$defs/requestId" },
+                "type": { "const": "readMetadata" },
+                "ok": { "const": true },
+                "totalBytes": { "type": "integer", "minimum": 0, "maximum": 5242880 },
+                "chunkCount": { "type": "integer", "minimum": 0, "maximum": 10 },
+                "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+                "firstChunk": {
+                    "type": "string",
+                    "maxLength": 699052,
+                    "pattern": "^[A-Za-z0-9+/]*={0,2}$"
+                }
+            }
+        },
+        "readChunkResponse": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["protocolVersion", "requestId", "type", "ok", "chunkIndex", "data"],
+            "properties": {
+                "protocolVersion": { "$ref": "#/$defs/protocolVersion" },
+                "requestId": { "$ref": "#/$defs/requestId" },
+                "type": { "const": "readChunk" },
+                "ok": { "const": true },
+                "chunkIndex": { "type": "integer", "minimum": 0, "maximum": 9 },
+                "data": {
+                    "type": "string",
+                    "maxLength": 699052,
+                    "pattern": "^[A-Za-z0-9+/]*={0,2}$"
+                }
+            }
+        },
+        "authorizationResponse": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["protocolVersion", "requestId", "type", "ok"],
+            "properties": {
+                "protocolVersion": { "$ref": "#/$defs/protocolVersion" },
+                "requestId": { "$ref": "#/$defs/requestId" },
+                "type": { "const": "authorization" },
+                "ok": { "const": true }
+            }
+        },
+        "errorResponse": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["protocolVersion", "requestId", "type", "ok", "error"],
+            "properties": {
+                "protocolVersion": { "$ref": "#/$defs/protocolVersion" },
+                "requestId": {
+                    "oneOf": [
+                        { "$ref": "#/$defs/requestId" },
+                        { "type": "null" }
+                    ]
+                },
+                "type": { "const": "error" },
+                "ok": { "const": false },
+                "error": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": ["code"],
+                    "properties": {
+                        "code": {
+                            "enum": [
+                                "INVALID_FRAME",
+                                "MESSAGE_TOO_LARGE",
+                                "INVALID_MESSAGE",
+                                "INVALID_REQUEST_ID",
+                                "UNSUPPORTED_PROTOCOL",
+                                "UNSUPPORTED_OPERATION",
+                                "INVALID_FILE_URL",
+                                "REMOTE_FILE_URL",
+                                "FILE_NOT_FOUND",
+                                "NOT_REGULAR_FILE",
+                                "FILE_TOO_LARGE",
+                                "INVALID_UTF8",
+                                "AUTHORIZATION_REQUIRED",
+                                "AUTHORIZATION_CANCELLED",
+                                "AUTHORIZATION_TARGET_NOT_FOUND",
+                                "AUTHORIZATION_FAILED",
+                                "READ_FAILED",
+                                "FILE_CHANGED",
+                                "INTERNAL_ERROR"
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

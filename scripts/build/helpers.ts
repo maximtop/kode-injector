@@ -103,7 +103,8 @@ export const updateManifest = (
     const optionalPermissions = normalizePermissions(manifest.optional_permissions)
         .filter((permission) => permission !== BrowserPermission.NativeMessaging);
 
-    if (options.browser === BROWSER_TARGETS.FIREFOX) {
+    if (options.browser === BROWSER_TARGETS.FIREFOX
+        || options.browser === BROWSER_TARGETS.SAFARI) {
         manifest.permissions = [...permissions, BrowserPermission.NativeMessaging];
 
         if (Array.isArray(manifest.optional_permissions)) {

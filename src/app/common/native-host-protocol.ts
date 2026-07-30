@@ -8,6 +8,7 @@
 export const PROTOCOL_VERSION = 1;
 export const MAX_FILE_BYTES = 5 * 1024 * 1024;
 export const RAW_CHUNK_BYTES = 512 * 1024;
+export const MAX_RESPONSE_BYTES = 1024 * 1024;
 export const NATIVE_HOST_NAME = 'dev.maximtop.kode_injector';
 
 const REQUEST_ID_PATTERN = /^[A-Za-z0-9_-]{1,64}$/u;
@@ -40,6 +41,11 @@ export enum NativeErrorCode {
     NotRegularFile = 'NOT_REGULAR_FILE',
     FileTooLarge = 'FILE_TOO_LARGE',
     InvalidUtf8 = 'INVALID_UTF8',
+    AuthorizationRequired = 'AUTHORIZATION_REQUIRED',
+    AuthorizationCancelled = 'AUTHORIZATION_CANCELLED',
+    AuthorizationTargetNotFound = 'AUTHORIZATION_TARGET_NOT_FOUND',
+    AuthorizationFailed = 'AUTHORIZATION_FAILED',
+    FileChanged = 'FILE_CHANGED',
     ReadFailed = 'READ_FAILED',
     InternalError = 'INTERNAL_ERROR',
 }

@@ -43,26 +43,38 @@ interface RuleRowProps {
 
     /**
      * Toggles the rule's enabled state.
+     *
+     * @param id Identifier of the rule to toggle.
      */
     onToggle: (id: string) => void;
 
     /**
      * Toggles one file of the rule.
+     *
+     * @param id Identifier of the rule containing the file.
+     * @param field File field to toggle.
+     * @param enabled New enabled state of the file.
      */
     onFileToggle: (id: string, field: InjectionFileField, enabled: boolean) => void;
 
     /**
      * Opens the rule editor for this rule.
+     *
+     * @param rule Rule selected for editing.
      */
     onEdit: (rule: InjectionRule) => void;
 
     /**
      * Duplicates this rule.
+     *
+     * @param id Identifier of the rule to duplicate.
      */
     onDuplicate: (id: string) => void;
 
     /**
      * Requests the inline delete confirmation.
+     *
+     * @param id Identifier of the rule awaiting confirmation.
      */
     onRequestDelete: (id: string) => void;
 
@@ -73,11 +85,15 @@ interface RuleRowProps {
 
     /**
      * Deletes this rule permanently.
+     *
+     * @param id Identifier of the rule to delete.
      */
     onConfirmDelete: (id: string) => void;
 
     /**
      * Opens a rule file in a browser tab.
+     *
+     * @param path Local file URL to open.
      */
     onOpenFile: (path: string) => void;
 }

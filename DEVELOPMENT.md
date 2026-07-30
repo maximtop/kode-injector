@@ -10,7 +10,7 @@ notes, and safety rules live in [AGENTS.md](AGENTS.md).
 - [pnpm](https://pnpm.io/) package manager
 - [Go 1.26](https://go.dev/) for the native host
 - Xcode 16 or newer, including the Swift 6 toolchain and command-line tools,
-  for the macOS helper application and disk images
+  for the macOS helper application, Safari app, and disk images
 
 ## Getting started
 
@@ -54,12 +54,17 @@ pnpm locales:validate # validate all locale catalogs and UI usage
 pnpm validate  # run the complete local quality gate
 pnpm native:test # run Go unit and subprocess tests with race detection
 pnpm native:validate # cross-compile and inspect all native packages
+pnpm dev safari # build shared Safari WebExtension resources only
+pnpm safari:build # build Swift tests, current-arch helper, and ad-hoc Safari app
+pnpm safari:validate # build and validate the Safari bundle and entitlements
+pnpm safari:fixture # create JS/CSS fixtures and serve a localhost target
 ```
 
 ## Build channels and browser targets
 
-The build CLI accepts `chrome`, `edge`, or `firefox` as an optional browser
-subcommand. Omitting the browser builds all three targets:
+The build CLI accepts `chrome`, `edge`, `firefox`, or explicit `safari` as an
+optional browser subcommand. Omitting the browser continues to build the three
+store extension targets only:
 
 ```sh
 pnpm dev
@@ -72,6 +77,39 @@ Development builds are emitted under `build/dev/<browser>/`; release builds
 are emitted under `build/release/<browser>/`. Each unpacked directory has a
 matching `build/<channel>/<browser>.zip`. Development locale names receive the
 `(Dev)` suffix; release names remain unchanged.
+
+Safari WebExtension resources are emitted under `build/dev/safari/`. They are
+not a complete installable artifact until `pnpm safari:build` embeds them in
+`build/safari/dev/Kode Injector.app` together with the native extension and
+current-architecture Go helper.
+
+### Testing Safari locally
+
+1. Run `pnpm safari:build`.
+2. Copy `build/safari/dev/Kode Injector.app` to `/Applications` manually.
+3. Launch the app and click **Open Safari Extension Settings**.
+4. If required for the ad-hoc development build, enable Safari's developer
+   option **Allow Unsigned Extensions**, then enable Kode Injector.
+5. Run `pnpm safari:fixture` and copy its printed site, JavaScript, and CSS URLs
+   into a new rule.
+6. Save the rule and authorize the exact folder shown by macOS. Selecting a
+   different folder is rejected. Reload the printed localhost page to verify
+   both JavaScript and CSS injection.
+
+Safari requests folder access only from the explicit Add/Save action. A
+background page load never opens a picker. Read-only security-scoped bookmarks
+are stored by the native extension and survive Safari restarts; edit and save a
+rule again to restore a stale or missing grant. The build scripts never copy an
+app into `/Applications` or modify that directory.
+
+Safari uses a memory-only stale-while-revalidate source cache after the first
+successful read. A page load receives one complete cached JS/CSS snapshot per
+rule immediately, while a single background refresh prepares the next page
+load. When testing an external file edit, reload once to refresh and a second
+time to observe the new snapshot. A failed refresh invalidates that rule before
+the next load, and rule mutations invalidate it immediately. The cache has no
+fixed TTL, but it disappears whenever Safari suspends or restarts the extension
+process.
 
 Watch mode requires one explicit development target:
 
@@ -188,7 +226,7 @@ and target-page CSP behavior are outside this minimal scenario.
 
 ## Tech stack
 
-- **Runtime:** Manifest V3 browser extension (Chrome / Firefox / Edge)
+- **Runtime:** Manifest V3 browser extension (Chrome / Firefox / Edge / macOS Safari)
 - **UI:** React 19, MobX 6, Mantine 9
 - **Bundling:** Rspack 2 with built-in SWC
 - **Styling:** PostCSS with `postcss-import`, `postcss-preset-env`,
@@ -246,6 +284,7 @@ scripts/
 rspack.config.ts            # Typed Rspack and SWC config
 build/                      # Output (build/<channel>/<browser>)
 native-host/                # Shared Go native messaging host and installer
+safari/                     # macOS containing app and Safari native bridge
 ```
 
 ## Linting

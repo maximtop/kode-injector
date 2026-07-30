@@ -1,0 +1,11 @@
+"app.version_format" = "Версия %@";
+"app.explanation" = "Включите расширение в настройках Safari. При сохранении правила Kode Injector запросит доступ только для чтения к точной папке, содержащей каждый локальный источник.";
+"app.open_settings" = "Открыть настройки расширений Safari";
+"app.refresh" = "Обновить";
+"app.status.checking" = "Проверяем состояние расширения…";
+"app.status.unavailable" = "Не удалось получить состояние расширения";
+"app.status.enabled" = "Расширение Safari включено";
+"app.status.disabled" = "Расширение Safari не включено";
+"authorization.button" = "Разрешить";
+"authorization.message_format" = "Разрешите доступ только для чтения к папке «%@».";
+"authorization.validation_format" = "Разрешите доступ к папке «%@», указанной Kode Injector.";

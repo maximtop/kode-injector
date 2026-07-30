@@ -33,15 +33,20 @@ import { urlUtils } from '../common/url-utils';
 import { app } from './app';
 import { executeScript } from './execute-script';
 import { sourceReader } from './native-host';
-import { SourceReadErrorCode } from './source-reader';
+import { isNativeHostWideFailure } from './source-reader';
 import { localSourceAccess } from './local-source-access';
-
-const FILE_URL_PREFIX = 'file://';
+import { BrowserTarget, getCurrentBrowserTarget } from '../common/browser-target';
+import {
+    InjectionSourceCache,
+    type ActiveRuleSources,
+    type RuleSourceResolution,
+    type RuleSourceSnapshot,
+} from './injection-source-cache';
 
 /**
  * Manages injection rules, site blocklisting, and code retrieval.
  */
-class Injections {
+export class Injections {
     /**
      * Storage key for persisted injection state.
      */
@@ -61,6 +66,27 @@ class Injections {
      * Hostnames where injections are disabled.
      */
     blocklist: string[] = [];
+
+    /**
+     * In-memory Safari source cache.
+     */
+    private readonly sourceCache: InjectionSourceCache;
+
+    /**
+     * Creates the rule service.
+     *
+     * @param staleSourceCacheEnabled Whether page loads use stale-while-revalidate.
+     */
+    public constructor(
+        private readonly staleSourceCacheEnabled = (
+            getCurrentBrowserTarget() === BrowserTarget.Safari
+        ),
+    ) {
+        this.sourceCache = new InjectionSourceCache(
+            (sources) => this.readRuleSources(sources),
+            (error) => log.error('Background source refresh failed', error),
+        );
+    }
 
     /**
      * Persists the current injection and blocklist state.
@@ -156,6 +182,7 @@ class Injections {
         };
         const idx = this.injections.indexOf(injection);
         this.injections.splice(idx, 1, updated);
+        this.sourceCache.invalidate(id);
         this.updateStorage();
         return updated;
     };
@@ -187,12 +214,15 @@ class Injections {
         const updated: InjectionRule = { ...injection, [FILE_ENABLED_FLAGS[field]]: enabled };
         const idx = this.injections.indexOf(injection);
         this.injections.splice(idx, 1, updated);
+        this.sourceCache.invalidate(id);
         this.updateStorage();
         return updated;
     };
 
     /**
      * Removes an injection rule by identifier.
+     *
+     * @param id Rule identifier to remove.
      */
     removeInjection = (id: string): void => {
         const removedInjection = this.injections.find((injection) => injection.id === id);
@@ -203,6 +233,7 @@ class Injections {
 
         const { site } = removedInjection;
         this.injections = this.injections.filter((injection) => injection.id !== id);
+        this.sourceCache.invalidate(id);
 
         // clear blocklist
         const injectionsForSameSite = this.injections
@@ -216,6 +247,8 @@ class Injections {
 
     /**
      * Enables an injection rule by identifier.
+     *
+     * @param id Rule identifier to enable.
      */
     enableInjection = (id: string): void => {
         const injection = find(this.injections, { id });
@@ -225,11 +258,14 @@ class Injections {
         }
         const idx = this.injections.indexOf(injection);
         this.injections.splice(idx, 1, { ...injection, enabled: true });
+        this.sourceCache.invalidate(id);
         this.updateStorage();
     };
 
     /**
      * Disables an injection rule by identifier.
+     *
+     * @param id Rule identifier to disable.
      */
     disableInjection = (id: string): void => {
         const injection = find(this.injections, { id });
@@ -239,6 +275,7 @@ class Injections {
         }
         const idx = this.injections.indexOf(injection);
         this.injections.splice(idx, 1, { ...injection, enabled: false });
+        this.sourceCache.invalidate(id);
         this.updateStorage();
     };
 
@@ -251,6 +288,8 @@ class Injections {
 
     /**
      * Returns injection rules matching a URL.
+     *
+     * @param url Page URL whose hostname should be matched.
      */
     getInjectionsByUrl = (url: string): InjectionRule[] | null => {
         const hostname = urlUtils.getHostnameWithoutWww(url);
@@ -264,6 +303,8 @@ class Injections {
 
     /**
      * Returns enabled injection rules allowed for a URL.
+     *
+     * @param url Page URL whose enabled rules should be resolved.
      */
     getAllowedInjectionsByUrl = (url: string): InjectionRule[] | null => {
         const hostname = urlUtils.getHostnameWithoutWww(url);
@@ -274,67 +315,157 @@ class Injections {
     }
 
     /**
-     * Injects matching JavaScript into a browser tab.
+     * Resolves one document-bound snapshot, starts JavaScript execution, and
+     * returns CSS from the same rule versions.
+     *
+     * @param url URL of the document requesting injections.
+     * @param tabId Browser tab containing the requesting document, when available.
+     * @param documentToken Identity used to reject work for a superseded document.
      */
-    injectJs = async (url: string, tabId?: number): Promise<void> => {
+    getPageInjections = async (
+        url: string,
+        tabId: number | undefined,
+        documentToken: string,
+    ): Promise<InjectionsCodeResponse> => {
         if (!app.enabled) {
-            return;
+            return null;
         }
 
-        const injections = this.getAllowedInjectionsByUrl(url);
-        if (!injections) {
-            return;
+        const matchingInjections = this.getAllowedInjectionsByUrl(url);
+        if (!matchingInjections) {
+            return null;
         }
 
-        // Only active JS files run: rule enabled, path set, per-file flag on.
-        // (An empty path would also resolve to the worker's own bundle.)
-        const enabledInjections = injections
-            .filter((injection) => isFileActive(injection, InjectionField.JsPath));
-        const promises = enabledInjections.map(async (injection) => {
-            const { jsPath } = injection;
-            const result = await sourceReader.read(jsPath);
-            if (result.ok) {
-                await executeScript(result.content, tabId, jsPath);
-            } else if (jsPath.startsWith(FILE_URL_PREFIX)
-                && result.errorCode !== SourceReadErrorCode.FetchFailed) {
-                localSourceAccess.markReadFailed();
+        const descriptors = matchingInjections
+            .map(this.getActiveRuleSources)
+            .filter((sources): sources is ActiveRuleSources => sources !== null);
+        const resolved = (await Promise.all(
+            descriptors.map(this.resolveRuleSources),
+        )).filter((value): value is RuleSourceResolution => value !== null);
+
+        resolved.forEach(({ snapshot }) => {
+            if (!snapshot.javascriptPath || snapshot.javascriptCode === undefined) {
+                return;
             }
+            executeScript(
+                snapshot.javascriptCode,
+                tabId,
+                documentToken,
+            ).catch((error) => {
+                log.error('JavaScript injection failed', error);
+            });
         });
 
-        await Promise.all(promises);
+        return resolved.reduce<CssInjectionCode[]>((result, { snapshot }) => {
+            if (snapshot.cssPath && snapshot.cssCode !== undefined) {
+                result.push({
+                    css: {
+                        code: snapshot.cssCode,
+                    },
+                });
+            }
+            return result;
+        }, []);
     };
 
     /**
-     * Builds CSS injection payloads matching a URL.
+     * Drops all source content held in memory.
      */
-    getCssInjection = async (url: string): Promise<InjectionsCodeResponse> => {
-        if (!app.enabled) {
+    clearSourceCache = (): void => {
+        this.sourceCache.clear();
+    };
+
+    /**
+     * Selects active source paths from one rule.
+     *
+     * @param injection Rule to inspect.
+     *
+     * @returns Active paths, or null when the rule has no active source.
+     */
+    private getActiveRuleSources = (injection: InjectionRule): ActiveRuleSources | null => {
+        const javascriptPath = isFileActive(injection, InjectionField.JsPath)
+            ? injection.jsPath
+            : undefined;
+        const cssPath = isFileActive(injection, InjectionField.CssPath)
+            ? injection.cssPath
+            : undefined;
+        if (!javascriptPath && !cssPath) {
             return null;
         }
+        return {
+            ruleId: injection.id,
+            javascriptPath,
+            cssPath,
+        };
+    };
 
-        const injections = this.getAllowedInjectionsByUrl(url);
-        if (!injections) {
-            return null;
+    /**
+     * Resolves one rule through Safari cache or a fresh browser read.
+     *
+     * @param sources Active source paths.
+     *
+     * @returns A complete atomic rule snapshot, or null after a read failure.
+     */
+    private resolveRuleSources = async (
+        sources: ActiveRuleSources,
+    ): Promise<RuleSourceResolution | null> => {
+        if (this.staleSourceCacheEnabled) {
+            return this.sourceCache.resolve(sources);
         }
 
-        const promises: Promise<CssInjectionCode | null>[] = injections
-            .filter((injection) => isFileActive(injection, InjectionField.CssPath))
-            .map(async (injection) => {
-                const { cssPath } = injection;
-                const result = await sourceReader.read(cssPath);
-                if (!result.ok) {
-                    if (cssPath.startsWith(FILE_URL_PREFIX)
-                        && result.errorCode !== SourceReadErrorCode.FetchFailed) {
-                        localSourceAccess.markReadFailed();
-                    }
-                    return null;
-                }
-                return {
-                    css: { filename: cssPath, code: result.content },
-                };
-            });
-        const results = await Promise.all(promises);
-        return results.filter((result): result is CssInjectionCode => result !== null);
+        const snapshot = await this.readRuleSources(sources);
+        return snapshot ? {
+            snapshot,
+            cacheHit: false,
+        } : null;
+    };
+
+    /**
+     * Reads all active files of a rule and publishes them only as a complete set.
+     *
+     * @param sources Active source paths.
+     *
+     * @returns Fresh rule sources, or null when any source fails.
+     */
+    private readRuleSources = async (
+        sources: ActiveRuleSources,
+    ): Promise<RuleSourceSnapshot | null> => {
+        const [javascript, css] = await Promise.all([
+            this.readSource(sources.javascriptPath),
+            this.readSource(sources.cssPath),
+        ]);
+        if (javascript.failed || css.failed) {
+            return null;
+        }
+        return {
+            ...sources,
+            javascriptCode: javascript.code,
+            cssCode: css.code,
+        };
+    };
+
+    /**
+     * Reads one optional source path.
+     *
+     * @param sourcePath Source URL, or undefined for an inactive file.
+     *
+     * @returns Source content and whether reading failed.
+     */
+    private readSource = async (
+        sourcePath: string | undefined,
+    ): Promise<{ code?: string; failed: boolean }> => {
+        if (!sourcePath) {
+            return { failed: false };
+        }
+        const result = await sourceReader.read(sourcePath);
+        if (result.ok) {
+            return { code: result.content, failed: false };
+        }
+        if (urlUtils.isFileUrl(sourcePath)
+            && isNativeHostWideFailure(result.errorCode)) {
+            localSourceAccess.markReadFailed();
+        }
+        return { failed: true };
     };
 
     /**
@@ -349,6 +480,9 @@ class Injections {
             return;
         }
 
+        this.injections
+            .filter((injection) => injection.site === hostname)
+            .forEach((injection) => this.sourceCache.invalidate(injection.id));
         this.blocklist = this.blocklist.filter((item) => item !== hostname);
         this.updateStorage();
     }
@@ -363,6 +497,9 @@ class Injections {
         if (!hostname || this.blocklist.includes(hostname)) {
             return;
         }
+        this.injections
+            .filter((injection) => injection.site === hostname)
+            .forEach((injection) => this.sourceCache.invalidate(injection.id));
         this.blocklist.push(hostname);
         this.updateStorage();
     }
@@ -396,6 +533,8 @@ class Injections {
 
     /**
      * Checks whether a site is blocklisted.
+     *
+     * @param url Page URL whose hostname should be checked.
      */
     isSiteBlacklisted = (url: string): boolean => {
         const hostname = urlUtils.getHostnameWithoutWww(url);
@@ -414,6 +553,7 @@ class Injections {
      * firing for them. Unrecognizable values are preserved as-is.
      */
     init = async (): Promise<void> => {
+        this.sourceCache.clear();
         const storedState = await storage.get<unknown>(this.STORAGE_KEY);
         const { state, migrated } = runMigrations(
             storedState,

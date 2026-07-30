@@ -37,6 +37,19 @@ Host method, Kode Injector Helper reads only the exact local regular file path
 requested by the extension. The helper is read-only: it cannot write files,
 list directories, execute programs, start subprocesses, or access the network.
 
+In Safari for macOS, the same read-only Go reader is embedded inside the Safari
+extension. macOS displays its standard folder authorization panel when the user
+adds or saves a rule whose immediate containing folder has not yet been
+authorized. The native extension stores a read-only security-scoped bookmark
+for that folder in its local preferences. Bookmark data, file paths, and file
+contents are not logged or transmitted by the native bridge. It may keep up to
+two file snapshots totaling 10 MiB in memory for 30 seconds. The WebExtension
+also keeps up to 64 last-known-good rule snapshots totaling 10 MiB in memory,
+with no fixed lifetime, so it can inject promptly while refreshing files for a
+future page load. Neither cache is written to disk, and both disappear when
+their processes stop. Removing the containing application prevents further use
+of grants; clearing its local application data also removes stored bookmarks.
+
 When a rule matches, the user-selected JavaScript or CSS is applied to that
 website in the browser. The selected code is therefore exposed to scripts
 running on that page: CSS is inserted into the page DOM, and JavaScript runs in

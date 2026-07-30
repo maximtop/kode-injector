@@ -54,20 +54,34 @@ test.each([BROWSER_TARGETS.CHROME, BROWSER_TARGETS.EDGE])(
     },
 );
 
-test('updateManifest requires native messaging only for Firefox', () => {
+test.each([BROWSER_TARGETS.FIREFOX, BROWSER_TARGETS.SAFARI])(
+    'updateManifest requires native messaging for %s',
+    (browser) => {
+        const result = JSON.parse(updateManifest(
+            JSON.stringify({
+                permissions: ['storage', 'nativeMessaging', 'storage'],
+                optional_permissions: ['downloads', 'nativeMessaging', 'downloads'],
+            }),
+            {
+                browser,
+                version: '1.2.3',
+            },
+        ));
+
+        expect(result.permissions).toEqual(['storage', 'nativeMessaging']);
+        expect(result.optional_permissions).toEqual(['downloads']);
+    },
+);
+
+test('updateManifest creates a Safari service-worker manifest without Gecko metadata', () => {
     const result = JSON.parse(updateManifest(
-        JSON.stringify({
-            permissions: ['storage', 'nativeMessaging', 'storage'],
-            optional_permissions: ['downloads', 'nativeMessaging', 'downloads'],
-        }),
-        {
-            browser: BROWSER_TARGETS.FIREFOX,
-            version: '1.2.3',
-        },
+        '{"background":{"page":"old.html"}}',
+        { browser: BROWSER_TARGETS.SAFARI, version: '1.2.3' },
     ));
 
-    expect(result.permissions).toEqual(['storage', 'nativeMessaging']);
-    expect(result.optional_permissions).toEqual(['downloads']);
+    expect(result.background).toEqual({ service_worker: 'background.js' });
+    expect(result.browser_specific_settings).toBeUndefined();
+    expect(result.permissions).toContain('nativeMessaging');
 });
 
 test('updateManifest creates the Firefox background and signing metadata', () => {

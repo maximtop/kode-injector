@@ -19,6 +19,7 @@ export const BROWSER_TARGETS = {
     CHROME: 'chrome',
     EDGE: 'edge',
     FIREFOX: 'firefox',
+    SAFARI: 'safari',
 } as const;
 
 /**
@@ -27,9 +28,23 @@ export const BROWSER_TARGETS = {
 export type BrowserTarget = typeof BROWSER_TARGETS[keyof typeof BROWSER_TARGETS];
 
 /**
- * Browser targets in the order used by all-browser builds.
+ * Every browser target accepted by the explicit build CLI.
  */
 export const ALL_BROWSER_TARGETS: BrowserTarget[] = [
+    BROWSER_TARGETS.CHROME,
+    BROWSER_TARGETS.EDGE,
+    BROWSER_TARGETS.FIREFOX,
+    BROWSER_TARGETS.SAFARI,
+];
+
+/**
+ * Browser targets that remain part of the default cross-browser build.
+ *
+ * Safari is intentionally explicit because it also requires a macOS app
+ * bundle. Building WebExtension resources alone is not a complete Safari
+ * artifact.
+ */
+export const DEFAULT_BROWSER_TARGETS: BrowserTarget[] = [
     BROWSER_TARGETS.CHROME,
     BROWSER_TARGETS.EDGE,
     BROWSER_TARGETS.FIREFOX,

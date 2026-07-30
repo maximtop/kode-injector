@@ -30,11 +30,15 @@ class I18n implements I18nInterface {
 
         /**
          * Resolves a resource path within the extension.
+         *
+         * @param path Bundle-relative resource path.
          */
         getURL: (path) => browser.runtime.getURL(path),
 
         /**
          * Fetches and parses a locale catalog.
+         *
+         * @param url Locale catalog URL to fetch.
          */
         fetchJson: async (url): Promise<MessagesJson> => {
             const response = await fetch(url);

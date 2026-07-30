@@ -46,6 +46,8 @@ export const createRspackConfig = (
 
                     /**
                      * Applies package and browser metadata to the manifest.
+                     *
+                     * @param content Original manifest contents.
                      */
                     transform: (content) => updateManifest(
                         content,
@@ -65,6 +67,8 @@ export const createRspackConfig = (
 
                     /**
                      * Applies the build-channel suffix to locale catalogs.
+                     *
+                     * @param content Original locale catalog contents.
                      */
                     transform: (content) => updateLocalesMSGName(content, buildEnv),
                 },

@@ -8,12 +8,16 @@ import {
     ALL_BROWSER_TARGETS,
     BROWSER_TARGETS,
     CHANNEL_ENVS,
+    DEFAULT_BROWSER_TARGETS,
     type BrowserTarget,
     type BuildEnv,
 } from '../constants';
 
 /**
  * Executes an accepted build request.
+ *
+ * @param targets Browser targets selected for the build.
+ * @param watch Whether to keep rebuilding changed inputs.
  */
 export type BuildCommandHandler = (
     targets: BrowserTarget[],
@@ -93,7 +97,7 @@ export const createBuildProgram = (
 
     program.action(async (options: BuildCommandOptions) => {
         validateWatch(program, buildEnv, undefined, options.watch);
-        await build([...ALL_BROWSER_TARGETS], options.watch);
+        await build([...DEFAULT_BROWSER_TARGETS], options.watch);
     });
 
     return program;

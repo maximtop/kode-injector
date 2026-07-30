@@ -13,6 +13,7 @@ import {
 import { rootStore } from '../../stores/RootStore';
 import { COLOR_SCHEMES } from '../../../common/color-scheme';
 import type { BrowserTarget } from '../../../common/browser-target';
+import { getBrowserCapabilities } from '../../../common/browser-capabilities';
 import {
     LocalSourceAccessMethod,
 } from '../../../common/contracts';
@@ -46,6 +47,8 @@ interface SettingsViewProps {
 
     /**
      * Applies a user-selected access method.
+     *
+     * @param method Local-source access method selected by the user.
      */
     onChangeMethod: (method: LocalSourceAccessMethod) => void;
 
@@ -92,6 +95,7 @@ export const SettingsView = observer(({
     onOpenExtensionSettings,
 }: SettingsViewProps): React.JSX.Element => {
     const { injectionsStore, translationStore } = useContext(rootStore);
+    const browserCapabilities = getBrowserCapabilities(browserTarget);
     const { colorScheme, setColorScheme } = useMantineColorScheme();
 
     const browserLanguageLabel = translator.getMessage('language_browser');
@@ -124,7 +128,8 @@ export const SettingsView = observer(({
     };
 
     const { localSourceAccess } = injectionsStore;
-    const showDownloadCard = localSourceAccess.kind === LocalSourceAccessMethod.NativeHost
+    const showDownloadCard = browserCapabilities.canDownloadExternalHelper
+        && localSourceAccess.kind === LocalSourceAccessMethod.NativeHost
         && localSourceAccess.permissionGranted
         && (localSourceAccess.host.status === NativeHostStatus.NotInstalled
             || localSourceAccess.host.status === NativeHostStatus.UpdateRequired);
