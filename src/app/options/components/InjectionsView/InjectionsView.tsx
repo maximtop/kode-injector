@@ -16,6 +16,8 @@ import { log } from '../../../common/log';
 import { IconPause, IconPlus, IconSearch } from '../../../common/components/icons';
 import { RuleRow } from './RuleRow';
 import { EmptyState } from './EmptyState';
+import { DemoCard } from './DemoCard';
+import { isBuiltInDemoOffered } from '../../../common/demo-contracts';
 
 import './injections-view.pcss';
 
@@ -118,6 +120,7 @@ export const InjectionsView = observer(({
     if (injections.length === 0) {
         return (
             <section>
+                {isBuiltInDemoOffered(injections.length) && <DemoCard />}
                 <EmptyState onCreate={onCreate} />
             </section>
         );

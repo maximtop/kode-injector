@@ -362,6 +362,94 @@
     }
 }
 
+/* ---------- built-in demo card (Safari) ---------- */
+
+.demo-card {
+    margin-top: 18px;
+    padding: 20px 24px;
+    background: var(--surface);
+    border: 1px solid var(--accent);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    display: grid;
+    gap: 12px;
+    animation: rise 0.18s ease;
+
+    & h2 {
+        font-size: 16px;
+        font-weight: 650;
+        letter-spacing: -0.01em;
+        margin: 0;
+    }
+}
+
+.demo-card-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.tag-demo {
+    background: var(--accent-strong);
+    color: var(--accent-ink);
+}
+
+.demo-card-desc {
+    margin: 0;
+    color: var(--muted);
+    font-size: 13.5px;
+}
+
+.demo-card-target {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+
+    & .host {
+        font-family: var(--mono);
+        font-weight: 600;
+        font-size: 13.5px;
+        direction: ltr;
+        unicode-bidi: isolate;
+    }
+}
+
+/* Static source-type chips: same look as rule chips, no affordance. */
+.chip-static {
+    cursor: default;
+
+    &:hover {
+        color: var(--muted);
+        border-color: var(--border);
+    }
+}
+
+.demo-card-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.demo-card-status {
+    margin: 0;
+    font-size: 13px;
+    color: var(--fg);
+
+    &[data-status="failed"],
+    &[data-status="paused"] {
+        padding: 9px 14px;
+        border-radius: var(--r);
+        background: var(--warn-soft);
+    }
+
+    &[data-status="applied"] {
+        font-weight: 600;
+    }
+}
+
 @keyframes rise {
     from {
         opacity: 0;

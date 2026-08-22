@@ -14,6 +14,7 @@ import { rootStore } from '../../stores/RootStore';
 import { COLOR_SCHEMES } from '../../../common/color-scheme';
 import type { BrowserTarget } from '../../../common/browser-target';
 import { getBrowserCapabilities } from '../../../common/browser-capabilities';
+import { isBuiltInDemoOffered } from '../../../common/demo-contracts';
 import {
     LocalSourceAccessMethod,
 } from '../../../common/contracts';
@@ -71,6 +72,11 @@ interface SettingsViewProps {
      * Opens the browser's extension settings, when supported.
      */
     onOpenExtensionSettings: (() => void) | undefined;
+
+    /**
+     * Opens the Rules tab with the built-in demo card.
+     */
+    onOpenDemo: () => void;
 }
 
 /**
@@ -93,6 +99,7 @@ export const SettingsView = observer(({
     onViewAllDownloads,
     onCheckAgain,
     onOpenExtensionSettings,
+    onOpenDemo,
 }: SettingsViewProps): React.JSX.Element => {
     const { injectionsStore, translationStore } = useContext(rootStore);
     const browserCapabilities = getBrowserCapabilities(browserTarget);
@@ -140,8 +147,23 @@ export const SettingsView = observer(({
         dark: translator.getMessage('theme_dark'),
     };
 
+    const showDemoLink = isBuiltInDemoOffered(injectionsStore.injections.length);
+
     return (
         <section>
+            {showDemoLink && (
+                <div className="setting-group" data-testid="settings-demo">
+                    <h2>{translator.getMessage('settings_demo_title')}</h2>
+                    <button
+                        type="button"
+                        className="link-btn"
+                        onClick={onOpenDemo}
+                        data-testid="settings-demo-link"
+                    >
+                        {translator.getMessage('settings_demo_link')}
+                    </button>
+                </div>
+            )}
             <div className="setting-group">
                 <h2>{translator.getMessage('local_source_method')}</h2>
                 <p className="setting-sub">

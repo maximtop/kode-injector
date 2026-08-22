@@ -413,6 +413,8 @@ export type RuntimeMessage =
         type: typeof MESSAGE_TYPES.SET_INTERFACE_LANGUAGE;
         data: { language: LocalePreference };
     }
+    | { type: typeof MESSAGE_TYPES.RUN_DEMO; data?: undefined }
+    | { type: typeof MESSAGE_TYPES.GET_DEMO_LAUNCH_STATE; data?: undefined }
     | LanguageChangedMessage;
 
 /**

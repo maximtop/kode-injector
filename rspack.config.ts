@@ -12,6 +12,7 @@ import { updateLocalesMSGName, updateManifest } from './scripts/build/helpers';
 import { SourceArchivePlugin } from './scripts/build/source-archive-plugin';
 import {
     BROWSER_TARGETS,
+    BUILT_IN_DEMO_DEFINE_KEY,
     CHANNEL_ENVS,
     type BrowserTarget,
     type BuildEnv,
@@ -37,7 +38,11 @@ export const createRspackConfig = (
     const channelPath = path.join(BUILD_PATH, buildEnv);
     const outputPath = path.join(channelPath, browser);
 
+    const isSafari = browser === BROWSER_TARGETS.SAFARI;
     const plugins: NonNullable<Configuration['plugins']> = [
+        new rspack.DefinePlugin({
+            [BUILT_IN_DEMO_DEFINE_KEY]: JSON.stringify(String(isSafari)),
+        }),
         new rspack.CopyRspackPlugin({
             patterns: [
                 {
@@ -72,6 +77,10 @@ export const createRspackConfig = (
                      */
                     transform: (content) => updateLocalesMSGName(content, buildEnv),
                 },
+                // Only the Safari product ships the built-in demo sources (FR-001).
+                ...(isSafari
+                    ? [{ from: path.join(SRC_PATH, 'demo'), to: 'demo' }]
+                    : []),
             ],
         }),
         new rspack.HtmlRspackPlugin({

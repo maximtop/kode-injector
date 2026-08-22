@@ -131,5 +131,21 @@
     "editor_safari_authorization_cancelled": { "message": "Folder access was not granted. The rule was not saved." },
     "editor_safari_folder_not_found": { "message": "The folder for %file% does not exist. Create it and try again." },
     "editor_safari_authorization_failed": { "message": "Could not authorize the folder for %file%. The rule was not saved." },
-    "popup_safari_native_host_unavailable": { "message": "Safari could not reach the embedded read-only Helper. Open Settings and check again." }
+    "popup_safari_native_host_unavailable": { "message": "Safari could not reach the embedded read-only Helper. Open Settings and check again." },
+    "demo_badge": { "message": "Demo" },
+    "demo_title": { "message": "Pogledajte Kode Injector na djelu" },
+    "demo_description": { "message": "Pokreće ugrađeni JavaScript i CSS na %site% – bez pravila, lokalne datoteke ili pristupa mapi." },
+    "demo_run": { "message": "Pokreni demo" },
+    "demo_status_waiting": { "message": "Otvaranje %site% i čekanje stranice…" },
+    "demo_status_applied": { "message": "Gotovo – JavaScript i CSS umetnuti su na %site%. Prijeđite na tu karticu da biste vidjeli rezultat." },
+    "demo_paused": { "message": "Umetanje je pauzirano pa se demo ne može pokrenuti." },
+    "demo_error_website_access": { "message": "Safari još nije dopustio Kode Injector na %site%. Na toj kartici kliknite gumb Kode Injector na alatnoj traci, dopustite pristup web-mjestu, a zatim ponovno učitajte stranicu ili ponovno pokrenite demo." },
+    "demo_error_not_confirmed": { "message": "Kode Injector nije mogao potvrditi demo na %site%. Provjerite je li se stranica učitala i je li Kode Injector dopušten na njoj, a zatim ponovno pokrenite demo." },
+    "demo_error_interrupted": { "message": "Demo je prekinut ili je njegova kartica zatvorena. Ponovno pokrenite demo." },
+    "demo_error_site_disabled": { "message": "Kode Injector je isključen za %site%. Uključite ga gumbom Kode Injector na alatnoj traci na toj kartici, a zatim ponovno pokrenite demo." },
+    "demo_error_unavailable": { "message": "Demo je dostupan samo dok nemate pravila." },
+    "demo_error_sources": { "message": "Sadržaj ugrađenog demoa nije se mogao učitati. Ponovno instalirajte Kode Injector i pokušajte ponovno." },
+    "demo_error_open_failed": { "message": "Safari nije mogao otvoriti %site%. Ponovno pokrenite demo." },
+    "settings_demo_title": { "message": "Ugrađeni demo" },
+    "settings_demo_link": { "message": "Isprobajte ugrađeni demo na stranici Pravila" }
 }

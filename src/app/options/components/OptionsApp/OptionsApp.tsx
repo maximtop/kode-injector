@@ -387,6 +387,7 @@ export const OptionsApp = observer(() => {
                                 onViewAllDownloads={openAllNativeHostDownloads}
                                 onCheckAgain={refreshLocalSourceAccess}
                                 onOpenExtensionSettings={openBrowserExtensionSettings}
+                                onOpenDemo={() => setActiveTab(OPTIONS_TABS.INJECTIONS)}
                             />
                         </Tabs.Panel>
                     </main>

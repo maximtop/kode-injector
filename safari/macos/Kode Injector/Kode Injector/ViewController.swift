@@ -2,6 +2,14 @@ import Cocoa
 import SafariServices
 
 private let extensionBundleIdentifier = "dev.maximtop.kode-injector.safari.Extension"
+private let safariBundleIdentifier = "com.apple.Safari"
+
+/// Message sent to the extension background when the user chooses Try Demo.
+/// The background matches both the message name and `userInfo[action]`.
+private enum DemoAppMessage {
+    static let name = "openDemo"
+    static let actionKey = "action"
+}
 
 private enum LocalizedText {
     static let checkingStatus = NSLocalizedString(
@@ -32,6 +40,22 @@ private enum LocalizedText {
         "app.status.disabled",
         comment: "Status shown when the Safari extension is disabled"
     )
+    static let tryDemo = NSLocalizedString(
+        "demo.button",
+        comment: "Button that starts the built-in demo journey"
+    )
+    static let demoExplanation = NSLocalizedString(
+        "demo.explanation",
+        comment: "Explains the built-in demo available on the Rules page"
+    )
+    static let demoStatusDisabled = NSLocalizedString(
+        "demo.status.disabled",
+        comment: "Demo status shown when the Safari extension must be enabled first"
+    )
+    static let demoStatusOpening = NSLocalizedString(
+        "demo.status.opening",
+        comment: "Demo status shown after asking Safari to open the Rules page"
+    )
 
     /// Formats the localized version label.
     static func version(_ value: String) -> String {
@@ -46,6 +70,7 @@ private enum LocalizedText {
 /// Onboarding screen for enabling and checking the Safari extension.
 final class ViewController: NSViewController {
     private let statusLabel = NSTextField(labelWithString: LocalizedText.checkingStatus)
+    private let demoStatusLabel = NSTextField(wrappingLabelWithString: "")
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -87,12 +112,32 @@ final class ViewController: NSViewController {
         buttons.orientation = .horizontal
         buttons.spacing = 8
 
+        let demoExplanation = NSTextField(wrappingLabelWithString:
+            LocalizedText.demoExplanation
+        )
+        demoExplanation.textColor = .secondaryLabelColor
+
+        let demoButton = NSButton(
+            title: LocalizedText.tryDemo,
+            target: self,
+            action: #selector(tryDemo)
+        )
+        demoButton.bezelStyle = .rounded
+        demoButton.setAccessibilityIdentifier("try-demo")
+
+        demoStatusLabel.font = .systemFont(ofSize: 12)
+        demoStatusLabel.textColor = .secondaryLabelColor
+        demoStatusLabel.isHidden = true
+
         let stack = NSStackView(views: [
             title,
             versionLabel,
             explanation,
             statusLabel,
             buttons,
+            demoExplanation,
+            demoButton,
+            demoStatusLabel,
         ])
         stack.orientation = .vertical
         stack.alignment = .leading
@@ -106,6 +151,8 @@ final class ViewController: NSViewController {
             stack.topAnchor.constraint(equalTo: view.topAnchor, constant: 24),
             stack.bottomAnchor.constraint(lessThanOrEqualTo: view.bottomAnchor, constant: -24),
             explanation.widthAnchor.constraint(equalTo: stack.widthAnchor),
+            demoExplanation.widthAnchor.constraint(equalTo: stack.widthAnchor),
+            demoStatusLabel.widthAnchor.constraint(equalTo: stack.widthAnchor),
         ])
     }
 
@@ -137,6 +184,56 @@ final class ViewController: NSViewController {
                 }
             }
         }
+    }
+
+    /// Starts the demo journey: a disabled extension is sent to Safari
+    /// settings, an enabled one is asked to open the Rules page.
+    @objc private func tryDemo() {
+        demoStatusLabel.isHidden = false
+        demoStatusLabel.stringValue = LocalizedText.checkingStatus
+        SFSafariExtensionManager.getStateOfSafariExtension(
+            withIdentifier: extensionBundleIdentifier
+        ) { [weak self] state, error in
+            DispatchQueue.main.async {
+                guard let self = self else {
+                    return
+                }
+                self.refreshExtensionState()
+                guard error == nil, state?.isEnabled == true else {
+                    self.demoStatusLabel.stringValue = LocalizedText.demoStatusDisabled
+                    self.openSafariSettings()
+                    return
+                }
+                self.demoStatusLabel.stringValue = LocalizedText.demoStatusOpening
+                self.requestRulesPageInSafari()
+            }
+        }
+    }
+
+    /// Asks the extension background to open Rules and brings Safari forward.
+    ///
+    /// Safari delivers the message only while the extension background is
+    /// running, so the status text always names the manual route as well.
+    private func requestRulesPageInSafari() {
+        SFSafariApplication.dispatchMessage(
+            withName: DemoAppMessage.name,
+            toExtensionWithIdentifier: extensionBundleIdentifier,
+            userInfo: [DemoAppMessage.actionKey: DemoAppMessage.name]
+        ) { error in
+            if let error = error {
+                NSLog("Kode Injector demo message was not delivered: %@", error.localizedDescription)
+            }
+        }
+        guard let safariURL = NSWorkspace.shared.urlForApplication(
+            withBundleIdentifier: safariBundleIdentifier
+        ) else {
+            return
+        }
+        NSWorkspace.shared.openApplication(
+            at: safariURL,
+            configuration: NSWorkspace.OpenConfiguration(),
+            completionHandler: nil
+        )
     }
 
 }

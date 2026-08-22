@@ -23,6 +23,8 @@ export const MESSAGE_TYPES = {
     ENABLE_INJECTIONS_FOR_SITE: 'enable.injections.for.site',
     SET_INTERFACE_LANGUAGE: 'set.interface.language',
     LANGUAGE_CHANGED: 'language.changed',
+    RUN_DEMO: 'run.demo',
+    GET_DEMO_LAUNCH_STATE: 'get.demo.launch.state',
 } as const;
 
 export const PROJECT_REPOSITORY_URL = 'https://github.com/maximtop/kode-injector';

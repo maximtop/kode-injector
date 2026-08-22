@@ -131,5 +131,21 @@
     "editor_safari_authorization_cancelled": { "message": "Folder access was not granted. The rule was not saved." },
     "editor_safari_folder_not_found": { "message": "The folder for %file% does not exist. Create it and try again." },
     "editor_safari_authorization_failed": { "message": "Could not authorize the folder for %file%. The rule was not saved." },
-    "popup_safari_native_host_unavailable": { "message": "Safari could not reach the embedded read-only Helper. Open Settings and check again." }
+    "popup_safari_native_host_unavailable": { "message": "Safari could not reach the embedded read-only Helper. Open Settings and check again." },
+    "demo_badge": { "message": "Демо" },
+    "demo_title": { "message": "Подивіться Kode Injector у дії" },
+    "demo_description": { "message": "Запускає вбудовані JavaScript і CSS на %site% — без правила, локальних файлів і доступу до тек." },
+    "demo_run": { "message": "Запустити демо" },
+    "demo_status_waiting": { "message": "Відкриваємо %site% і чекаємо на сторінку…" },
+    "demo_status_applied": { "message": "Готово — JavaScript і CSS впроваджено на %site%. Перейдіть на цю вкладку, щоб побачити результат." },
+    "demo_paused": { "message": "Вставлення коду призупинено, тому демо не може запуститися." },
+    "demo_error_website_access": { "message": "Safari ще не дозволив Kode Injector доступ до %site%. У цій вкладці натисніть кнопку Kode Injector на панелі інструментів, дозвольте доступ до сайту, а потім перезавантажте сторінку або запустіть демо знову." },
+    "demo_error_not_confirmed": { "message": "Kode Injector не зміг підтвердити демо на %site%. Переконайтеся, що сторінка завантажилася і Kode Injector дозволено на ній, а потім запустіть демо знову." },
+    "demo_error_interrupted": { "message": "Демо було перервано або його вкладку закрито. Запустіть демо знову." },
+    "demo_error_site_disabled": { "message": "Kode Injector вимкнено для %site%. Увімкніть його кнопкою Kode Injector на панелі інструментів у цій вкладці, а потім запустіть демо знову." },
+    "demo_error_unavailable": { "message": "Демо доступне, лише поки у вас немає правил." },
+    "demo_error_sources": { "message": "Не вдалося завантажити вміст вбудованого демо. Перевстановіть Kode Injector і спробуйте знову." },
+    "demo_error_open_failed": { "message": "Safari не зміг відкрити %site%. Запустіть демо знову." },
+    "settings_demo_title": { "message": "Вбудоване демо" },
+    "settings_demo_link": { "message": "Спробувати вбудоване демо на сторінці «Правила»" }
 }

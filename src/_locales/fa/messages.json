@@ -131,5 +131,21 @@
     "editor_safari_authorization_cancelled": { "message": "Folder access was not granted. The rule was not saved." },
     "editor_safari_folder_not_found": { "message": "The folder for %file% does not exist. Create it and try again." },
     "editor_safari_authorization_failed": { "message": "Could not authorize the folder for %file%. The rule was not saved." },
-    "popup_safari_native_host_unavailable": { "message": "Safari could not reach the embedded read-only Helper. Open Settings and check again." }
+    "popup_safari_native_host_unavailable": { "message": "Safari could not reach the embedded read-only Helper. Open Settings and check again." },
+    "demo_badge": { "message": "نمایش آزمایشی" },
+    "demo_title": { "message": "Kode Injector را در عمل ببینید" },
+    "demo_description": { "message": "JavaScript و CSS داخلی را روی %site% اجرا می‌کند — بدون قانون، فایل محلی یا دسترسی به پوشه." },
+    "demo_run": { "message": "اجرای نمایش آزمایشی" },
+    "demo_status_waiting": { "message": "در حال باز کردن %site% و انتظار برای صفحه…" },
+    "demo_status_applied": { "message": "انجام شد — JavaScript و CSS در %site% تزریق شدند. برای دیدن نتیجه به آن زبانه بروید." },
+    "demo_paused": { "message": "تزریق‌ها متوقف شده‌اند، بنابراین نمایش آزمایشی نمی‌تواند اجرا شود." },
+    "demo_error_website_access": { "message": "Safari هنوز به Kode Injector در %site% اجازه نداده است. در آن زبانه روی دکمهٔ Kode Injector در نوار ابزار کلیک کنید، دسترسی به وب‌سایت را مجاز کنید، سپس صفحه را دوباره بارگذاری کنید یا نمایش آزمایشی را دوباره اجرا کنید." },
+    "demo_error_not_confirmed": { "message": "Kode Injector نتوانست نمایش آزمایشی را در %site% تأیید کند. مطمئن شوید صفحه بارگذاری شده و Kode Injector در آن مجاز است، سپس نمایش آزمایشی را دوباره اجرا کنید." },
+    "demo_error_interrupted": { "message": "نمایش آزمایشی قطع شد یا زبانهٔ آن بسته شد. نمایش آزمایشی را دوباره اجرا کنید." },
+    "demo_error_site_disabled": { "message": "Kode Injector برای %site% خاموش است. آن را از دکمهٔ Kode Injector در نوار ابزار همان زبانه روشن کنید، سپس نمایش آزمایشی را دوباره اجرا کنید." },
+    "demo_error_unavailable": { "message": "نمایش آزمایشی فقط تا زمانی در دسترس است که هیچ قانونی ندارید." },
+    "demo_error_sources": { "message": "محتوای نمایش آزمایشی داخلی بارگذاری نشد. Kode Injector را دوباره نصب کنید و دوباره تلاش کنید." },
+    "demo_error_open_failed": { "message": "Safari نتوانست %site% را باز کند. نمایش آزمایشی را دوباره اجرا کنید." },
+    "settings_demo_title": { "message": "نمایش آزمایشی داخلی" },
+    "settings_demo_link": { "message": "نمایش آزمایشی داخلی را در صفحهٔ قوانین امتحان کنید" }
 }

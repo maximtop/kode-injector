@@ -131,5 +131,21 @@
     "editor_safari_authorization_cancelled": { "message": "Folder access was not granted. The rule was not saved." },
     "editor_safari_folder_not_found": { "message": "The folder for %file% does not exist. Create it and try again." },
     "editor_safari_authorization_failed": { "message": "Could not authorize the folder for %file%. The rule was not saved." },
-    "popup_safari_native_host_unavailable": { "message": "Safari could not reach the embedded read-only Helper. Open Settings and check again." }
+    "popup_safari_native_host_unavailable": { "message": "Safari could not reach the embedded read-only Helper. Open Settings and check again." },
+    "demo_badge": { "message": "Ukázka" },
+    "demo_title": { "message": "Podívejte se na Kode Injector v akci" },
+    "demo_description": { "message": "Spustí vestavěný JavaScript a CSS na %site% – bez pravidla, místního souboru nebo přístupu ke složce." },
+    "demo_run": { "message": "Spustit ukázku" },
+    "demo_status_waiting": { "message": "Otevírám %site% a čekám na stránku…" },
+    "demo_status_applied": { "message": "Hotovo – JavaScript a CSS byly vloženy na %site%. Přepněte na tuto kartu a podívejte se na výsledek." },
+    "demo_paused": { "message": "Vkládání je pozastaveno, takže ukázku nelze spustit." },
+    "demo_error_website_access": { "message": "Safari zatím nepovolilo Kode Injector na %site%. Na této kartě klikněte na tlačítko Kode Injector na panelu nástrojů, povolte přístup k webu a pak stránku znovu načtěte nebo ukázku spusťte znovu." },
+    "demo_error_not_confirmed": { "message": "Kode Injector nemohl ukázku na %site% potvrdit. Ujistěte se, že se stránka načetla a že je na ní Kode Injector povolen, a ukázku spusťte znovu." },
+    "demo_error_interrupted": { "message": "Ukázka byla přerušena nebo byla její karta zavřena. Spusťte ukázku znovu." },
+    "demo_error_site_disabled": { "message": "Kode Injector je pro %site% vypnutý. Zapněte ho tlačítkem Kode Injector na panelu nástrojů na této kartě a ukázku spusťte znovu." },
+    "demo_error_unavailable": { "message": "Ukázka je dostupná, jen dokud nemáte žádná pravidla." },
+    "demo_error_sources": { "message": "Obsah vestavěné ukázky se nepodařilo načíst. Přeinstalujte Kode Injector a zkuste to znovu." },
+    "demo_error_open_failed": { "message": "Safari nemohlo otevřít %site%. Spusťte ukázku znovu." },
+    "settings_demo_title": { "message": "Vestavěná ukázka" },
+    "settings_demo_link": { "message": "Vyzkoušet vestavěnou ukázku na stránce Pravidla" }
 }

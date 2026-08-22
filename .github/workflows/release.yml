@@ -82,11 +82,14 @@ jobs:
           pnpm install --frozen-lockfile
       - name: Build release extensions
         run: pnpm release
+      - name: Build Safari release resources
+        run: pnpm release safari
       - name: Install Playwright Chromium
         run: pnpm exec playwright install --with-deps chromium
-      - name: Test Chrome release candidate
+      - name: Test release candidates
         env:
           KODE_INJECTOR_E2E_EXTENSION_PATH: build/release/chrome
+          KODE_INJECTOR_E2E_SAFARI_EXTENSION_PATH: build/release/safari
         run: pnpm test:e2e:run
       - name: Retain store-ready extension archives
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1

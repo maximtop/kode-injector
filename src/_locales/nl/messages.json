@@ -131,5 +131,21 @@
     "editor_safari_authorization_cancelled": { "message": "Folder access was not granted. The rule was not saved." },
     "editor_safari_folder_not_found": { "message": "The folder for %file% does not exist. Create it and try again." },
     "editor_safari_authorization_failed": { "message": "Could not authorize the folder for %file%. The rule was not saved." },
-    "popup_safari_native_host_unavailable": { "message": "Safari could not reach the embedded read-only Helper. Open Settings and check again." }
+    "popup_safari_native_host_unavailable": { "message": "Safari could not reach the embedded read-only Helper. Open Settings and check again." },
+    "demo_badge": { "message": "Demo" },
+    "demo_title": { "message": "Bekijk Kode Injector in actie" },
+    "demo_description": { "message": "Voert ingebouwde JavaScript en CSS uit op %site% – zonder regel, lokaal bestand of maptoegang." },
+    "demo_run": { "message": "Demo starten" },
+    "demo_status_waiting": { "message": "%site% wordt geopend, wachten op de pagina…" },
+    "demo_status_applied": { "message": "Klaar – JavaScript en CSS zijn geïnjecteerd op %site%. Ga naar dat tabblad om het resultaat te zien." },
+    "demo_paused": { "message": "Injecties zijn gepauzeerd, dus de demo kan niet worden uitgevoerd." },
+    "demo_error_website_access": { "message": "Safari heeft Kode Injector nog niet toegestaan op %site%. Klik in dat tabblad op de Kode Injector-knop in de werkbalk, sta toegang tot de website toe en herlaad de pagina of start de demo opnieuw." },
+    "demo_error_not_confirmed": { "message": "Kode Injector kon de demo op %site% niet bevestigen. Controleer of de pagina is geladen en Kode Injector daar is toegestaan, en start de demo opnieuw." },
+    "demo_error_interrupted": { "message": "De demo is onderbroken of het tabblad is gesloten. Start de demo opnieuw." },
+    "demo_error_site_disabled": { "message": "Kode Injector staat uit voor %site%. Schakel het in via de Kode Injector-knop in de werkbalk van dat tabblad en start de demo opnieuw." },
+    "demo_error_unavailable": { "message": "De demo is alleen beschikbaar zolang u geen regels hebt." },
+    "demo_error_sources": { "message": "De ingebouwde demo-inhoud kon niet worden geladen. Installeer Kode Injector opnieuw en probeer het nog eens." },
+    "demo_error_open_failed": { "message": "Safari kon %site% niet openen. Start de demo opnieuw." },
+    "settings_demo_title": { "message": "Ingebouwde demo" },
+    "settings_demo_link": { "message": "Probeer de ingebouwde demo op de pagina Regels" }
 }

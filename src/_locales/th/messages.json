@@ -131,5 +131,21 @@
     "editor_safari_authorization_cancelled": { "message": "Folder access was not granted. The rule was not saved." },
     "editor_safari_folder_not_found": { "message": "The folder for %file% does not exist. Create it and try again." },
     "editor_safari_authorization_failed": { "message": "Could not authorize the folder for %file%. The rule was not saved." },
-    "popup_safari_native_host_unavailable": { "message": "Safari could not reach the embedded read-only Helper. Open Settings and check again." }
+    "popup_safari_native_host_unavailable": { "message": "Safari could not reach the embedded read-only Helper. Open Settings and check again." },
+    "demo_badge": { "message": "เดโม" },
+    "demo_title": { "message": "ดู Kode Injector ทำงานจริง" },
+    "demo_description": { "message": "รัน JavaScript และ CSS ในตัวบน %site% — ไม่ต้องมีกฎ ไฟล์ในเครื่อง หรือสิทธิ์เข้าถึงโฟลเดอร์" },
+    "demo_run": { "message": "รันเดโม" },
+    "demo_status_waiting": { "message": "กำลังเปิด %site% และรอหน้าเว็บ…" },
+    "demo_status_applied": { "message": "เสร็จแล้ว — แทรก JavaScript และ CSS บน %site% แล้ว สลับไปที่แท็บนั้นเพื่อดูผลลัพธ์" },
+    "demo_paused": { "message": "การแทรกโค้ดถูกหยุดชั่วคราว จึงไม่สามารถรันเดโมได้" },
+    "demo_error_website_access": { "message": "Safari ยังไม่อนุญาต Kode Injector บน %site% ในแท็บนั้น ให้คลิกปุ่ม Kode Injector บนแถบเครื่องมือ อนุญาตการเข้าถึงเว็บไซต์ จากนั้นโหลดหน้าใหม่หรือรันเดโมอีกครั้ง" },
+    "demo_error_not_confirmed": { "message": "Kode Injector ไม่สามารถยืนยันเดโมบน %site% ได้ โปรดตรวจสอบว่าหน้าเว็บโหลดแล้วและ Kode Injector ได้รับอนุญาตบนหน้านั้น จากนั้นรันเดโมอีกครั้ง" },
+    "demo_error_interrupted": { "message": "เดโมถูกขัดจังหวะหรือแท็บถูกปิด โปรดรันเดโมอีกครั้ง" },
+    "demo_error_site_disabled": { "message": "Kode Injector ถูกปิดสำหรับ %site% ให้เปิดจากปุ่ม Kode Injector บนแถบเครื่องมือในแท็บนั้น จากนั้นรันเดโมอีกครั้ง" },
+    "demo_error_unavailable": { "message": "เดโมใช้ได้เฉพาะเมื่อคุณยังไม่มีกฎเท่านั้น" },
+    "demo_error_sources": { "message": "ไม่สามารถโหลดเนื้อหาเดโมในตัวได้ โปรดติดตั้ง Kode Injector ใหม่แล้วลองอีกครั้ง" },
+    "demo_error_open_failed": { "message": "Safari ไม่สามารถเปิด %site% ได้ โปรดรันเดโมอีกครั้ง" },
+    "settings_demo_title": { "message": "เดโมในตัว" },
+    "settings_demo_link": { "message": "ลองเดโมในตัวได้ที่หน้ากฎ" }
 }

@@ -131,5 +131,21 @@
     "editor_safari_authorization_cancelled": { "message": "Folder access was not granted. The rule was not saved." },
     "editor_safari_folder_not_found": { "message": "The folder for %file% does not exist. Create it and try again." },
     "editor_safari_authorization_failed": { "message": "Could not authorize the folder for %file%. The rule was not saved." },
-    "popup_safari_native_host_unavailable": { "message": "Safari could not reach the embedded read-only Helper. Open Settings and check again." }
+    "popup_safari_native_host_unavailable": { "message": "Safari could not reach the embedded read-only Helper. Open Settings and check again." },
+    "demo_badge": { "message": "הדגמה" },
+    "demo_title": { "message": "ראו את Kode Injector בפעולה" },
+    "demo_description": { "message": "מריץ JavaScript ו-CSS מובנים ב-%site% — בלי כלל, קובץ מקומי או גישה לתיקייה." },
+    "demo_run": { "message": "הפעלת ההדגמה" },
+    "demo_status_waiting": { "message": "פותח את %site% וממתין לדף…" },
+    "demo_status_applied": { "message": "בוצע — JavaScript ו-CSS הוזרקו ל-%site%. עברו ללשונית הזו כדי לראות את התוצאה." },
+    "demo_paused": { "message": "ההזרקות מושהות, ולכן לא ניתן להריץ את ההדגמה." },
+    "demo_error_website_access": { "message": "Safari עדיין לא אישר את Kode Injector ב-%site%. בלשונית הזו לחצו על כפתור Kode Injector בסרגל הכלים, אשרו גישה לאתר, ואז טענו מחדש את הדף או הפעילו את ההדגמה שוב." },
+    "demo_error_not_confirmed": { "message": "Kode Injector לא הצליח לאשר את ההדגמה ב-%site%. ודאו שהדף נטען ושל-Kode Injector יש הרשאה בו, ואז הפעילו את ההדגמה שוב." },
+    "demo_error_interrupted": { "message": "ההדגמה הופסקה או שהלשונית שלה נסגרה. הפעילו את ההדגמה שוב." },
+    "demo_error_site_disabled": { "message": "Kode Injector כבוי עבור %site%. הפעילו אותו מכפתור Kode Injector בסרגל הכלים בלשונית הזו, ואז הפעילו את ההדגמה שוב." },
+    "demo_error_unavailable": { "message": "ההדגמה זמינה רק כל עוד אין לכם כללים." },
+    "demo_error_sources": { "message": "לא ניתן לטעון את תוכן ההדגמה המובנית. התקינו מחדש את Kode Injector ונסו שוב." },
+    "demo_error_open_failed": { "message": "Safari לא הצליח לפתוח את %site%. הפעילו את ההדגמה שוב." },
+    "settings_demo_title": { "message": "הדגמה מובנית" },
+    "settings_demo_link": { "message": "נסו את ההדגמה המובנית בדף הכללים" }
 }

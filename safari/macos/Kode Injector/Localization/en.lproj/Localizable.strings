@@ -9,3 +9,7 @@
 "authorization.button" = "Authorize";
 "authorization.message_format" = "Authorize read-only access to “%@”.";
 "authorization.validation_format" = "Authorize the “%@” folder shown by Kode Injector.";
+"demo.button" = "Try Demo";
+"demo.explanation" = "Kode Injector includes a built-in demo that injects JavaScript and CSS on example.com without any local files or folder access. Enable the extension, then open Rules in Safari and choose Run Demo.";
+"demo.status.disabled" = "Enable the Safari extension first, then try the demo again.";
+"demo.status.opening" = "Opening the Kode Injector Rules page in Safari… If it does not appear, click the Kode Injector button in the Safari toolbar and choose Options.";

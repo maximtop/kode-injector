@@ -15,6 +15,14 @@ import {
     readAppleTeamIdentifier,
     validateBuildNumber,
 } from './config';
+import { validateBuiltInDemoResources } from './demo-artifact';
+
+/**
+ * Localized string key of the containing app's demo entry, written as a
+ * `plutil -extract` key path: the dot must be escaped, otherwise plutil reads
+ * `demo.button` as the nested path `demo` → `button` and fails.
+ */
+const DEMO_ENTRY_STRING_KEY_PATH = 'demo\\.button';
 
 /**
  * Controls validation of one built Safari containing application.
@@ -448,14 +456,18 @@ export const validateSafariArtifact = (
         assetCatalogPath,
     ].forEach(requirePath);
     ['en', 'ru'].forEach((locale) => {
-        requirePath(path.join(
+        const appStringsPath = path.join(
             appPath,
             `Contents/Resources/${locale}.lproj/Localizable.strings`,
-        ));
+        );
+        requirePath(appStringsPath);
         requirePath(path.join(
             extensionPath,
             `Contents/Resources/${locale}.lproj/Localizable.strings`,
         ));
+        if (readPlistValue(appStringsPath, DEMO_ENTRY_STRING_KEY_PATH).length === 0) {
+            throw new Error(`Safari containing app lacks the localized demo entry (${locale})`);
+        }
     });
 
     validatePrivacyManifest(path.join(
@@ -535,6 +547,7 @@ export const validateSafariArtifact = (
     if (readEmbeddedHelperVersion(helperPath) !== options.expectedVersion) {
         throw new Error('Embedded Safari helper version must match package.json');
     }
+    validateBuiltInDemoResources(path.join(extensionPath, 'Contents/Resources'));
 
     if (options.requireUniversalHelper) {
         const expectedArchitectures = JSON.stringify(['arm64', 'x86_64']);

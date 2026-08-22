@@ -131,5 +131,21 @@
     "editor_safari_authorization_cancelled": { "message": "Folder access was not granted. The rule was not saved." },
     "editor_safari_folder_not_found": { "message": "The folder for %file% does not exist. Create it and try again." },
     "editor_safari_authorization_failed": { "message": "Could not authorize the folder for %file%. The rule was not saved." },
-    "popup_safari_native_host_unavailable": { "message": "Safari could not reach the embedded read-only Helper. Open Settings and check again." }
+    "popup_safari_native_host_unavailable": { "message": "Safari could not reach the embedded read-only Helper. Open Settings and check again." },
+    "demo_badge": { "message": "Bản demo" },
+    "demo_title": { "message": "Xem Kode Injector hoạt động" },
+    "demo_description": { "message": "Chạy JavaScript và CSS tích hợp sẵn trên %site% — không cần quy tắc, tệp cục bộ hay quyền truy cập thư mục." },
+    "demo_run": { "message": "Chạy demo" },
+    "demo_status_waiting": { "message": "Đang mở %site% và chờ trang…" },
+    "demo_status_applied": { "message": "Xong — JavaScript và CSS đã được chèn vào %site%. Chuyển sang thẻ đó để xem kết quả." },
+    "demo_paused": { "message": "Việc chèn mã đang tạm dừng nên không thể chạy demo." },
+    "demo_error_website_access": { "message": "Safari chưa cho phép Kode Injector trên %site%. Trong thẻ đó, hãy nhấp vào nút Kode Injector trên thanh công cụ, cho phép truy cập trang web, sau đó tải lại trang hoặc chạy lại demo." },
+    "demo_error_not_confirmed": { "message": "Kode Injector không thể xác nhận demo trên %site%. Hãy đảm bảo trang đã tải và Kode Injector được cho phép trên đó, sau đó chạy lại demo." },
+    "demo_error_interrupted": { "message": "Demo đã bị gián đoạn hoặc thẻ của nó đã bị đóng. Hãy chạy lại demo." },
+    "demo_error_site_disabled": { "message": "Kode Injector đang tắt cho %site%. Hãy bật lại bằng nút Kode Injector trên thanh công cụ trong thẻ đó, sau đó chạy lại demo." },
+    "demo_error_unavailable": { "message": "Demo chỉ khả dụng khi bạn chưa có quy tắc nào." },
+    "demo_error_sources": { "message": "Không thể tải nội dung demo tích hợp sẵn. Hãy cài đặt lại Kode Injector và thử lại." },
+    "demo_error_open_failed": { "message": "Safari không thể mở %site%. Hãy chạy lại demo." },
+    "settings_demo_title": { "message": "Demo tích hợp sẵn" },
+    "settings_demo_link": { "message": "Dùng thử demo tích hợp sẵn trên trang Quy tắc" }
 }

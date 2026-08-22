@@ -131,5 +131,21 @@
     "editor_safari_authorization_cancelled": { "message": "Folder access was not granted. The rule was not saved." },
     "editor_safari_folder_not_found": { "message": "The folder for %file% does not exist. Create it and try again." },
     "editor_safari_authorization_failed": { "message": "Could not authorize the folder for %file%. The rule was not saved." },
-    "popup_safari_native_host_unavailable": { "message": "Safari could not reach the embedded read-only Helper. Open Settings and check again." }
+    "popup_safari_native_host_unavailable": { "message": "Safari could not reach the embedded read-only Helper. Open Settings and check again." },
+    "demo_badge": { "message": "Démo" },
+    "demo_title": { "message": "Voir Kode Injector en action" },
+    "demo_description": { "message": "Exécute du JavaScript et du CSS intégrés sur %site% — sans règle, fichier local ni accès aux dossiers." },
+    "demo_run": { "message": "Lancer la démo" },
+    "demo_status_waiting": { "message": "Ouverture de %site%, en attente de la page…" },
+    "demo_status_applied": { "message": "Terminé — le JavaScript et le CSS ont été injectés sur %site%. Passez à cet onglet pour voir le résultat." },
+    "demo_paused": { "message": "Les injections sont en pause, la démo ne peut donc pas s'exécuter." },
+    "demo_error_website_access": { "message": "Safari n'a pas encore autorisé Kode Injector sur %site%. Dans cet onglet, cliquez sur le bouton Kode Injector de la barre d'outils, autorisez l'accès au site, puis rechargez la page ou relancez la démo." },
+    "demo_error_not_confirmed": { "message": "Kode Injector n'a pas pu confirmer la démo sur %site%. Vérifiez que la page s'est chargée et que Kode Injector y est autorisé, puis relancez la démo." },
+    "demo_error_interrupted": { "message": "La démo a été interrompue ou son onglet a été fermé. Relancez la démo." },
+    "demo_error_site_disabled": { "message": "Kode Injector est désactivé pour %site%. Réactivez-le depuis le bouton Kode Injector de la barre d'outils dans cet onglet, puis relancez la démo." },
+    "demo_error_unavailable": { "message": "La démo n'est disponible que tant que vous n'avez aucune règle." },
+    "demo_error_sources": { "message": "Le contenu de la démo intégrée n'a pas pu être chargé. Réinstallez Kode Injector et réessayez." },
+    "demo_error_open_failed": { "message": "Safari n'a pas pu ouvrir %site%. Relancez la démo." },
+    "settings_demo_title": { "message": "Démo intégrée" },
+    "settings_demo_link": { "message": "Essayer la démo intégrée sur la page Règles" }
 }

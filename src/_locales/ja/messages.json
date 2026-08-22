@@ -131,5 +131,21 @@
     "editor_safari_authorization_cancelled": { "message": "Folder access was not granted. The rule was not saved." },
     "editor_safari_folder_not_found": { "message": "The folder for %file% does not exist. Create it and try again." },
     "editor_safari_authorization_failed": { "message": "Could not authorize the folder for %file%. The rule was not saved." },
-    "popup_safari_native_host_unavailable": { "message": "Safari could not reach the embedded read-only Helper. Open Settings and check again." }
+    "popup_safari_native_host_unavailable": { "message": "Safari could not reach the embedded read-only Helper. Open Settings and check again." },
+    "demo_badge": { "message": "デモ" },
+    "demo_title": { "message": "Kode Injector の動作を見る" },
+    "demo_description": { "message": "%site% で内蔵の JavaScript と CSS を実行します。ルールもローカルファイルもフォルダへのアクセスも不要です。" },
+    "demo_run": { "message": "デモを実行" },
+    "demo_status_waiting": { "message": "%site% を開いてページを待機しています…" },
+    "demo_status_applied": { "message": "完了 — %site% に JavaScript と CSS が注入されました。そのタブに切り替えて結果を確認してください。" },
+    "demo_paused": { "message": "注入が一時停止中のため、デモを実行できません。" },
+    "demo_error_website_access": { "message": "Safari はまだ %site% で Kode Injector を許可していません。そのタブでツールバーの Kode Injector ボタンをクリックし、Web サイトへのアクセスを許可してから、ページを再読み込みするかデモをもう一度実行してください。" },
+    "demo_error_not_confirmed": { "message": "Kode Injector は %site% でデモを確認できませんでした。ページが読み込まれ、そのページで Kode Injector が許可されていることを確認してから、デモをもう一度実行してください。" },
+    "demo_error_interrupted": { "message": "デモが中断されたか、タブが閉じられました。デモをもう一度実行してください。" },
+    "demo_error_site_disabled": { "message": "Kode Injector は %site% で無効になっています。そのタブでツールバーの Kode Injector ボタンから有効にしてから、デモをもう一度実行してください。" },
+    "demo_error_unavailable": { "message": "デモはルールがない間だけ利用できます。" },
+    "demo_error_sources": { "message": "内蔵デモのコンテンツを読み込めませんでした。Kode Injector を再インストールしてやり直してください。" },
+    "demo_error_open_failed": { "message": "Safari は %site% を開けませんでした。デモをもう一度実行してください。" },
+    "settings_demo_title": { "message": "内蔵デモ" },
+    "settings_demo_link": { "message": "「ルール」ページで内蔵デモを試す" }
 }

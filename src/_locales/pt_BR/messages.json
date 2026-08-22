@@ -131,5 +131,21 @@
     "editor_safari_authorization_cancelled": { "message": "Folder access was not granted. The rule was not saved." },
     "editor_safari_folder_not_found": { "message": "The folder for %file% does not exist. Create it and try again." },
     "editor_safari_authorization_failed": { "message": "Could not authorize the folder for %file%. The rule was not saved." },
-    "popup_safari_native_host_unavailable": { "message": "Safari could not reach the embedded read-only Helper. Open Settings and check again." }
+    "popup_safari_native_host_unavailable": { "message": "Safari could not reach the embedded read-only Helper. Open Settings and check again." },
+    "demo_badge": { "message": "Demonstração" },
+    "demo_title": { "message": "Veja o Kode Injector em ação" },
+    "demo_description": { "message": "Executa JavaScript e CSS integrados em %site% — sem regra, arquivo local ou acesso a pastas." },
+    "demo_run": { "message": "Executar demonstração" },
+    "demo_status_waiting": { "message": "Abrindo %site% e aguardando a página…" },
+    "demo_status_applied": { "message": "Pronto — JavaScript e CSS foram injetados em %site%. Mude para essa aba para ver o resultado." },
+    "demo_paused": { "message": "As injeções estão pausadas, então a demonstração não pode ser executada." },
+    "demo_error_website_access": { "message": "O Safari ainda não permitiu o Kode Injector em %site%. Nessa aba, clique no botão do Kode Injector na barra de ferramentas, permita o acesso ao site e depois recarregue a página ou execute a demonstração novamente." },
+    "demo_error_not_confirmed": { "message": "O Kode Injector não conseguiu confirmar a demonstração em %site%. Verifique se a página carregou e se o Kode Injector está permitido nela, depois execute a demonstração novamente." },
+    "demo_error_interrupted": { "message": "A demonstração foi interrompida ou sua aba foi fechada. Execute a demonstração novamente." },
+    "demo_error_site_disabled": { "message": "O Kode Injector está desligado para %site%. Ligue-o pelo botão do Kode Injector na barra de ferramentas dessa aba e execute a demonstração novamente." },
+    "demo_error_unavailable": { "message": "A demonstração só está disponível enquanto você não tem regras." },
+    "demo_error_sources": { "message": "Não foi possível carregar o conteúdo da demonstração integrada. Reinstale o Kode Injector e tente novamente." },
+    "demo_error_open_failed": { "message": "O Safari não conseguiu abrir %site%. Execute a demonstração novamente." },
+    "settings_demo_title": { "message": "Demonstração integrada" },
+    "settings_demo_link": { "message": "Experimentar a demonstração integrada na página Regras" }
 }

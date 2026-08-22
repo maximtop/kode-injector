@@ -131,5 +131,21 @@
     "editor_safari_authorization_cancelled": { "message": "Folder access was not granted. The rule was not saved." },
     "editor_safari_folder_not_found": { "message": "The folder for %file% does not exist. Create it and try again." },
     "editor_safari_authorization_failed": { "message": "Could not authorize the folder for %file%. The rule was not saved." },
-    "popup_safari_native_host_unavailable": { "message": "Safari could not reach the embedded read-only Helper. Open Settings and check again." }
+    "popup_safari_native_host_unavailable": { "message": "Safari could not reach the embedded read-only Helper. Open Settings and check again." },
+    "demo_badge": { "message": "Demo" },
+    "demo_title": { "message": "Katso Kode Injector toiminnassa" },
+    "demo_description": { "message": "Suorittaa sisäänrakennetun JavaScriptin ja CSS:n sivustolla %site% – ilman sääntöä, paikallista tiedostoa tai kansion käyttöoikeutta." },
+    "demo_run": { "message": "Suorita demo" },
+    "demo_status_waiting": { "message": "Avataan %site% ja odotetaan sivua…" },
+    "demo_status_applied": { "message": "Valmis – JavaScript ja CSS lisättiin sivustolle %site%. Siirry kyseiseen välilehteen nähdäksesi tuloksen." },
+    "demo_paused": { "message": "Lisäykset on keskeytetty, joten demoa ei voi suorittaa." },
+    "demo_error_website_access": { "message": "Safari ei ole vielä sallinut Kode Injectoria sivustolla %site%. Napsauta kyseisessä välilehdessä työkalupalkin Kode Injector -painiketta, salli sivuston käyttö ja lataa sivu uudelleen tai suorita demo uudelleen." },
+    "demo_error_not_confirmed": { "message": "Kode Injector ei voinut vahvistaa demoa sivustolla %site%. Varmista, että sivu latautui ja että Kode Injector on sallittu siinä, ja suorita demo uudelleen." },
+    "demo_error_interrupted": { "message": "Demo keskeytyi tai sen välilehti suljettiin. Suorita demo uudelleen." },
+    "demo_error_site_disabled": { "message": "Kode Injector on poistettu käytöstä sivustolla %site%. Ota se käyttöön työkalupalkin Kode Injector -painikkeesta kyseisessä välilehdessä ja suorita demo uudelleen." },
+    "demo_error_unavailable": { "message": "Demo on käytettävissä vain niin kauan kuin sinulla ei ole sääntöjä." },
+    "demo_error_sources": { "message": "Sisäänrakennetun demon sisältöä ei voitu ladata. Asenna Kode Injector uudelleen ja yritä uudelleen." },
+    "demo_error_open_failed": { "message": "Safari ei voinut avata sivustoa %site%. Suorita demo uudelleen." },
+    "settings_demo_title": { "message": "Sisäänrakennettu demo" },
+    "settings_demo_link": { "message": "Kokeile sisäänrakennettua demoa Säännöt-sivulla" }
 }

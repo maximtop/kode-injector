@@ -131,5 +131,21 @@
     "editor_safari_authorization_cancelled": { "message": "Folder access was not granted. The rule was not saved." },
     "editor_safari_folder_not_found": { "message": "The folder for %file% does not exist. Create it and try again." },
     "editor_safari_authorization_failed": { "message": "Could not authorize the folder for %file%. The rule was not saved." },
-    "popup_safari_native_host_unavailable": { "message": "Safari could not reach the embedded read-only Helper. Open Settings and check again." }
+    "popup_safari_native_host_unavailable": { "message": "Safari could not reach the embedded read-only Helper. Open Settings and check again." },
+    "demo_badge": { "message": "عرض توضيحي" },
+    "demo_title": { "message": "شاهد Kode Injector أثناء العمل" },
+    "demo_description": { "message": "يشغّل JavaScript وCSS المضمّنين على %site% — دون قاعدة أو ملف محلي أو إذن للوصول إلى المجلدات." },
+    "demo_run": { "message": "تشغيل العرض التوضيحي" },
+    "demo_status_waiting": { "message": "جارٍ فتح %site% وانتظار الصفحة…" },
+    "demo_status_applied": { "message": "تم — جرى حقن JavaScript وCSS في %site%. انتقل إلى علامة التبويب تلك لرؤية النتيجة." },
+    "demo_paused": { "message": "الحقن متوقف مؤقتًا، لذا لا يمكن تشغيل العرض التوضيحي." },
+    "demo_error_website_access": { "message": "لم يسمح Safari بعد لـ Kode Injector على %site%. في علامة التبويب تلك، انقر على زر Kode Injector في شريط الأدوات، واسمح بالوصول إلى الموقع، ثم أعد تحميل الصفحة أو شغّل العرض التوضيحي مرة أخرى." },
+    "demo_error_not_confirmed": { "message": "تعذّر على Kode Injector تأكيد العرض التوضيحي على %site%. تأكد من تحميل الصفحة ومن أن Kode Injector مسموح به عليها، ثم شغّل العرض التوضيحي مرة أخرى." },
+    "demo_error_interrupted": { "message": "تمت مقاطعة العرض التوضيحي أو أُغلقت علامة تبويبه. شغّل العرض التوضيحي مرة أخرى." },
+    "demo_error_site_disabled": { "message": "Kode Injector متوقف لموقع %site%. شغّله من زر Kode Injector في شريط الأدوات في علامة التبويب تلك، ثم شغّل العرض التوضيحي مرة أخرى." },
+    "demo_error_unavailable": { "message": "العرض التوضيحي متاح فقط ما دامت لا توجد لديك قواعد." },
+    "demo_error_sources": { "message": "تعذّر تحميل محتوى العرض التوضيحي المضمّن. أعد تثبيت Kode Injector وحاول مرة أخرى." },
+    "demo_error_open_failed": { "message": "تعذّر على Safari فتح %site%. شغّل العرض التوضيحي مرة أخرى." },
+    "settings_demo_title": { "message": "عرض توضيحي مضمّن" },
+    "settings_demo_link": { "message": "جرّب العرض التوضيحي المضمّن في صفحة القواعد" }
 }

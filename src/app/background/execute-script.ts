@@ -93,19 +93,22 @@ type MainWorldScriptInjection = {
  * @param script JavaScript source to inject.
  * @param tabId Target browser tab identifier.
  * @param documentToken Identity of the document that requested the injection.
+ *
+ * @returns Whether the browser accepted the injection request. A stale
+ * document token is not an error: the injected function simply returns.
  */
 export const executeScript = async (
     script: ExecuteScriptPayload['script'],
     tabId: ExecuteScriptPayload['tabId'],
     documentToken: ExecuteScriptPayload['documentToken'],
-): Promise<void> => {
+): Promise<boolean> => {
     if (script.length === 0) {
-        return;
+        return false;
     }
 
     if (typeof tabId !== 'number') {
         log.debug(`Error on executeScript in the tab ${tabId}:`, undefined, 'Missing tab id');
-        return;
+        return false;
     }
 
     try {
@@ -121,11 +124,13 @@ export const executeScript = async (
             ],
         };
         await chrome.scripting.executeScript(options);
+        return true;
     } catch (e) {
         log.debug(
             `Error on executeScript in the tab ${tabId}:`,
             chrome.runtime.lastError,
             e,
         );
+        return false;
     }
 };
