@@ -56,17 +56,18 @@ unsigned universal archive without contacting Apple:
 pnpm safari:store:check
 ```
 
-For a local signed archive, sign in to the Apple account in Xcode, choose a
-build number higher than every build previously uploaded to App Store Connect,
-and run the three commands with the same value. `validateBuildNumber` accepts
-one to three integer components within Apple's four/two/two-digit limits (for
-example `1.58.1`); the workflow derives its numbers from the run counter, so a
-local upload can block later automated uploads — prefer the workflow.
+For a local signed archive, sign in to the Apple account in Xcode, pick a
+build number (`<build>` below) that is higher than every build already listed
+under the app in App Store Connect, and run the three commands with the same
+value. `validateBuildNumber` accepts one to three integer components within
+Apple's four/two/two-digit limits; the workflow derives its own numbers from
+the run counter (`1.<run>.<attempt>` shape, e.g. `1.57.1`), so a local number
+above that sequence blocks later automated uploads — prefer the workflow.
 
 ```sh
 pnpm safari:store:profiles
-SAFARI_BUILD_NUMBER=1.58.1 pnpm safari:store:archive
-SAFARI_BUILD_NUMBER=1.58.1 pnpm safari:store:validate
+SAFARI_BUILD_NUMBER=<build> pnpm safari:store:archive
+SAFARI_BUILD_NUMBER=<build> pnpm safari:store:validate
 ```
 
 The normal path for a resubmission is the workflow, not a local archive: see
@@ -92,7 +93,7 @@ export APP_STORE_CONNECT_API_ISSUER_ID=00000000-0000-0000-0000-000000000000
 Upload is a separate explicit command:
 
 ```sh
-SAFARI_BUILD_NUMBER=1.58.1 pnpm safari:store:upload
+SAFARI_BUILD_NUMBER=<build> pnpm safari:store:upload
 ```
 
 `xcodebuild -exportArchive` uses the `app-store-connect` method and uploads the
