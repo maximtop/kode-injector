@@ -144,8 +144,9 @@ required reviewers if every upload should need explicit approval.
 fix that must reach App Review (such as the built-in demo) has to be on a
 tagged, released commit:
 
-1. Bump `package.json` to the next version (for example `0.9.2`), merge to
-   `master`, push the matching tag, and publish the GitHub Release. All store
+1. Run **Actions → Prepare release** with the next version (for example
+   `0.9.2`) and merge the pull request it opens; **Tag release** then tags
+   `master` and **Release** drafts the GitHub Release — publish it. All store
    deployments run; Chrome, Edge, and Firefox receive the same source with the
    Safari demo compiled out. App Store Connect receives a new workflow-derived
    build number (for example `1.57.1`) of the new version.

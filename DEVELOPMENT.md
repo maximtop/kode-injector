@@ -599,19 +599,36 @@ Kode Injector Helper app.
 
 ## Releases
 
-1. Bump the `version` field in `package.json`.
-2. Run `make build` to produce the browser directories and ZIPs under
-   `build/release/`.
-3. Push the matching version tag to create a GitHub Draft Release containing
-   the same store-ready `chrome.zip`, `edge.zip`, `firefox.zip`, `source.zip`,
-   and `approval-notes.txt` artifacts.
-4. After checking the draft assets, publish the GitHub Release. Publishing
+The version in `package.json` is the single source of truth (the manifest,
+the Safari bundles, and the AMO source archive all derive from it), and a
+release tag must point at a `master` commit that already carries that
+version. Two workflows remove the manual edits:
+
+1. **Actions → Prepare release → Run workflow**, enter the next version
+   (`X.Y.Z`). The workflow bumps `package.json` on a
+   `feature/release-<version>` branch and opens a pull request titled
+   “Bump version to <version>”. (One-time repository setting: Settings →
+   Actions → General → *Allow GitHub Actions to create and approve pull
+   requests*; without it the workflow stops at the pull-request step with a
+   pointer to this setting. A pull request opened by the workflow token does
+   not run CI — the Release workflow validates the tagged commit instead.)
+2. Merge that pull request. The **Tag release** workflow runs on every
+   `master` push that changes `package.json`: if `v<version>` does not exist
+   yet, it creates the tag on the merge commit and starts the **Release**
+   workflow on it, which builds the store-ready `chrome.zip`, `edge.zip`,
+   `firefox.zip`, `source.zip`, `approval-notes.txt`, the signed Helper
+   packages, and creates a GitHub Draft Release.
+3. After checking the draft assets, publish the GitHub Release. Publishing
    triggers the Chrome Web Store, Firefox Add-ons, Microsoft Edge Add-ons, and
    Apple App Store deployment workflows automatically. Edge and Apple
    automation start only after their one-time store setup and repository
    configuration are complete.
-5. When the store review completes, publish the approved version manually in
+4. When the store review completes, publish the approved version manually in
    the Chrome Web Store Developer Dashboard.
+
+Bumping `package.json` by hand and merging it still works: Tag release reacts
+to the version change the same way. Pushing a `vX.Y.Z` tag manually also
+still triggers Release directly.
 
 ## Native host development and releases
 
@@ -767,13 +784,15 @@ Before creating a tag, run the signing preflight:
    verification to complete.
 3. Download and inspect the retained `kode-injector-helper-<version>` and
    `kode-injector-extensions-<version>` workflow artifacts. They expire after
-   30 days. A manual run does not create a GitHub Release.
+   30 days. A manual run on a branch does not create a GitHub Release; a run
+   on a tag (which is how Tag release starts it) does.
 
 To prepare a release:
 
-1. Set `package.json` to the intended semantic version and merge the change to
-   `master`.
-2. Create a matching tag, such as `v0.9.0`, on that `master` commit and push it.
+1. Run **Prepare release** with the intended semantic version and merge the
+   pull request it opens (or set `package.json` by hand and merge that).
+2. Tag release creates the matching tag, such as `v0.9.0`, on that `master`
+   commit and starts Release on it.
 3. Wait for the workflow to verify the tag, rebuild and sign the packages, and
    create an unpublished [GitHub Draft Release](https://github.com/maximtop/kode-injector/releases).
 4. Download the draft assets and inspect `chrome.zip`, `edge.zip`,
