@@ -1,0 +1,68 @@
+name: Deploy stores
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Published release tag to deploy (vX.Y.Z)'
+        required: true
+        type: string
+      chrome:
+        description: 'Chrome Web Store'
+        type: boolean
+        default: false
+      firefox:
+        description: 'Firefox Add-ons'
+        type: boolean
+        default: false
+      edge:
+        description: 'Microsoft Edge Add-ons'
+        type: boolean
+        default: false
+      apple:
+        description: 'Apple App Store Connect upload'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  actions: write
+
+concurrency:
+  group: deploy-stores
+  cancel-in-progress: false
+
+jobs:
+  dispatch:
+    name: Start the selected store deployments
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch the selected deployments
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.tag }}
+          DEPLOY_CHROME: ${{ inputs.chrome }}
+          DEPLOY_FIREFOX: ${{ inputs.firefox }}
+          DEPLOY_EDGE: ${{ inputs.edge }}
+          DEPLOY_APPLE: ${{ inputs.apple }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ ! "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Tag must match vX.Y.Z: $TAG" >&2
+            exit 1
+          fi
+          started=0
+          dispatch() {
+            gh workflow run "$1" --repo "$GITHUB_REPOSITORY" --ref master -f "tag=$TAG"
+            echo "::notice::Started $1 for $TAG"
+            started=$((started + 1))
+          }
+          if [[ "$DEPLOY_CHROME" == "true" ]]; then dispatch deploy-chrome-store.yml; fi
+          if [[ "$DEPLOY_FIREFOX" == "true" ]]; then dispatch deploy-firefox-amo.yml; fi
+          if [[ "$DEPLOY_EDGE" == "true" ]]; then dispatch deploy-edge-addons.yml; fi
+          if [[ "$DEPLOY_APPLE" == "true" ]]; then dispatch deploy-apple-app-store.yml; fi
+          if [[ "$started" -eq 0 ]]; then
+            echo "No store selected; nothing dispatched." >&2
+            exit 1
+          fi
