@@ -1,15 +1,14 @@
 #!/usr/bin/env bash
-# Bumps the package version for a release and emits the branch and tag names.
+# Bumps the package version for a release and emits the version and tag.
 #
 # Inputs (environment):
 #   VERSION            next semantic version, X.Y.Z (required)
 #   PACKAGE_JSON_PATH  package.json to update (default: package.json)
 #   EXISTING_TAGS      newline-separated tags that already exist (optional)
-#   GITHUB_OUTPUT      file receiving version=, tag=, branch= (required)
+#   GITHUB_OUTPUT      file receiving version= and tag= (required)
 set -euo pipefail
 
 readonly VERSION_PATTERN='^[0-9]+\.[0-9]+\.[0-9]+$'
-readonly RELEASE_BRANCH_PREFIX='feature/release-'
 
 fail() {
     printf '%s\n' "$1" >&2
@@ -59,5 +58,4 @@ fs.writeFileSync(path, `${JSON.stringify(manifest, null, 4)}\n`);
 
 write_output version "$version"
 write_output tag "$tag"
-write_output branch "${RELEASE_BRANCH_PREFIX}${version}"
 printf 'Bumped %s from %s to %s\n' "$package_path" "$current_version" "$version"
