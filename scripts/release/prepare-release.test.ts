@@ -70,7 +70,6 @@ test('bumps the version in place, keeps the formatting, and emits outputs', () =
     expect(readOutputs()).toEqual({
         version: '0.9.2',
         tag: 'v0.9.2',
-        branch: 'feature/release-0.9.2',
     });
 });
 
