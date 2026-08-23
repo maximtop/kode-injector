@@ -45,7 +45,7 @@ if [[ "$version" == "$current_version" || "$highest" != "$version" ]]; then
 fi
 
 tag="v$version"
-if [[ -n "$existing_tags" ]] && grep -qx "$tag" <<< "$existing_tags"; then
+if [[ -n "$existing_tags" ]] && grep -qxF -- "$tag" <<< "$existing_tags"; then
     fail "Tag $tag already exists"
 fi
 

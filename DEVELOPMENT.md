@@ -609,9 +609,11 @@ version. Two workflows remove the manual edits:
    `feature/release-<version>` branch and opens a pull request titled
    “Bump version to <version>”. (One-time repository setting: Settings →
    Actions → General → *Allow GitHub Actions to create and approve pull
-   requests*; without it the workflow stops at the pull-request step with a
-   pointer to this setting. A pull request opened by the workflow token does
-   not run CI — the Release workflow validates the tagged commit instead.)
+   requests*; without it the workflow pushes the branch and stops at the
+   pull-request step with a pointer to this setting — enable it and re-run,
+   the workflow reuses its branch and any already open pull request. A pull
+   request opened by the workflow token does not run CI — the Release
+   workflow validates the tagged commit instead.)
 2. Merge that pull request. The **Tag release** workflow runs on every
    `master` push that changes `package.json`: if `v<version>` does not exist
    yet, it creates the tag on the merge commit and starts the **Release**
