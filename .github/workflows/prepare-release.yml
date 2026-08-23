@@ -1,0 +1,78 @@
+name: Prepare release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Next version (X.Y.Z). Opens a pull request that bumps package.json.'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: prepare-release
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    name: Open the version bump pull request
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out master
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          ref: master
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '24'
+
+      - name: Bump package.json
+        id: bump
+        env:
+          VERSION: ${{ inputs.version }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --tags origin
+          EXISTING_TAGS="$(git tag -l)" scripts/release/prepare-release.sh
+
+      - name: Push the branch and open the pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH: ${{ steps.bump.outputs.branch }}
+          VERSION: ${{ steps.bump.outputs.version }}
+          TAG: ${{ steps.bump.outputs.tag }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c "$BRANCH"
+          git add package.json
+          git commit -m "Bump version to $VERSION"
+          # The branch belongs to this workflow: a re-run replaces its content.
+          git push --force-with-lease="refs/heads/$BRANCH" origin "$BRANCH"
+          EXISTING_PR="$(gh pr list --repo "$GITHUB_REPOSITORY" --head "$BRANCH" --base master \
+            --state open --json url --jq '.[0].url // empty')"
+          if [[ -n "$EXISTING_PR" ]]; then
+            echo "::notice::Pull request already open: $EXISTING_PR"
+            exit 0
+          fi
+          if ! CREATE_OUTPUT="$(gh pr create --repo "$GITHUB_REPOSITORY" --base master --head "$BRANCH" \
+            --title "Bump version to $VERSION" \
+            --body "Release $VERSION. Merging this pull request lets the Tag release workflow create \`$TAG\` and start the Release workflow, which drafts the GitHub Release; publishing that draft deploys to the stores." 2>&1)"; then
+            echo "$CREATE_OUTPUT" >&2
+            if grep -q "not permitted to create or approve pull requests" <<< "$CREATE_OUTPUT"; then
+              echo "::error::GitHub Actions may not open pull requests here. Enable 'Allow GitHub Actions to create and approve pull requests' under Settings → Actions → General and re-run this workflow; the branch $BRANCH is already pushed." >&2
+            else
+              echo "::error::Could not open the pull request from branch $BRANCH; see the gh output above." >&2
+            fi
+            exit 1
+          fi
+          echo "$CREATE_OUTPUT"

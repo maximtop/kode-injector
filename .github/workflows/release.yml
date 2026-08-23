@@ -28,7 +28,6 @@ jobs:
         id: release-context
         shell: bash
         env:
-          EVENT_NAME: ${{ github.event_name }}
           RELEASE_REF: ${{ github.ref }}
         run: |
           set -euo pipefail
@@ -39,7 +38,8 @@ jobs:
           fi
 
           RELEASE_TAG="v$PACKAGE_VERSION"
-          if [[ "$EVENT_NAME" == "push" ]]; then
+          # A run on a tag (pushed or dispatched) is a release run.
+          if [[ "$RELEASE_REF" == refs/tags/* ]]; then
             RELEASE_TAG="${RELEASE_REF#refs/tags/}"
             if [[ ! "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
               echo "Release tag must match vX.Y.Z: $RELEASE_TAG" >&2
@@ -254,7 +254,7 @@ jobs:
 
   draft-release:
     name: Create draft GitHub release
-    if: github.event_name == 'push'
+    if: github.ref_type == 'tag'
     needs: [validate-release, build-extensions, build-and-sign]
     runs-on: ubuntu-latest
     permissions:
