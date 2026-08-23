@@ -134,9 +134,11 @@ and the extension, respecting Apple's `four digits.two digits.two digits`
 limits, so a retry receives a new number. The workflow removes the keychain,
 certificate, and API key even after failure.
 
-Publishing a non-prerelease GitHub Release starts the workflow. It can also be
-run manually for an existing published tag. Protect the environment with
-required reviewers if every upload should need explicit approval.
+Start the workflow for a published release tag from **Actions → Deploy
+stores** (Apple checkbox) or from **Deploy Apple App Store → Run workflow**;
+publishing the GitHub Release by itself deploys nothing. Protect the
+environment with required reviewers if every upload should need explicit
+approval.
 
 ## Resubmitting a version
 
@@ -146,10 +148,11 @@ tagged, released commit:
 
 1. Run **Actions → Start release** with the next version (for example
    `0.9.2`): it bumps `package.json` on `master`, tags it, and **Release**
-   drafts the GitHub Release — publish it. All store
-   deployments run; Chrome, Edge, and Firefox receive the same source with the
-   Safari demo compiled out. App Store Connect receives a new workflow-derived
-   build number (for example `1.57.1`) of the new version.
+   drafts the GitHub Release — publish it, then run **Deploy stores** and
+   tick the stores this release should reach (at minimum Apple). Chrome,
+   Edge, and Firefox receive the same source with the Safari demo compiled
+   out. App Store Connect receives a new workflow-derived build number (for
+   example `1.57.1`) of the new version.
 2. Run the clean-install gate below on the processed build, then select it
    for the version in App Store Connect, paste the review notes, and submit.
 

@@ -355,7 +355,9 @@ make typecheck
 ## Deployment
 
 Chrome Web Store deployment is automated by the `Deploy Chrome Web Store`
-workflow. Publishing a GitHub Release for a `vX.Y.Z` tag verifies the
+workflow, started for a published release from **Actions → Deploy stores**
+(Chrome checkbox) or from the workflow's own **Run workflow** button with the
+tag. It verifies the
 release's `chrome.zip` against `SHA256SUMS` and the tag version, uploads it to
 the store item with a pinned `go-webext`, and submits it for review with
 deferred publishing. Nothing goes live automatically: when the review verdict
@@ -438,7 +440,9 @@ The local fallback uses the `Makefile` targets below and the local
 | `make firefox_update` | Upload `firefox.zip` + `source.zip` to AMO for review |
 
 Firefox Add-ons deployment is automated by the separate `Deploy Firefox
-Add-ons` workflow. Publishing a GitHub Release verifies the release's
+Add-ons` workflow, started for a published release from **Deploy stores**
+(Firefox checkbox) or its own **Run workflow** button. It verifies the
+release's
 `firefox.zip`, `source.zip`, and `approval-notes.txt` against `SHA256SUMS`,
 the tag version, and the `kode-injector@maximtop.dev` gecko ID, then uploads
 the package and its source to the listed AMO channel with a pinned
@@ -509,8 +513,9 @@ Failure playbook:
 
 Microsoft Edge Add-ons deployment is automated by the separate `Deploy
 Microsoft Edge Add-ons` workflow for updates to an already-published product.
-Publishing a GitHub Release verifies `edge.zip` against `SHA256SUMS` and the
-tag version, uploads it with pinned `go-webext` v0.4.2 and the Edge API v1.1,
+Started for a published release from **Deploy stores** (Edge checkbox) or its
+own **Run workflow** button, it verifies `edge.zip` against `SHA256SUMS` and
+the tag version, uploads it with pinned `go-webext` v0.4.2 and the Edge API v1.1,
 then submits the draft for certification. Microsoft processes certification
 asynchronously and publishes an accepted update according to the listing's
 availability settings.
@@ -613,10 +618,13 @@ version. The **Start release** workflow does both steps:
    creates a GitHub Draft Release. The version must be higher than the
    current one and its tag must not exist yet.
 2. After checking the draft assets, publish the GitHub Release. Publishing
-   triggers the Chrome Web Store, Firefox Add-ons, Microsoft Edge Add-ons, and
-   Apple App Store deployment workflows automatically. Edge and Apple
-   automation start only after their one-time store setup and repository
-   configuration are complete.
+   deploys nothing by itself; it makes the assets and the Helper download
+   links public. Then start **Actions → Deploy stores** for the tag and tick
+   the stores this release should go to (Chrome Web Store, Firefox Add-ons,
+   Microsoft Edge Add-ons, Apple App Store Connect upload) — every deploy
+   requires the release to be published first. Edge and Apple automation
+   works only after their one-time store setup and repository configuration
+   are complete.
 3. When the store review completes, publish the approved version manually in
    the Chrome Web Store Developer Dashboard.
 
@@ -721,8 +729,8 @@ submitted, stapled, and validated. Final checks use `codesign`, `stapler`,
 stapling and extended with the three browser-extension archives before the
 draft release is created.
 
-The `Deploy Chrome Web Store` workflow runs when a GitHub Release is
-published (or manually from the Actions tab for an existing release tag). It
+The `Deploy Chrome Web Store` workflow is started from **Deploy stores** or
+its own **Run workflow** button for a published release tag. It
 re-verifies `chrome.zip` against the release `SHA256SUMS` and the tag
 version, uploads it with a pinned `go-webext`, and submits it for review with
 deferred publishing. It has read-only repository permissions and uses the

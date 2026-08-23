@@ -1,8 +1,6 @@
 name: Deploy Microsoft Edge Add-ons
 
 on:
-  release:
-    types: [published]
   workflow_dispatch:
     inputs:
       tag:

@@ -1,8 +1,6 @@
 name: Deploy Firefox Add-ons
 
 on:
-  release:
-    types: [published]
   workflow_dispatch:
     inputs:
       tag:
