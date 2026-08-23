@@ -220,6 +220,8 @@ export class InjectionsStore {
             runInAction(() => {
                 this.injections.push(injection);
             });
+            // The first rule replaces the demo card; forget its last result.
+            this.rootStore.demoStore.reset();
             this.refreshFileIssues();
             return injection;
         } catch (e) {

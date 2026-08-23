@@ -131,5 +131,21 @@
     "editor_safari_authorization_cancelled": { "message": "Folder access was not granted. The rule was not saved." },
     "editor_safari_folder_not_found": { "message": "The folder for %file% does not exist. Create it and try again." },
     "editor_safari_authorization_failed": { "message": "Could not authorize the folder for %file%. The rule was not saved." },
-    "popup_safari_native_host_unavailable": { "message": "Safari could not reach the embedded read-only Helper. Open Settings and check again." }
+    "popup_safari_native_host_unavailable": { "message": "Safari could not reach the embedded read-only Helper. Open Settings and check again." },
+    "demo_badge": { "message": "Demó" },
+    "demo_title": { "message": "Nézze meg a Kode Injectort működés közben" },
+    "demo_description": { "message": "Beépített JavaScriptet és CSS-t futtat a(z) %site% oldalon – szabály, helyi fájl és mappahozzáférés nélkül." },
+    "demo_run": { "message": "Demó futtatása" },
+    "demo_status_waiting": { "message": "A(z) %site% megnyitása, várakozás az oldalra…" },
+    "demo_status_applied": { "message": "Kész – a JavaScript és a CSS be lett injektálva a(z) %site% oldalon. Váltson arra a lapra az eredmény megtekintéséhez." },
+    "demo_paused": { "message": "Az injektálás szünetel, ezért a demó nem futtatható." },
+    "demo_error_website_access": { "message": "A Safari még nem engedélyezte a Kode Injectort a(z) %site% oldalon. Azon a lapon kattintson az eszköztár Kode Injector gombjára, engedélyezze a hozzáférést a webhelyhez, majd töltse újra az oldalt, vagy futtassa újra a demót." },
+    "demo_error_not_confirmed": { "message": "A Kode Injector nem tudta megerősíteni a demót a(z) %site% oldalon. Győződjön meg róla, hogy az oldal betöltődött és a Kode Injector engedélyezve van rajta, majd futtassa újra a demót." },
+    "demo_error_interrupted": { "message": "A demó megszakadt, vagy a lapja bezárult. Futtassa újra a demót." },
+    "demo_error_site_disabled": { "message": "A Kode Injector ki van kapcsolva a(z) %site% oldalon. Kapcsolja be azon a lapon az eszköztár Kode Injector gombjával, majd futtassa újra a demót." },
+    "demo_error_unavailable": { "message": "A demó csak addig érhető el, amíg nincsenek szabályai." },
+    "demo_error_sources": { "message": "A beépített demó tartalmát nem sikerült betölteni. Telepítse újra a Kode Injectort, és próbálja újra." },
+    "demo_error_open_failed": { "message": "A Safari nem tudta megnyitni a(z) %site% oldalt. Futtassa újra a demót." },
+    "settings_demo_title": { "message": "Beépített demó" },
+    "settings_demo_link": { "message": "Próbálja ki a beépített demót a Szabályok oldalon" }
 }

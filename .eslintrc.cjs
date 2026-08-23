@@ -43,6 +43,7 @@ module.exports = {
             files: [
                 'scripts/build/**/*.ts',
                 'scripts/locales/**/*.ts',
+                'scripts/safari/**/*.ts',
                 'tests/**/*.ts',
                 'rspack.config.ts',
             ],

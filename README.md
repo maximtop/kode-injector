@@ -63,6 +63,11 @@ remembered; Kode Injector does not ask again while the bookmark remains valid.
 The signed archive and App Store Connect upload flow is documented in
 [`safari/APP_STORE.md`](safari/APP_STORE.md).
 
+The Safari build also ships a built-in demo: while no rules exist, the Rules
+page offers **Run Demo**, which opens `https://example.com/` and applies fixed
+JavaScript and CSS bundled with the extension — no local files or folder
+access involved. The demo ends as soon as you save your first rule.
+
 Options automatically links to the package for the installed extension version
 and the current operating system and architecture. **View all downloads** opens
 the complete [GitHub Releases page](https://github.com/maximtop/kode-injector/releases)

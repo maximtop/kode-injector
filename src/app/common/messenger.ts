@@ -17,6 +17,7 @@ import type {
     PopupTab,
     RuntimeRequest,
 } from './contracts';
+import type { DemoLaunchState, RunDemoResult } from './demo-contracts';
 import { MESSAGE_TYPES } from './constants';
 
 /**
@@ -233,6 +234,20 @@ class Messenger {
      */
     setInterfaceLanguage = (language: import('./locale').LocalePreference): Promise<import('./locale').LocalePreference> => {
         return this.sendMessage(MESSAGE_TYPES.SET_INTERFACE_LANGUAGE, { language });
+    };
+
+    /**
+     * Starts the Safari built-in demo or focuses its tab.
+     */
+    runDemo = (): Promise<RunDemoResult> => {
+        return this.sendMessage(MESSAGE_TYPES.RUN_DEMO);
+    };
+
+    /**
+     * Reads the current built-in demo launch state.
+     */
+    getDemoLaunchState = (): Promise<DemoLaunchState> => {
+        return this.sendMessage(MESSAGE_TYPES.GET_DEMO_LAUNCH_STATE);
     };
 }
 

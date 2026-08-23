@@ -49,3 +49,9 @@ export const DEFAULT_BROWSER_TARGETS: BrowserTarget[] = [
     BROWSER_TARGETS.EDGE,
     BROWSER_TARGETS.FIREFOX,
 ];
+
+/**
+ * DefinePlugin key compiled to `'true'` only for the Safari build. The source
+ * reads it as the literal `process.env.KODE_INJECTOR_BUILT_IN_DEMO`.
+ */
+export const BUILT_IN_DEMO_DEFINE_KEY = 'process.env.KODE_INJECTOR_BUILT_IN_DEMO';

@@ -131,5 +131,21 @@
     "editor_safari_authorization_cancelled": { "message": "Folder access was not granted. The rule was not saved." },
     "editor_safari_folder_not_found": { "message": "The folder for %file% does not exist. Create it and try again." },
     "editor_safari_authorization_failed": { "message": "Could not authorize the folder for %file%. The rule was not saved." },
-    "popup_safari_native_host_unavailable": { "message": "Safari could not reach the embedded read-only Helper. Open Settings and check again." }
+    "popup_safari_native_host_unavailable": { "message": "Safari could not reach the embedded read-only Helper. Open Settings and check again." },
+    "demo_badge": { "message": "演示" },
+    "demo_title": { "message": "看看 Kode Injector 的实际效果" },
+    "demo_description": { "message": "在 %site% 上运行内置的 JavaScript 和 CSS——无需规则、本地文件或文件夹访问权限。" },
+    "demo_run": { "message": "运行演示" },
+    "demo_status_waiting": { "message": "正在打开 %site% 并等待页面…" },
+    "demo_status_applied": { "message": "完成——JavaScript 和 CSS 已注入 %site%。切换到该标签页查看效果。" },
+    "demo_paused": { "message": "注入已暂停，因此无法运行演示。" },
+    "demo_error_website_access": { "message": "Safari 尚未允许 Kode Injector 访问 %site%。请在该标签页中点击工具栏上的 Kode Injector 按钮，允许访问该网站，然后重新加载页面或再次运行演示。" },
+    "demo_error_not_confirmed": { "message": "Kode Injector 无法确认 %site% 上的演示。请确保页面已加载且已允许 Kode Injector 访问该页面，然后再次运行演示。" },
+    "demo_error_interrupted": { "message": "演示已中断或其标签页已关闭。请再次运行演示。" },
+    "demo_error_site_disabled": { "message": "Kode Injector 已在 %site% 上关闭。请在该标签页中通过工具栏上的 Kode Injector 按钮将其打开，然后再次运行演示。" },
+    "demo_error_unavailable": { "message": "只有在没有任何规则时才能使用演示。" },
+    "demo_error_sources": { "message": "无法加载内置演示内容。请重新安装 Kode Injector 后重试。" },
+    "demo_error_open_failed": { "message": "Safari 无法打开 %site%。请再次运行演示。" },
+    "settings_demo_title": { "message": "内置演示" },
+    "settings_demo_link": { "message": "在“规则”页面试用内置演示" }
 }

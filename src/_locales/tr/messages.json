@@ -131,5 +131,21 @@
     "editor_safari_authorization_cancelled": { "message": "Folder access was not granted. The rule was not saved." },
     "editor_safari_folder_not_found": { "message": "The folder for %file% does not exist. Create it and try again." },
     "editor_safari_authorization_failed": { "message": "Could not authorize the folder for %file%. The rule was not saved." },
-    "popup_safari_native_host_unavailable": { "message": "Safari could not reach the embedded read-only Helper. Open Settings and check again." }
+    "popup_safari_native_host_unavailable": { "message": "Safari could not reach the embedded read-only Helper. Open Settings and check again." },
+    "demo_badge": { "message": "Demo" },
+    "demo_title": { "message": "Kode Injector'ı iş başında görün" },
+    "demo_description": { "message": "%site% üzerinde yerleşik JavaScript ve CSS çalıştırır — kural, yerel dosya veya klasör erişimi gerekmez." },
+    "demo_run": { "message": "Demoyu Çalıştır" },
+    "demo_status_waiting": { "message": "%site% açılıyor ve sayfa bekleniyor…" },
+    "demo_status_applied": { "message": "Tamam — JavaScript ve CSS %site% üzerine enjekte edildi. Sonucu görmek için o sekmeye geçin." },
+    "demo_paused": { "message": "Enjeksiyonlar duraklatıldığı için demo çalışamıyor." },
+    "demo_error_website_access": { "message": "Safari henüz %site% üzerinde Kode Injector'a izin vermedi. O sekmede araç çubuğundaki Kode Injector düğmesine tıklayın, web sitesine erişime izin verin, ardından sayfayı yeniden yükleyin veya demoyu yeniden çalıştırın." },
+    "demo_error_not_confirmed": { "message": "Kode Injector, %site% üzerindeki demoyu doğrulayamadı. Sayfanın yüklendiğinden ve Kode Injector'a orada izin verildiğinden emin olun, ardından demoyu yeniden çalıştırın." },
+    "demo_error_interrupted": { "message": "Demo kesintiye uğradı veya sekmesi kapatıldı. Demoyu yeniden çalıştırın." },
+    "demo_error_site_disabled": { "message": "Kode Injector %site% için kapalı. O sekmede araç çubuğundaki Kode Injector düğmesinden açın, ardından demoyu yeniden çalıştırın." },
+    "demo_error_unavailable": { "message": "Demo yalnızca hiç kuralınız yokken kullanılabilir." },
+    "demo_error_sources": { "message": "Yerleşik demo içeriği yüklenemedi. Kode Injector'ı yeniden yükleyin ve tekrar deneyin." },
+    "demo_error_open_failed": { "message": "Safari %site% adresini açamadı. Demoyu yeniden çalıştırın." },
+    "settings_demo_title": { "message": "Yerleşik demo" },
+    "settings_demo_link": { "message": "Kurallar sayfasında yerleşik demoyu deneyin" }
 }

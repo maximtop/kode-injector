@@ -131,5 +131,21 @@
     "editor_safari_authorization_cancelled": { "message": "Folder access was not granted. The rule was not saved." },
     "editor_safari_folder_not_found": { "message": "The folder for %file% does not exist. Create it and try again." },
     "editor_safari_authorization_failed": { "message": "Could not authorize the folder for %file%. The rule was not saved." },
-    "popup_safari_native_host_unavailable": { "message": "Safari could not reach the embedded read-only Helper. Open Settings and check again." }
+    "popup_safari_native_host_unavailable": { "message": "Safari could not reach the embedded read-only Helper. Open Settings and check again." },
+    "demo_badge": { "message": "Επίδειξη" },
+    "demo_title": { "message": "Δείτε το Kode Injector σε δράση" },
+    "demo_description": { "message": "Εκτελεί ενσωματωμένα JavaScript και CSS στο %site% — χωρίς κανόνα, τοπικό αρχείο ή πρόσβαση σε φάκελο." },
+    "demo_run": { "message": "Εκτέλεση επίδειξης" },
+    "demo_status_waiting": { "message": "Άνοιγμα του %site% και αναμονή για τη σελίδα…" },
+    "demo_status_applied": { "message": "Έτοιμο — τα JavaScript και CSS εισήχθησαν στο %site%. Μεταβείτε σε αυτήν την καρτέλα για να δείτε το αποτέλεσμα." },
+    "demo_paused": { "message": "Οι εισαγωγές είναι σε παύση, επομένως η επίδειξη δεν μπορεί να εκτελεστεί." },
+    "demo_error_website_access": { "message": "Το Safari δεν έχει επιτρέψει ακόμη το Kode Injector στο %site%. Σε αυτήν την καρτέλα, κάντε κλικ στο κουμπί Kode Injector της γραμμής εργαλείων, επιτρέψτε την πρόσβαση στον ιστότοπο και μετά φορτώστε ξανά τη σελίδα ή εκτελέστε ξανά την επίδειξη." },
+    "demo_error_not_confirmed": { "message": "Το Kode Injector δεν μπόρεσε να επιβεβαιώσει την επίδειξη στο %site%. Βεβαιωθείτε ότι η σελίδα φορτώθηκε και ότι το Kode Injector επιτρέπεται σε αυτήν, και μετά εκτελέστε ξανά την επίδειξη." },
+    "demo_error_interrupted": { "message": "Η επίδειξη διακόπηκε ή η καρτέλα της έκλεισε. Εκτελέστε ξανά την επίδειξη." },
+    "demo_error_site_disabled": { "message": "Το Kode Injector είναι απενεργοποιημένο για το %site%. Ενεργοποιήστε το από το κουμπί Kode Injector της γραμμής εργαλείων σε αυτήν την καρτέλα και μετά εκτελέστε ξανά την επίδειξη." },
+    "demo_error_unavailable": { "message": "Η επίδειξη είναι διαθέσιμη μόνο όσο δεν έχετε κανόνες." },
+    "demo_error_sources": { "message": "Δεν ήταν δυνατή η φόρτωση του περιεχομένου της ενσωματωμένης επίδειξης. Επανεγκαταστήστε το Kode Injector και δοκιμάστε ξανά." },
+    "demo_error_open_failed": { "message": "Το Safari δεν μπόρεσε να ανοίξει το %site%. Εκτελέστε ξανά την επίδειξη." },
+    "settings_demo_title": { "message": "Ενσωματωμένη επίδειξη" },
+    "settings_demo_link": { "message": "Δοκιμάστε την ενσωματωμένη επίδειξη στη σελίδα Κανόνες" }
 }

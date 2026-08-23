@@ -131,5 +131,21 @@
     "editor_safari_authorization_cancelled": { "message": "Folder access was not granted. The rule was not saved." },
     "editor_safari_folder_not_found": { "message": "The folder for %file% does not exist. Create it and try again." },
     "editor_safari_authorization_failed": { "message": "Could not authorize the folder for %file%. The rule was not saved." },
-    "popup_safari_native_host_unavailable": { "message": "Safari could not reach the embedded read-only Helper. Open Settings and check again." }
+    "popup_safari_native_host_unavailable": { "message": "Safari could not reach the embedded read-only Helper. Open Settings and check again." },
+    "demo_badge": { "message": "Demo" },
+    "demo_title": { "message": "Vezi Kode Injector în acțiune" },
+    "demo_description": { "message": "Rulează JavaScript și CSS încorporate pe %site% — fără regulă, fișier local sau acces la foldere." },
+    "demo_run": { "message": "Rulează demo" },
+    "demo_status_waiting": { "message": "Se deschide %site% și se așteaptă pagina…" },
+    "demo_status_applied": { "message": "Gata — JavaScript și CSS au fost injectate pe %site%. Treci la acea filă pentru a vedea rezultatul." },
+    "demo_paused": { "message": "Injectările sunt în pauză, așa că demo-ul nu poate rula." },
+    "demo_error_website_access": { "message": "Safari nu a permis încă Kode Injector pe %site%. În acea filă, apasă butonul Kode Injector din bara de instrumente, permite accesul la site, apoi reîncarcă pagina sau rulează demo-ul din nou." },
+    "demo_error_not_confirmed": { "message": "Kode Injector nu a putut confirma demo-ul pe %site%. Asigură-te că pagina s-a încărcat și că Kode Injector este permis pe ea, apoi rulează demo-ul din nou." },
+    "demo_error_interrupted": { "message": "Demo-ul a fost întrerupt sau fila sa a fost închisă. Rulează demo-ul din nou." },
+    "demo_error_site_disabled": { "message": "Kode Injector este dezactivat pentru %site%. Activează-l din butonul Kode Injector din bara de instrumente în acea filă, apoi rulează demo-ul din nou." },
+    "demo_error_unavailable": { "message": "Demo-ul este disponibil doar cât timp nu ai reguli." },
+    "demo_error_sources": { "message": "Conținutul demo-ului încorporat nu a putut fi încărcat. Reinstalează Kode Injector și încearcă din nou." },
+    "demo_error_open_failed": { "message": "Safari nu a putut deschide %site%. Rulează demo-ul din nou." },
+    "settings_demo_title": { "message": "Demo încorporat" },
+    "settings_demo_link": { "message": "Încearcă demo-ul încorporat pe pagina Reguli" }
 }

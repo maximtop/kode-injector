@@ -5,15 +5,8 @@
 import type { Page, Worker } from '@playwright/test';
 
 import { STORAGE_KEYS } from '../../src/app/common/constants';
-import { expect, test } from './fixtures';
+import { createRule, expect, test } from './fixtures';
 
-const NEW_INJECTION_BUTTON = '[data-testid="new-injection-btn"]';
-const EDITOR_FIELD = {
-    Site: '[data-testid="editor-site"]',
-    JavaScript: '[data-testid="editor-js"]',
-    Css: '[data-testid="editor-css"]',
-} as const;
-const EDITOR_SUBMIT = '[data-testid="editor-submit"]';
 const RULE_ROW = '[data-testid="rule-row"]';
 const RULE_CHIP = '.chip';
 const INJECTED_STYLE = 'style[data-source="Kode Injector"]';
@@ -23,31 +16,6 @@ const CSS_MARKER_PROPERTY = '--kode-injector-e2e-css';
 const CSS_MARKER_VALUE = 'injected';
 const SETTLED_ATTRIBUTE = 'data-kode-injector-e2e-settled';
 const SETTLED_VALUE = 'true';
-
-/**
- * Creates an injection rule through the redesigned options UI.
- *
- * @param optionsPage Options page handle.
- * @param site Hostname entered into the editor.
- * @param jsFileUrl Optional JavaScript file URL.
- * @param cssFileUrl Optional CSS file URL.
- */
-const createRule = async (
-    optionsPage: Page,
-    site: string,
-    jsFileUrl: string | null,
-    cssFileUrl: string | null,
-): Promise<void> => {
-    await optionsPage.locator(NEW_INJECTION_BUTTON).click();
-    await optionsPage.locator(EDITOR_FIELD.Site).fill(site);
-    if (jsFileUrl) {
-        await optionsPage.locator(EDITOR_FIELD.JavaScript).fill(jsFileUrl);
-    }
-    if (cssFileUrl) {
-        await optionsPage.locator(EDITOR_FIELD.Css).fill(cssFileUrl);
-    }
-    await optionsPage.locator(EDITOR_SUBMIT).click();
-};
 
 /**
  * Reads the persisted injection count from extension storage.

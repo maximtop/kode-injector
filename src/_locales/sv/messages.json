@@ -131,5 +131,21 @@
     "editor_safari_authorization_cancelled": { "message": "Folder access was not granted. The rule was not saved." },
     "editor_safari_folder_not_found": { "message": "The folder for %file% does not exist. Create it and try again." },
     "editor_safari_authorization_failed": { "message": "Could not authorize the folder for %file%. The rule was not saved." },
-    "popup_safari_native_host_unavailable": { "message": "Safari could not reach the embedded read-only Helper. Open Settings and check again." }
+    "popup_safari_native_host_unavailable": { "message": "Safari could not reach the embedded read-only Helper. Open Settings and check again." },
+    "demo_badge": { "message": "Demo" },
+    "demo_title": { "message": "Se Kode Injector i aktion" },
+    "demo_description": { "message": "Kör inbyggd JavaScript och CSS på %site% – utan regel, lokal fil eller mappåtkomst." },
+    "demo_run": { "message": "Kör demo" },
+    "demo_status_waiting": { "message": "Öppnar %site% och väntar på sidan…" },
+    "demo_status_applied": { "message": "Klart – JavaScript och CSS injicerades på %site%. Växla till den fliken för att se resultatet." },
+    "demo_paused": { "message": "Injektioner är pausade, så demon kan inte köras." },
+    "demo_error_website_access": { "message": "Safari har inte tillåtit Kode Injector på %site% ännu. Klicka på Kode Injector-knappen i verktygsfältet i den fliken, tillåt åtkomst till webbplatsen och läs sedan in sidan igen eller kör demon igen." },
+    "demo_error_not_confirmed": { "message": "Kode Injector kunde inte bekräfta demon på %site%. Kontrollera att sidan lästes in och att Kode Injector är tillåtet där, och kör sedan demon igen." },
+    "demo_error_interrupted": { "message": "Demon avbröts eller dess flik stängdes. Kör demon igen." },
+    "demo_error_site_disabled": { "message": "Kode Injector är avstängt för %site%. Slå på det med Kode Injector-knappen i verktygsfältet i den fliken och kör sedan demon igen." },
+    "demo_error_unavailable": { "message": "Demon är bara tillgänglig så länge du inte har några regler." },
+    "demo_error_sources": { "message": "Det inbyggda demoinnehållet kunde inte läsas in. Installera om Kode Injector och försök igen." },
+    "demo_error_open_failed": { "message": "Safari kunde inte öppna %site%. Kör demon igen." },
+    "settings_demo_title": { "message": "Inbyggd demo" },
+    "settings_demo_link": { "message": "Prova den inbyggda demon på sidan Regler" }
 }

@@ -131,5 +131,21 @@
     "editor_safari_authorization_cancelled": { "message": "Folder access was not granted. The rule was not saved." },
     "editor_safari_folder_not_found": { "message": "The folder for %file% does not exist. Create it and try again." },
     "editor_safari_authorization_failed": { "message": "Could not authorize the folder for %file%. The rule was not saved." },
-    "popup_safari_native_host_unavailable": { "message": "Safari could not reach the embedded read-only Helper. Open Settings and check again." }
+    "popup_safari_native_host_unavailable": { "message": "Safari could not reach the embedded read-only Helper. Open Settings and check again." },
+    "demo_badge": { "message": "Demo" },
+    "demo_title": { "message": "Lihat Kode Injector beraksi" },
+    "demo_description": { "message": "Menjalankan JavaScript dan CSS bawaan di %site% — tanpa aturan, file lokal, atau akses folder." },
+    "demo_run": { "message": "Jalankan Demo" },
+    "demo_status_waiting": { "message": "Membuka %site% dan menunggu halaman…" },
+    "demo_status_applied": { "message": "Selesai — JavaScript dan CSS telah disuntikkan di %site%. Beralih ke tab tersebut untuk melihat hasilnya." },
+    "demo_paused": { "message": "Penyuntikan dijeda, jadi demo tidak dapat dijalankan." },
+    "demo_error_website_access": { "message": "Safari belum mengizinkan Kode Injector di %site%. Di tab tersebut, klik tombol Kode Injector pada bilah alat, izinkan akses ke situs web, lalu muat ulang halaman atau jalankan demo lagi." },
+    "demo_error_not_confirmed": { "message": "Kode Injector tidak dapat mengonfirmasi demo di %site%. Pastikan halaman telah dimuat dan Kode Injector diizinkan di sana, lalu jalankan demo lagi." },
+    "demo_error_interrupted": { "message": "Demo terputus atau tabnya ditutup. Jalankan demo lagi." },
+    "demo_error_site_disabled": { "message": "Kode Injector dimatikan untuk %site%. Nyalakan dari tombol Kode Injector pada bilah alat di tab tersebut, lalu jalankan demo lagi." },
+    "demo_error_unavailable": { "message": "Demo hanya tersedia selama Anda tidak memiliki aturan." },
+    "demo_error_sources": { "message": "Konten demo bawaan tidak dapat dimuat. Instal ulang Kode Injector dan coba lagi." },
+    "demo_error_open_failed": { "message": "Safari tidak dapat membuka %site%. Jalankan demo lagi." },
+    "settings_demo_title": { "message": "Demo bawaan" },
+    "settings_demo_link": { "message": "Coba demo bawaan di halaman Aturan" }
 }

@@ -131,5 +131,21 @@
     "editor_safari_authorization_cancelled": { "message": "Доступ к папке не предоставлен. Правило не сохранено." },
     "editor_safari_folder_not_found": { "message": "Папка для файла «%file%» не существует. Создайте папку и повторите попытку." },
     "editor_safari_authorization_failed": { "message": "Не удалось предоставить доступ к папке для файла «%file%». Правило не сохранено." },
-    "popup_safari_native_host_unavailable": { "message": "Safari не удалось подключиться к встроенному Helper только для чтения. Откройте Настройки и повторите проверку." }
+    "popup_safari_native_host_unavailable": { "message": "Safari не удалось подключиться к встроенному Helper только для чтения. Откройте Настройки и повторите проверку." },
+    "demo_badge": { "message": "Демо" },
+    "demo_title": { "message": "Посмотрите Kode Injector в действии" },
+    "demo_description": { "message": "Запускает встроенные JavaScript и CSS на %site% — без правила, локальных файлов и доступа к папкам." },
+    "demo_run": { "message": "Запустить демо" },
+    "demo_status_waiting": { "message": "Открываем %site% и ждём загрузку страницы…" },
+    "demo_status_applied": { "message": "Готово — JavaScript и CSS внедрены на %site%. Переключитесь на эту вкладку, чтобы увидеть результат." },
+    "demo_paused": { "message": "Вставка кода приостановлена, поэтому демо не может запуститься." },
+    "demo_error_website_access": { "message": "Safari ещё не разрешил Kode Injector доступ к %site%. В этой вкладке нажмите кнопку Kode Injector на панели инструментов, разрешите доступ к сайту, затем перезагрузите страницу или запустите демо снова." },
+    "demo_error_not_confirmed": { "message": "Kode Injector не смог подтвердить демо на %site%. Убедитесь, что страница загрузилась и Kode Injector разрешён на ней, затем запустите демо снова." },
+    "demo_error_interrupted": { "message": "Демо было прервано или его вкладка закрыта. Запустите демо снова." },
+    "demo_error_site_disabled": { "message": "Kode Injector выключен для %site%. Включите его через кнопку Kode Injector на панели инструментов в этой вкладке и запустите демо снова." },
+    "demo_error_unavailable": { "message": "Демо доступно, только пока у вас нет правил." },
+    "demo_error_sources": { "message": "Не удалось загрузить встроенное содержимое демо. Переустановите Kode Injector и попробуйте снова." },
+    "demo_error_open_failed": { "message": "Safari не смог открыть %site%. Запустите демо снова." },
+    "settings_demo_title": { "message": "Встроенное демо" },
+    "settings_demo_link": { "message": "Попробовать встроенное демо на странице «Правила»" }
 }

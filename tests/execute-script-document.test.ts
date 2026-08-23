@@ -86,3 +86,15 @@ test('executes JavaScript when the request still belongs to the current document
         textContent: 'window.injected = true;',
     }));
 });
+
+test('reports whether the browser accepted the injection', async () => {
+    await expect(executeScript('window.injected = true;', 7, currentDocumentToken))
+        .resolves.toBe(true);
+
+    vi.mocked(chrome.scripting.executeScript).mockRejectedValueOnce(new Error('no tab'));
+    await expect(executeScript('window.injected = true;', 7, currentDocumentToken))
+        .resolves.toBe(false);
+
+    await expect(executeScript('window.injected = true;', undefined, currentDocumentToken))
+        .resolves.toBe(false);
+});

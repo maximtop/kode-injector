@@ -1,0 +1,28 @@
+/*
+ * Kode Injector built-in demo: CSS applied to https://example.com.
+ * Fixed product content shipped with the Safari extension.
+ */
+
+:root {
+    --kode-injector-demo-css: applied;
+}
+
+body {
+    background: #e6f6f1 !important;
+    color: #123b32 !important;
+}
+
+h1 {
+    color: #007c65 !important;
+}
+
+body::before {
+    content: "Kode Injector demo — this banner and the green background are injected CSS";
+    display: block;
+    margin: 0 0 16px;
+    padding: 10px 16px;
+    border-radius: 8px;
+    background: #00a485;
+    color: #ffffff;
+    font: 600 14px/1.4 system-ui, -apple-system, sans-serif;
+}

@@ -9,3 +9,7 @@
 "authorization.button" = "Разрешить";
 "authorization.message_format" = "Разрешите доступ только для чтения к папке «%@».";
 "authorization.validation_format" = "Разрешите доступ к папке «%@», указанной Kode Injector.";
+"demo.button" = "Попробовать демо";
+"demo.explanation" = "В Kode Injector встроено демо: оно вставляет JavaScript и CSS на example.com без локальных файлов и доступа к папкам. Включите расширение, затем откройте «Правила» в Safari и нажмите «Запустить демо».";
+"demo.status.disabled" = "Сначала включите расширение Safari, затем запустите демо снова.";
+"demo.status.opening" = "Открываем страницу «Правила» Kode Injector в Safari… Если она не появилась, нажмите кнопку Kode Injector на панели инструментов Safari и выберите «Настройки».";

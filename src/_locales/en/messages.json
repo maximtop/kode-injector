@@ -530,5 +530,69 @@
     "popup_safari_native_host_unavailable": {
         "message": "Safari could not reach the embedded read-only Helper. Open Settings and check again.",
         "description": "Popup recovery message when Safari cannot reach the Helper embedded in its app extension."
+    },
+    "demo_badge": {
+        "message": "Demo",
+        "description": "Tag on the Safari built-in demo card shown when no rules exist."
+    },
+    "demo_title": {
+        "message": "See Kode Injector in action",
+        "description": "Title of the Safari built-in demo card."
+    },
+    "demo_description": {
+        "message": "Runs built-in JavaScript and CSS on %site% — no rule, local file, or folder access needed.",
+        "description": "Description of the Safari built-in demo card. %site% is the fixed demo hostname."
+    },
+    "demo_run": {
+        "message": "Run Demo",
+        "description": "Button that opens the demo site and applies the built-in JavaScript and CSS."
+    },
+    "demo_status_waiting": {
+        "message": "Opening %site% and waiting for the page…",
+        "description": "Demo status while the demo tab is opening or loading. %site% is the fixed demo hostname."
+    },
+    "demo_status_applied": {
+        "message": "Done — JavaScript and CSS were injected on %site%. Switch to that tab to see the result.",
+        "description": "Demo status after both sources were applied. %site% is the fixed demo hostname."
+    },
+    "demo_paused": {
+        "message": "Injections are paused, so the demo can't run.",
+        "description": "Demo status shown while injecting is globally paused; accompanied by the Resume action."
+    },
+    "demo_error_website_access": {
+        "message": "Safari hasn't allowed Kode Injector on %site% yet. In that tab, click the Kode Injector toolbar button, allow access to the website, then reload the page or run the demo again.",
+        "description": "Demo failure when Safari website access for the demo site is missing. %site% is the fixed demo hostname."
+    },
+    "demo_error_not_confirmed": {
+        "message": "Kode Injector couldn't confirm the demo on %site%. Make sure the page loaded and Kode Injector is allowed on it, then run the demo again.",
+        "description": "Demo failure when the page did not report a complete JavaScript and CSS result in time. %site% is the fixed demo hostname."
+    },
+    "demo_error_interrupted": {
+        "message": "The demo was interrupted or its tab was closed. Run the demo again.",
+        "description": "Demo failure when the demo tab closed or the launch was lost before completion."
+    },
+    "demo_error_site_disabled": {
+        "message": "Kode Injector is turned off for %site%. Turn it on from the Kode Injector toolbar button on that tab, then run the demo again.",
+        "description": "Demo failure when the user disabled injecting on the demo site through the popup. %site% is the fixed demo hostname."
+    },
+    "demo_error_unavailable": {
+        "message": "The demo is available only while you have no rules.",
+        "description": "Demo failure when a custom rule exists."
+    },
+    "demo_error_sources": {
+        "message": "The built-in demo content couldn't be loaded. Reinstall Kode Injector and try again.",
+        "description": "Demo failure when the bundled demo JavaScript or CSS is missing or invalid."
+    },
+    "demo_error_open_failed": {
+        "message": "Safari couldn't open %site%. Run the demo again.",
+        "description": "Demo failure when the demo tab could not be opened. %site% is the fixed demo hostname."
+    },
+    "settings_demo_title": {
+        "message": "Built-in demo",
+        "description": "Title of the Safari settings group linking to the Rules demo."
+    },
+    "settings_demo_link": {
+        "message": "Try the built-in demo on the Rules page",
+        "description": "Settings link that opens the Rules tab with the demo card."
     }
 }

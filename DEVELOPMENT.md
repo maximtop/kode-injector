@@ -49,7 +49,7 @@ pnpm lint      # run ESLint over source, scripts, and the Rspack config
 pnpm typecheck # validate TypeScript and TSX without emitting files
 pnpm test      # run build-helper and localization tests
 pnpm exec playwright install chromium # one-time local Chromium installation
-pnpm test:e2e  # build dev Chrome and run the headless core injection E2E
+pnpm test:e2e  # build dev Chrome + Safari resources and run the headless E2E suites
 pnpm locales:validate # validate all locale catalogs and UI usage
 pnpm validate  # run the complete local quality gate
 pnpm native:test # run Go unit and subprocess tests with race detection
@@ -104,6 +104,14 @@ release instructions are in [`safari/APP_STORE.md`](safari/APP_STORE.md).
 6. Save the rule and authorize the exact folder shown by macOS. Selecting a
    different folder is rejected. Reload the printed localhost page to verify
    both JavaScript and CSS injection.
+7. On a clean profile with no rules, Rules shows the **Demo** card. **Run
+   Demo** opens `https://example.com/` in one tab and applies the fixed
+   `demo/example-com.js` and `demo/example-com.css` shipped only in the Safari
+   build; allow website access if Safari asks. Adding the first rule ends the
+   demo. The launch is kept in `storage.session`, so it survives background
+   unloads until the tab closes or Safari quits. The containing app's
+   **Try Demo** button opens Safari's extension settings while the extension
+   is disabled and otherwise asks the running background to open Rules.
 
 Safari requests folder access only from the explicit Add/Save action. A
 background page load never opens a picker. Read-only security-scoped bookmarks
@@ -218,16 +226,24 @@ pnpm dev chrome
 pnpm test:e2e:run --headed
 ```
 
-The test creates an isolated temporary profile, loads `build/dev/chrome`,
-enables file access only through Chromium's automation switch, adds one rule
-through the real Options UI, and verifies real local JavaScript and CSS on a
-matching loopback hostname. It also verifies that a second hostname is not
-modified. It never opens a visible window, uses an installed browser profile,
-or requires Kode Injector Helper.
+`pnpm test:e2e` builds `build/dev/chrome` and the Safari WebExtension
+resources in `build/dev/safari`, then runs two suites in an isolated temporary
+profile: the core injection test loads the Chrome build, enables file access
+only through Chromium's automation switch, adds one rule through the real
+Options UI, and verifies real local JavaScript and CSS on a matching loopback
+hostname (and nothing on a second hostname); the built-in demo test loads the
+Safari-built resources into the same headless Chromium, serves
+`https://example.com/` locally through Playwright routing, and verifies one
+demo tab, one JavaScript and one CSS effect per document across 20 reloads,
+no effect in unrelated tabs, the Settings link, rule-based deactivation, and
+the paused state, plus the absence of the demo card in the Chrome build. It
+never opens a visible window, uses an installed browser profile, or requires
+Kode Injector Helper.
 
-`pnpm test:e2e:run` skips the build and is intended for CI. Set
-`KODE_INJECTOR_E2E_EXTENSION_PATH=build/release/chrome` to test an existing
-release candidate. `pnpm validate` remains browser-independent; GitHub CI and
+`pnpm test:e2e:run` skips the builds and is intended for CI. Set
+`KODE_INJECTOR_E2E_EXTENSION_PATH=build/release/chrome` and
+`KODE_INJECTOR_E2E_SAFARI_EXTENSION_PATH=build/release/safari` to test
+release candidates. `pnpm validate` remains browser-independent; GitHub CI and
 the Release workflow install Chromium and run E2E explicitly.
 
 Firefox/Native Host, Edge-specific packaging, popup controls, localization,

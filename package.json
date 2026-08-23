@@ -23,7 +23,7 @@
         "release": "CHANNEL_ENV=release tsx scripts/build/bundle.ts",
         "test": "vitest run",
         "test:build": "vitest run scripts/build",
-        "test:e2e": "pnpm dev chrome && pnpm test:e2e:run",
+        "test:e2e": "pnpm dev chrome && pnpm dev safari && pnpm test:e2e:run",
         "test:e2e:run": "playwright test --config tests/e2e/playwright.config.ts",
         "test:locales": "vitest run tests",
         "locales:validate": "tsx scripts/locales/validate.ts",

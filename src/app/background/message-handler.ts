@@ -25,6 +25,8 @@ import { app } from './app';
 import { gateMessageHandler } from './message-readiness';
 import { localSourceAccess } from './local-source-access';
 import { isDocumentToken } from '../common/document-injection';
+import { demoLaunch } from './demo-launch';
+import type { DemoLaunchState, RunDemoResult } from '../common/demo-contracts';
 
 /**
  * Values returned by background runtime message handlers.
@@ -39,6 +41,8 @@ type MessageResponse =
     | LocalePreference
     | LocalSourceAccessMethod
     | LocalSourceAccessState
+    | RunDemoResult
+    | DemoLaunchState
     | null
     | void;
 
@@ -85,7 +89,12 @@ class MessageHandler {
             }
             case MESSAGE_TYPES.ADD_INJECTION: {
                 const { injectionData, enabled } = data;
-                return injections.addInjection(injectionData, enabled ?? true);
+                const created = injections.addInjection(injectionData, enabled ?? true);
+                if (created) {
+                    // The first custom rule ends any demo launch (FR-015).
+                    demoLaunch.invalidate();
+                }
+                return created;
             }
             case MESSAGE_TYPES.UPDATE_INJECTION: {
                 const { id, injectionData } = data;
@@ -139,6 +148,14 @@ class MessageHandler {
                 }
                 const senderUrl = sender.url || '';
                 const senderTabId = sender.tab?.id;
+                const demoResponse = await demoLaunch.handleDocumentRequest(
+                    senderUrl,
+                    senderTabId,
+                    documentToken,
+                );
+                if (demoResponse !== undefined) {
+                    return demoResponse;
+                }
                 return injections.getPageInjections(
                     senderUrl,
                     senderTabId,
@@ -172,6 +189,12 @@ class MessageHandler {
                 // The broadcast targets UI contexts, but the background receives it too.
                 // No background state change or response is required.
                 return undefined;
+            case MESSAGE_TYPES.RUN_DEMO: {
+                return demoLaunch.run();
+            }
+            case MESSAGE_TYPES.GET_DEMO_LAUNCH_STATE: {
+                return demoLaunch.getState();
+            }
             default: {
                 const unknownMessage = message as { type: string };
                 throw new Error(`Unknown message type ${unknownMessage.type}`);
