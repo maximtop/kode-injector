@@ -729,6 +729,10 @@ submitted, stapled, and validated. Final checks use `codesign`, `stapler`,
 stapling and extended with the three browser-extension archives before the
 draft release is created.
 
+The `Deploy stores` workflow calls the selected store deployments as reusable
+workflows. Its run waits for every selected store and reports their individual
+results without requiring permission to dispatch additional Actions runs.
+
 The `Deploy Chrome Web Store` workflow is started from **Deploy stores** or
 its own **Run workflow** button for a published release tag. It
 re-verifies `chrome.zip` against the release `SHA256SUMS` and the tag

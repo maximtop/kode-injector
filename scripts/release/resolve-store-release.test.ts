@@ -81,6 +81,17 @@ test('resolves a published release selected by a manual deployment', () => {
     );
 });
 
+test('resolves a published release selected by a reusable workflow', () => {
+    const result = runResolver({ EVENT_NAME: 'workflow_call' });
+
+    expect(result.status).toBe(0);
+    expect(readOutputs()).toEqual([
+        'deploy=true',
+        'tag=v1.2.3',
+        'version=1.2.3',
+    ]);
+});
+
 test('skips an unsupported tag received from a release event', () => {
     const result = runResolver({
         EVENT_NAME: 'release',

@@ -10,7 +10,7 @@ inputs:
     required: false
     default: ''
   input-tag:
-    description: Tag selected for a manual workflow dispatch
+    description: Tag selected by a manual or reusable workflow
     required: false
     default: ''
 
