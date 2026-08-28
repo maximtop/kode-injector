@@ -14,7 +14,6 @@ permissions:
 jobs:
   deploy:
     name: Upload and submit for review
-    if: github.event_name == 'workflow_dispatch' || !github.event.release.prerelease
     runs-on: ubuntu-latest
     concurrency:
       group: chrome-store-deploy

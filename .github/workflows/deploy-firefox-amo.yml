@@ -14,7 +14,6 @@ permissions:
 jobs:
   deploy:
     name: Upload and submit for review
-    if: github.event_name == 'workflow_dispatch' || !github.event.release.prerelease
     runs-on: ubuntu-latest
     # go-webext bounds the AMO validation wait at 20 minutes; this only
     # catches a run that hangs outside it.

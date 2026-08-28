@@ -14,7 +14,6 @@ permissions:
 jobs:
   deploy:
     name: Upload and submit for certification
-    if: github.event_name == 'workflow_dispatch' || !github.event.release.prerelease
     runs-on: ubuntu-latest
     timeout-minutes: 15
     concurrency:
