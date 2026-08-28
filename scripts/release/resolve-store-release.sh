@@ -2,7 +2,6 @@
 set -euo pipefail
 
 readonly EVENT_RELEASE='release'
-readonly EVENT_WORKFLOW_CALL='workflow_call'
 readonly EVENT_WORKFLOW_DISPATCH='workflow_dispatch'
 readonly RELEASE_TAG_PATTERN='^v[0-9]+\.[0-9]+\.[0-9]+$'
 
@@ -20,7 +19,7 @@ repository=${GITHUB_REPOSITORY:?GITHUB_REPOSITORY is required}
 : "${GITHUB_OUTPUT:?GITHUB_OUTPUT is required}"
 
 case "$event_name" in
-    "$EVENT_WORKFLOW_CALL" | "$EVENT_WORKFLOW_DISPATCH")
+    "$EVENT_WORKFLOW_DISPATCH")
         release_tag=${INPUT_TAG:-}
         if [[ ! "$release_tag" =~ $RELEASE_TAG_PATTERN ]]; then
             fail "Release tag must match vX.Y.Z: $release_tag"

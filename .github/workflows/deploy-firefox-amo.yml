@@ -1,12 +1,6 @@
 name: Deploy Firefox Add-ons
 
 on:
-  workflow_call:
-    inputs:
-      tag:
-        description: 'Published release tag to deploy (vX.Y.Z)'
-        required: true
-        type: string
   workflow_dispatch:
     inputs:
       tag:

@@ -1,12 +1,6 @@
 name: Deploy Chrome Web Store
 
 on:
-  workflow_call:
-    inputs:
-      tag:
-        description: 'Published release tag to deploy (vX.Y.Z)'
-        required: true
-        type: string
   workflow_dispatch:
     inputs:
       tag:

@@ -1,12 +1,6 @@
 name: Deploy Apple App Store
 
 on:
-  workflow_call:
-    inputs:
-      tag:
-        description: 'Published release tag to upload (vX.Y.Z)'
-        required: true
-        type: string
   workflow_dispatch:
     inputs:
       tag:

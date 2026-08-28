@@ -354,22 +354,15 @@ make typecheck
 
 ## Deployment
 
-Chrome Web Store deployment is automated by the `Deploy Chrome Web Store`
-workflow, started for a published release from **Actions → Deploy stores**
-(Chrome checkbox) or from the workflow's own **Run workflow** button with the
-tag. It verifies the
-release's `chrome.zip` against `SHA256SUMS` and the tag version, uploads it to
-the store item with a pinned `go-webext`, and submits it for review with
+Chrome Web Store deployment is started manually from **Actions → Deploy Chrome
+Web Store → Run workflow** with a published release tag. The workflow verifies
+the release's `chrome.zip` against `SHA256SUMS` and the tag version, uploads it
+to the store item with a pinned `go-webext`, and submits it for review with
 deferred publishing. Nothing goes live automatically: when the review verdict
 email arrives, publish the approved version manually in the Chrome Web Store
 Developer Dashboard. An approved staged submission expires back to a draft
-after about 30 days if left unpublished.
-
-The workflow can also be started manually from the Actions tab for an
-already-published release tag. That is required for releases whose tag
-predates the workflow (their `published` event runs the workflow tree at the
-tagged commit, which lacks it) and for re-deploying after a staged submission
-expired.
+after about 30 days if left unpublished; re-run the workflow for the same tag
+to submit it again.
 
 Configure these sensitive repository secrets:
 
@@ -439,17 +432,15 @@ The local fallback uses the `Makefile` targets below and the local
 | `make firefox_status` | Check the status of the AMO listing |
 | `make firefox_update` | Upload `firefox.zip` + `source.zip` to AMO for review |
 
-Firefox Add-ons deployment is automated by the separate `Deploy Firefox
-Add-ons` workflow, started for a published release from **Deploy stores**
-(Firefox checkbox) or its own **Run workflow** button. It verifies the
-release's
-`firefox.zip`, `source.zip`, and `approval-notes.txt` against `SHA256SUMS`,
-the tag version, and the `kode-injector@maximtop.dev` gecko ID, then uploads
-the package and its source to the listed AMO channel with a pinned
+Firefox Add-ons deployment is started manually from **Actions → Deploy Firefox
+Add-ons → Run workflow** with a published release tag. It verifies the
+release's `firefox.zip`, `source.zip`, and `approval-notes.txt` against
+`SHA256SUMS`, the tag version, and the `kode-injector@maximtop.dev` gecko ID,
+then uploads the package and its source to the listed AMO channel with a pinned
 `go-webext`, passing the notes through the AMO `approval_notes` field. The
-workflow only submits: Mozilla reviews and signs asynchronously, from hours
-to days, and publishes the version automatically once approved, so there is
-no publish step on our side. It keeps its own concurrency group and runs
+workflow only submits: Mozilla reviews and signs asynchronously, from hours to
+days, and publishes the version automatically once approved, so there is no
+publish step on our side. It keeps its own concurrency group and runs
 independently of the Chrome deployment.
 
 AMO requires the source archive because the release bundle is minified.
@@ -511,14 +502,13 @@ Failure playbook:
   arrives by email days after a green run. Address the reasons and ship a
   fixed version through a new release.
 
-Microsoft Edge Add-ons deployment is automated by the separate `Deploy
-Microsoft Edge Add-ons` workflow for updates to an already-published product.
-Started for a published release from **Deploy stores** (Edge checkbox) or its
-own **Run workflow** button, it verifies `edge.zip` against `SHA256SUMS` and
-the tag version, uploads it with pinned `go-webext` v0.4.2 and the Edge API v1.1,
-then submits the draft for certification. Microsoft processes certification
-asynchronously and publishes an accepted update according to the listing's
-availability settings.
+Microsoft Edge Add-ons deployment is started manually from **Actions → Deploy
+Microsoft Edge Add-ons → Run workflow** with a published release tag. For
+updates to an already-published product, it verifies `edge.zip` against
+`SHA256SUMS` and the tag version, uploads it with pinned `go-webext` v0.4.2 and
+the Edge API v1.1, then submits the draft for certification. Microsoft
+processes certification asynchronously and publishes an accepted update
+according to the listing's availability settings.
 
 The Microsoft API cannot create a product or update its listing metadata. The
 first release must therefore be completed in Partner Center:
@@ -589,11 +579,11 @@ Edge failure playbook:
   email after the workflow finishes. Address the feedback, then submit a fixed
   release or metadata update.
 
-Mac App Store uploads are automated by the separate `Deploy Apple App Store`
-workflow. It runs on the Xcode 26 macOS image, builds a universal signed
-archive directly from the published tag, verifies its nested layout and
-metadata, then uploads the build to App Store Connect. Uploading does not
-submit a version for App Review.
+Mac App Store uploads are started manually from **Actions → Deploy Apple App
+Store → Run workflow** with a published release tag. The workflow runs on the
+Xcode 26 macOS image, builds a universal signed archive directly from the tag,
+verifies its nested layout and metadata, then uploads the build to App Store
+Connect. Uploading does not submit a version for App Review.
 
 The one-time app record, explicit identifiers, listing and privacy metadata,
 Apple Distribution certificate, protected GitHub Environment, and API-key
@@ -619,12 +609,11 @@ version. The **Start release** workflow does both steps:
    current one and its tag must not exist yet.
 2. After checking the draft assets, publish the GitHub Release. Publishing
    deploys nothing by itself; it makes the assets and the Helper download
-   links public. Then start **Actions → Deploy stores** for the tag and tick
-   the stores this release should go to (Chrome Web Store, Firefox Add-ons,
-   Microsoft Edge Add-ons, Apple App Store Connect upload) — every deploy
-   requires the release to be published first. Edge and Apple automation
-   works only after their one-time store setup and repository configuration
-   are complete.
+   links public. Start each desired store workflow independently, immediately
+   or later, with the same published tag: `Deploy Chrome Web Store`, `Deploy
+   Firefox Add-ons`, `Deploy Microsoft Edge Add-ons`, and `Deploy Apple App
+   Store`. Edge and Apple work only after their one-time store setup and
+   repository configuration are complete.
 3. When the store review completes, publish the approved version manually in
    the Chrome Web Store Developer Dashboard.
 
@@ -729,17 +718,16 @@ submitted, stapled, and validated. Final checks use `codesign`, `stapler`,
 stapling and extended with the three browser-extension archives before the
 draft release is created.
 
-The `Deploy stores` workflow calls the selected store deployments as reusable
-workflows. Its run waits for every selected store and reports their individual
-results without requiring permission to dispatch additional Actions runs.
+The four store workflows are dispatched independently from their own **Run
+workflow** buttons with a published release tag. They can receive the same
+release at different times and use separate concurrency groups, so deploying
+one store does not start or block an unrelated store.
 
-The `Deploy Chrome Web Store` workflow is started from **Deploy stores** or
-its own **Run workflow** button for a published release tag. It
-re-verifies `chrome.zip` against the release `SHA256SUMS` and the tag
-version, uploads it with a pinned `go-webext`, and submits it for review with
-deferred publishing. It has read-only repository permissions and uses the
-`CHROME_*` secrets and variable listed in the Deployment section; deployments
-are serialized through a concurrency group so runs never interleave.
+The `Deploy Chrome Web Store` workflow re-verifies `chrome.zip` against the
+release `SHA256SUMS` and the tag version, uploads it with a pinned `go-webext`,
+and submits it for review with deferred publishing. It has read-only repository
+permissions and uses the `CHROME_*` secrets and variable listed in the
+Deployment section.
 
 The `Deploy Microsoft Edge Add-ons` workflow applies the same release-asset
 and version checks to `edge.zip`, uploads it to the configured existing
