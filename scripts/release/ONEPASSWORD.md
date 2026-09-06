@@ -7,7 +7,11 @@ signing flows.
 
 ## Item to create
 
-Create one item named `kode-injector-release`. Add the sections and fields below.
+Create one item named `kode-injector-release` for the project-specific fields
+and add the sections and fields below. Account-level store credentials are
+shared by every extension and live in separate items with the same field
+labels: `chrome-web-store-api`, `edge-addons-api`, and `firefox-amo-api` (see
+the store sections).
 Use concealed fields for passwords, private keys, tokens, API keys, and base64
 certificate data. IDs and product metadata can be regular text fields.
 
@@ -44,26 +48,39 @@ Certificates, Identifiers & Profiles so CI can download the named profiles.
 ### Chrome Web Store
 
 - `CHROME_APP_ID`
-- `CHROME_CLIENT_ID`
-- `CHROME_CLIENT_SECRET`
-- `CHROME_REFRESH_TOKEN`
-- `CHROME_PUBLISHER_ID`
+
+Only the item ID is specific to this extension. `CHROME_CLIENT_ID`,
+`CHROME_CLIENT_SECRET`, `CHROME_REFRESH_TOKEN`, and `CHROME_PUBLISHER_ID`
+belong to the Google account and are shared by every extension it publishes,
+so they live in the separate `chrome-web-store-api` item with the same field
+labels; this section keeps only a `CHROME_CREDENTIALS` note pointing there.
+Rotate them in that item and push the new value to every repository listed in
+its notes.
 
 ### Edge Add-ons
 
 - `EDGE_PRODUCT_ID`
-- `EDGE_CLIENT_ID`
-- `EDGE_API_KEY`
 - `KODE_INJECTOR_EDGE_ID`
 
 `EDGE_PRODUCT_ID` identifies the Partner Center product. `KODE_INJECTOR_EDGE_ID`
 is the 32-letter installed extension ID and remains optional until the listing
 has assigned it.
 
+`EDGE_CLIENT_ID` and `EDGE_API_KEY` belong to the Partner Center account and are
+shared by every extension it publishes, so they live in the separate
+`edge-addons-api` item; this section keeps only an `EDGE_CREDENTIALS` note
+pointing there. Take the Client ID from the API-key experience of the Publish
+API page: the Client ID of the retired v1 experience, stored here until
+2026-09-06, is rejected with `403 Client ID is Invalid`. The API key expires;
+its name and expiry date are recorded in that item.
+
 ### Firefox AMO
 
-- `FIREFOX_CLIENT_ID`
-- `FIREFOX_CLIENT_SECRET`
+`FIREFOX_CLIENT_ID` and `FIREFOX_CLIENT_SECRET` belong to the Mozilla account
+and are shared by every add-on it publishes, so they live in the separate
+`firefox-amo-api` item; this section keeps only a `FIREFOX_CREDENTIALS` note
+pointing there. Regenerating the AMO key invalidates the previous one for every
+repository at once, so update all of them together.
 
 The Firefox extension ID is fixed in source and is not a credential field.
 
