@@ -1,138 +1,247 @@
 name: Release
 
+# One pipeline, two entry points:
+# - Pushing a tag vX.Y.Z that matches package.json runs the quality checks,
+#   builds the extension archives, verifies them, and publishes a GitHub
+#   Release with the store archives, the source archive, and SHA-256
+#   checksums.
+# - Manual dispatch runs the same pipeline as a dry run: it builds, verifies,
+#   and uploads workflow artifacts, but publishes nothing.
+# Store submissions are separate manual workflows (deploy-*.yml) that take a
+# published release; nothing is sent to a store from here.
+# GitHub Releases are created only here: a release created by hand for a new
+# tag makes the tag run fail before anything is built.
+
 on:
-  workflow_dispatch:
   push:
-    tags: ['v*.*.*']
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
 
 permissions:
   contents: read
 
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  # Repository specifics; the rest of this workflow is identical across the
+  # extension repositories.
+  ASSET_PREFIX: kode-injector
+  RELEASE_TITLE: Kode Injector
+  BUILD_DIR: build/release
+
 jobs:
-  validate-release:
-    name: Validate release context
+  release:
+    name: Build artifacts and publish release
     runs-on: ubuntu-latest
-    outputs:
-      version: ${{ steps.release-context.outputs.version }}
-      tag: ${{ steps.release-context.outputs.tag }}
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    env:
+      # Every run that is not a tag push is a dry run.
+      DRY_RUN: ${{ github.event_name != 'push' }}
     steps:
       - name: Check out repository
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          # Full history brings refs/remotes/origin/master along, so the
+          # ancestry check below needs no credentialed fetch.
           fetch-depth: 0
-      - name: Set up Node.js
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-        with:
-          node-version: '24'
-      - name: Validate version and tagged commit
-        id: release-context
-        shell: bash
+          persist-credentials: false
+
+      - name: Validate version, tag, and release state
+        id: context
         env:
-          RELEASE_REF: ${{ github.ref }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          PACKAGE_VERSION="$(node -p "require('./package.json').version")"
+          PACKAGE_VERSION="$(jq -er '.version' package.json)"
           if [[ ! "$PACKAGE_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             echo "package.json version is not semantic: $PACKAGE_VERSION" >&2
             exit 1
           fi
 
-          RELEASE_TAG="v$PACKAGE_VERSION"
-          # A run on a tag (pushed or dispatched) is a release run.
-          if [[ "$RELEASE_REF" == refs/tags/* ]]; then
-            RELEASE_TAG="${RELEASE_REF#refs/tags/}"
-            if [[ ! "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-              echo "Release tag must match vX.Y.Z: $RELEASE_TAG" >&2
+          if [[ "$DRY_RUN" == "false" ]]; then
+            if [[ "$GITHUB_REF_NAME" != "v$PACKAGE_VERSION" ]]; then
+              echo "Tag $GITHUB_REF_NAME does not match package.json ($PACKAGE_VERSION)" >&2
               exit 1
             fi
-            if [[ "$RELEASE_TAG" != "v$PACKAGE_VERSION" ]]; then
-              echo "Tag $RELEASE_TAG does not match package version $PACKAGE_VERSION" >&2
-              exit 1
-            fi
-
-            git fetch origin master
-            TAG_COMMIT="$(git rev-parse "$RELEASE_TAG^{commit}")"
-            if ! git merge-base --is-ancestor "$TAG_COMMIT" origin/master; then
+            if ! git merge-base --is-ancestor HEAD origin/master; then
               echo "Tagged commit must be reachable from master" >&2
+              exit 1
+            fi
+            # gh exits non-zero when no release exists for the tag; that is
+            # the normal case. Any other failure must not pass as "absent".
+            RELEASE_STATE=""
+            if ! RELEASE_STATE="$(gh release view "$GITHUB_REF_NAME" \
+              --repo "$GITHUB_REPOSITORY" --json isDraft \
+              --jq 'if .isDraft then "draft" else "published" end' \
+              2>"$RUNNER_TEMP/release-view.err")"; then
+              if ! grep -qF "release not found" "$RUNNER_TEMP/release-view.err"; then
+                cat "$RUNNER_TEMP/release-view.err" >&2
+                exit 1
+              fi
+            fi
+            if [[ "$RELEASE_STATE" == "draft" ]]; then
+              echo "A draft release for $GITHUB_REF_NAME exists" >&2
+              echo "Delete it with: gh release delete $GITHUB_REF_NAME --yes" >&2
+              exit 1
+            elif [[ "$RELEASE_STATE" == "published" ]]; then
+              echo "Release $GITHUB_REF_NAME is already published" >&2
+              echo "Deploy it with the deploy-*.yml workflows; to rebuild it," \
+                "delete it (gh release delete --yes) and re-run" >&2
               exit 1
             fi
           fi
 
           echo "version=$PACKAGE_VERSION" >> "$GITHUB_OUTPUT"
-          echo "tag=$RELEASE_TAG" >> "$GITHUB_OUTPUT"
+          echo "prefix=$ASSET_PREFIX-$PACKAGE_VERSION" >> "$GITHUB_OUTPUT"
 
-  build-extensions:
-    name: Build extension archives
-    needs: validate-release
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    env:
-      KODE_INJECTOR_EDGE_ID: ${{ vars.KODE_INJECTOR_EDGE_ID }}
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - name: Set up pnpm
+        uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
       - name: Set up Node.js
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          node-version: '24'
+          node-version-file: package.json
+          cache: pnpm
       - name: Install dependencies
-        run: |
-          corepack enable
-          pnpm install --frozen-lockfile
-      - name: Build release extensions
+        run: pnpm install --frozen-lockfile
+
+      - name: Run quality checks
+        run: pnpm check
+
+      - name: Build release archives
         run: pnpm release
-      - name: Build Safari release resources
-        run: pnpm release safari
-      - name: Install Playwright Chromium
-        run: pnpm exec playwright install --with-deps chromium
-      - name: Test release candidates
+
+      - name: Assemble release assets with checksums
         env:
-          KODE_INJECTOR_E2E_EXTENSION_PATH: build/release/chrome
-          KODE_INJECTOR_E2E_SAFARI_EXTENSION_PATH: build/release/safari
-        run: pnpm test:e2e:run
-      - name: Retain store-ready extension archives
+          VERSION: ${{ steps.context.outputs.version }}
+          PREFIX: ${{ steps.context.outputs.prefix }}
+        run: |
+          set -euo pipefail
+          mkdir -p release-artifacts
+          COUNT=0
+          # One archive per browser target the build produced.
+          for ZIP in "$BUILD_DIR"/*.zip; do
+            [[ -f "$ZIP" ]] || continue
+            BROWSER="$(basename "$ZIP" .zip)"
+            MANIFEST="$BUILD_DIR/$BROWSER/manifest.json"
+            BUILT_VERSION="$(jq -er '.version' "$MANIFEST")"
+            if [[ "$BUILT_VERSION" != "$VERSION" ]]; then
+              echo "$MANIFEST version $BUILT_VERSION does not match $VERSION" >&2
+              exit 1
+            fi
+            cp "$ZIP" "release-artifacts/$PREFIX-$BROWSER.zip"
+            COUNT=$((COUNT + 1))
+          done
+          if [[ "$COUNT" -eq 0 ]]; then
+            echo "No browser archives found in $BUILD_DIR" >&2
+            exit 1
+          fi
+          git archive --format=zip -o "release-artifacts/$PREFIX-source.zip" HEAD
+          # The checksum file lists bare asset names, so it is generated
+          # and later checked inside the directory holding the assets.
+          (cd release-artifacts && sha256sum -- *.zip > SHA256SUMS.txt)
+          cat release-artifacts/SHA256SUMS.txt
+
+      - name: Upload workflow artifacts
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: kode-injector-extensions-${{ needs.validate-release.outputs.version }}
-          path: |
-            build/release/chrome.zip
-            build/release/edge.zip
-            build/release/firefox.zip
-            build/release/source.zip
-            build/release/approval-notes.txt
+          name: ${{ steps.context.outputs.prefix }}
+          path: release-artifacts/
           if-no-files-found: error
           retention-days: 30
+          # A re-run of the same tag is a new attempt of the same run.
+          overwrite: true
 
-  build-and-sign:
-    name: Build, sign, and notarize candidate
-    needs: validate-release
+      - name: Publish GitHub Release
+        id: publish
+        if: env.DRY_RUN == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.context.outputs.version }}
+        run: |
+          set -euo pipefail
+          # gh creates the release as a draft, uploads every asset, and
+          # publishes it last; a failed upload deletes the draft again.
+          NOTES="Store-ready extension archives, the source archive, and SHA-256 checksums."
+          NOTES="$NOTES Store submissions are run separately with the deploy workflows."
+          gh release create "$GITHUB_REF_NAME" \
+            --repo "$GITHUB_REPOSITORY" \
+            --verify-tag \
+            --title "$RELEASE_TITLE $VERSION" \
+            --notes "$NOTES" \
+            --generate-notes \
+            release-artifacts/*.zip \
+            release-artifacts/SHA256SUMS.txt
+
+      - name: Write release summary
+        if: always()
+        env:
+          PUBLISH_OUTCOME: ${{ steps.publish.outcome }}
+        run: |
+          set -euo pipefail
+          if [[ -f release-artifacts/SHA256SUMS.txt ]]; then
+            {
+              if [[ "$DRY_RUN" == "true" ]]; then
+                echo "## Dry run: nothing was published"
+              elif [[ "$PUBLISH_OUTCOME" == "success" ]]; then
+                echo "## Release $GITHUB_REF_NAME"
+                echo
+                echo "Submit it to the stores with the deploy workflows (Actions tab or \`gh workflow run\`)."
+              else
+                echo "## Release $GITHUB_REF_NAME was not published"
+                echo "Publish step outcome: \`$PUBLISH_OUTCOME\`"
+              fi
+              echo '```'
+              cat release-artifacts/SHA256SUMS.txt
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+  # Repository-specific addition: the signed Kode Injector Helper packages are
+  # built on macOS and attached to the release created above, and their
+  # checksums are appended to SHA256SUMS.txt. On a dry run they are only
+  # retained as workflow artifacts.
+  native:
+    name: Build, sign, and notarize the helper
+    needs: release
     runs-on: macos-latest
+    timeout-minutes: 90
     permissions:
-      contents: read
+      contents: write
     env:
+      DRY_RUN: ${{ github.event_name != 'push' }}
+      GH_TOKEN: ${{ github.token }}
       KODE_INJECTOR_EDGE_ID: ${{ vars.KODE_INJECTOR_EDGE_ID }}
       APPLE_DEVELOPER_ID: ${{ vars.APPLE_DEVELOPER_ID }}
       APPLE_NOTARY_KEY_ID: ${{ vars.APPLE_NOTARY_KEY_ID }}
       APPLE_NOTARY_ISSUER_ID: ${{ vars.APPLE_NOTARY_ISSUER_ID }}
     steps:
       - name: Check out repository
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Read the package version
+        id: context
+        run: echo "version=$(jq -er '.version' package.json)" >> "$GITHUB_OUTPUT"
+      - name: Set up pnpm
+        uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
       - name: Set up Node.js
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          node-version: '24'
+          node-version-file: package.json
+          cache: pnpm
       - name: Set up Go
         uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6.5.0
         with:
           go-version: '1.26.x'
           cache-dependency-path: native-host/go.sum
       - name: Install dependencies
-        run: |
-          corepack enable
-          pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile
       - name: Configure isolated Apple signing credentials
-        shell: bash
         env:
           APPLE_CERTIFICATE_P12_BASE64: ${{ secrets.APPLE_CERTIFICATE_P12_BASE64 }}
           APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
@@ -177,18 +286,16 @@ jobs:
       - name: Build native packages
         run: pnpm native:package
       - name: Sign and notarize macOS packages
-        shell: bash
         env:
-          PACKAGE_VERSION: ${{ needs.validate-release.outputs.version }}
+          PACKAGE_VERSION: ${{ steps.context.outputs.version }}
         run: |
           set -euo pipefail
           while IFS= read -r package; do
             scripts/native-host/notarize.sh "build/native/$PACKAGE_VERSION/$package"
           done < <(pnpm exec tsx scripts/native-host/package.ts --list-macos-artifacts)
       - name: Independently inspect final macOS packages
-        shell: bash
         env:
-          PACKAGE_VERSION: ${{ needs.validate-release.outputs.version }}
+          PACKAGE_VERSION: ${{ steps.context.outputs.version }}
         run: |
           set -euo pipefail
           WORK_DIR="$(mktemp -d)"
@@ -216,9 +323,8 @@ jobs:
               "$dmg"
           done < <(pnpm exec tsx scripts/native-host/package.ts --list-macos-artifacts)
       - name: Refresh and verify checksums
-        shell: bash
         env:
-          PACKAGE_VERSION: ${{ needs.validate-release.outputs.version }}
+          PACKAGE_VERSION: ${{ steps.context.outputs.version }}
         run: |
           set -euo pipefail
           pnpm exec tsx scripts/native-host/package.ts --list-artifacts \
@@ -237,13 +343,34 @@ jobs:
       - name: Retain signed release candidate
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: kode-injector-helper-${{ needs.validate-release.outputs.version }}
-          path: build/native/${{ needs.validate-release.outputs.version }}/
+          name: kode-injector-helper-${{ steps.context.outputs.version }}
+          path: build/native/${{ steps.context.outputs.version }}/
           if-no-files-found: error
           retention-days: 30
+      - name: Attach the helper packages to the release
+        if: env.DRY_RUN == 'false'
+        env:
+          PACKAGE_VERSION: ${{ steps.context.outputs.version }}
+        run: |
+          set -euo pipefail
+          DIR="build/native/$PACKAGE_VERSION"
+          SUMS_DIR="$RUNNER_TEMP/sums"
+          mkdir -p "$SUMS_DIR"
+          gh release download "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" \
+            --pattern SHA256SUMS.txt --dir "$SUMS_DIR"
+          ASSETS=()
+          while IFS= read -r artifact; do
+            ASSETS+=("$DIR/$artifact")
+          done < <(pnpm exec tsx scripts/native-host/package.ts --list-artifacts)
+          # The release checksum file lists every asset with its bare name:
+          # the browser and source archives from the release job plus the
+          # helper packages from this job.
+          cat "$DIR/SHA256SUMS" >> "$SUMS_DIR/SHA256SUMS.txt"
+          (cd "$DIR" && shasum -a 256 --check --strict --ignore-missing "$SUMS_DIR/SHA256SUMS.txt")
+          gh release upload "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --clobber \
+            "${ASSETS[@]}" "$SUMS_DIR/SHA256SUMS.txt"
       - name: Remove Apple signing credentials
         if: always()
-        shell: bash
         run: |
           KEYCHAIN_PATH="${SIGNING_KEYCHAIN_PATH:-$RUNNER_TEMP/kode-injector-signing.keychain-db}"
           NOTARY_KEY_PATH="${APPLE_NOTARY_KEY_PATH:-$RUNNER_TEMP/kode-injector-notary-key.p8}"
@@ -251,49 +378,3 @@ jobs:
           rm -f \
             "${SIGNING_CERTIFICATE_PATH:-$RUNNER_TEMP/kode-injector-signing.p12}" \
             "$NOTARY_KEY_PATH"
-
-  draft-release:
-    name: Create draft GitHub release
-    if: github.ref_type == 'tag'
-    needs: [validate-release, build-extensions, build-and-sign]
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    env:
-      GH_TOKEN: ${{ github.token }}
-      RELEASE_TAG: ${{ needs.validate-release.outputs.tag }}
-      PACKAGE_VERSION: ${{ needs.validate-release.outputs.version }}
-    steps:
-      - name: Download signed release candidate
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
-        with:
-          name: kode-injector-helper-${{ needs.validate-release.outputs.version }}
-          path: release-assets
-      - name: Download extension release candidate
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
-        with:
-          name: kode-injector-extensions-${{ needs.validate-release.outputs.version }}
-          path: release-assets
-      - name: Finalize and verify release checksums
-        working-directory: release-assets
-        run: |
-          sha256sum -c SHA256SUMS
-          sha256sum chrome.zip edge.zip firefox.zip source.zip \
-            approval-notes.txt >> SHA256SUMS
-          sha256sum -c SHA256SUMS
-      - name: Refuse to replace an existing release
-        shell: bash
-        run: |
-          if gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
-            echo "Release $RELEASE_TAG already exists" >&2
-            exit 1
-          fi
-      - name: Create draft release
-        shell: bash
-        run: |
-          gh release create "$RELEASE_TAG" release-assets/* \
-            --repo "$GITHUB_REPOSITORY" \
-            --draft \
-            --verify-tag \
-            --title "Kode Injector $PACKAGE_VERSION" \
-            --notes "Store-ready browser extension archives and signed Kode Injector Helper packages for Kode Injector $PACKAGE_VERSION."

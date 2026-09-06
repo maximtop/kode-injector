@@ -1,8 +1,5 @@
-.PHONY: build dev release chrome edge firefox native_test native_package \
-	chrome_status chrome_update edge_update edge_publish firefox_status \
-	firefox_update
-
-include .env
+.PHONY: install start build dev release chrome edge firefox lint typecheck test check validate \
+	native_test native_package chrome_status chrome_update chrome_publish .require-chrome-app-id
 
 BROWSERS := chrome edge firefox
 BROWSER_TARGET := $(firstword $(filter $(BROWSERS),$(MAKECMDGOALS)))
@@ -35,8 +32,11 @@ typecheck:
 test:
 	pnpm test
 
+check:
+	pnpm check
+
 validate:
-	pnpm validate
+	pnpm check
 
 native_test:
 	pnpm native:test
@@ -44,24 +44,31 @@ native_test:
 native_package:
 	pnpm native:package
 
-chrome_status:
-	../go-webext/go-webext status chrome -a $(CHROME_APP_ID)
+# Local Chrome Web Store fallback for .github/workflows/deploy-chrome-store.yml.
+# Credentials come either from the environment (op run --env-file=.env.1password,
+# see 1password.env.example) or from the gitignored .env that go-webext loads
+# itself (see .env.example). CHROME_APP_ID is taken from the environment when
+# set and read from .env otherwise. Edge and Firefox commands are documented in
+# docs/RELEASE.md.
+export CHROME_API_VERSION := v2
+CHROME_APP_ID ?= $(strip $(shell \
+  sed -nE 's/^[[:space:]]*(export[[:space:]]+)?CHROME_APP_ID[[:space:]]*=[[:space:]]*//p' \
+    .env 2>/dev/null \
+  | tail -n 1 \
+  | sed -E 's/[[:space:]]+\#.*$$//' \
+  | tr -d "\"'\r"))
 
-chrome_update:
-	../go-webext/go-webext update chrome -a $(CHROME_APP_ID) -f ./build/release/chrome.zip
+.require-chrome-app-id:
+	@test -n "$(CHROME_APP_ID)" || { echo "CHROME_APP_ID is empty; fill in .env (see .env.example)" >&2; exit 1; }
 
-# Let go-webext parse Edge credentials from `.env` itself so dotenv quoting and
-# special characters are preserved instead of being reinterpreted by make.
-export FIREFOX_CLIENT_ID FIREFOX_CLIENT_SECRET
+chrome_status: .require-chrome-app-id
+	@go-webext status chrome -a "$(CHROME_APP_ID)"
 
-edge_update:
-	EDGE_API_VERSION=v1.1 ../go-webext/go-webext update edge -a $(EDGE_PRODUCT_ID) -f ./build/release/edge.zip
+# A fresh build guarantees that the uploaded manifest carries the package.json
+# version.
+chrome_update: .require-chrome-app-id
+	@pnpm release chrome
+	@go-webext update chrome -a "$(CHROME_APP_ID)" -f "build/release/chrome.zip"
 
-edge_publish:
-	EDGE_API_VERSION=v1.1 ../go-webext/go-webext publish edge -a $(EDGE_PRODUCT_ID)
-
-firefox_status:
-	../go-webext/go-webext status firefox -a $(FIREFOX_APP_ID)
-
-firefox_update:
-	../go-webext/go-webext update firefox -f ./build/release/firefox.zip -s ./build/release/source.zip -c listed -n "$$(cat ./build/release/approval-notes.txt)"
+chrome_publish: .require-chrome-app-id
+	@go-webext publish chrome -a "$(CHROME_APP_ID)" --staged

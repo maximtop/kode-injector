@@ -352,275 +352,16 @@ make typecheck
 
 `make typecheck` mirrors `pnpm typecheck` and runs `tsc --noEmit`.
 
-## Deployment
+## Deployment and releases
 
-Chrome Web Store deployment is started manually from **Actions → Deploy Chrome
-Web Store → Run workflow** with a published release tag. The workflow verifies
-the release's `chrome.zip` against `SHA256SUMS` and the tag version, uploads it
-to the store item with a pinned `go-webext`, and submits it for review with
-deferred publishing. Nothing goes live automatically: when the review verdict
-email arrives, publish the approved version manually in the Chrome Web Store
-Developer Dashboard. An approved staged submission expires back to a draft
-after about 30 days if left unpublished; re-run the workflow for the same tag
-to submit it again.
-
-Configure these sensitive repository secrets:
-
-- `CHROME_CLIENT_ID` and `CHROME_CLIENT_SECRET` — the OAuth 2.0 client ID and
-  secret of a **Web application** client with
-  `https://developers.google.com/oauthplayground` as an authorized redirect
-  URI, created on the Credentials page of the Google Cloud Console project
-  that has the Chrome Web Store API enabled (mirrored from the local `.env`)
-- `CHROME_REFRESH_TOKEN`
-- `CHROME_PUBLISHER_ID` (shown on the Developer Dashboard account page)
-
-Configure this repository variable:
-
-- `CHROME_APP_ID` (the public store item ID)
-
-The Google Cloud OAuth consent screen backing these credentials must be in
-the "In production" status: refresh tokens issued while it is in "Testing"
-are revoked after seven days. An unused refresh token also expires after
-about six months. To obtain a new refresh token, open the
-[Google OAuth Playground](https://developers.google.com/oauthplayground/),
-enable "Use your own OAuth credentials" (gear icon) with the client ID and
-secret, authorize the `https://www.googleapis.com/auth/chromewebstore`
-scope, exchange the authorization code for tokens, and copy the issued
-`refresh_token` into `.env`. Verify the credentials by exchanging the
-refresh token for an access token:
-
-```sh
-source .env
-curl -s "https://oauth2.googleapis.com/token" -d \
-  "client_id=$CHROME_CLIENT_ID&client_secret=$CHROME_CLIENT_SECRET&grant_type=refresh_token&refresh_token=$CHROME_REFRESH_TOKEN"
-```
-
-Then update the `CHROME_REFRESH_TOKEN` secret. If the store API answers
-`deleted_client`, the OAuth client itself was removed: create a new Web
-application client (redirect URI
-`https://developers.google.com/oauthplayground`), update
-`CHROME_CLIENT_ID`/`CHROME_CLIENT_SECRET` locally and in the GitHub secrets,
-and issue a fresh refresh token.
-
-Failure playbook:
-
-- **Authentication failure (`deleted_client`, `invalid_grant`, 401)**: the
-  OAuth client or refresh token is dead. Recreate the credentials per the
-  runbook above, update the GitHub secrets, and re-run the workflow —
-  nothing was uploaded to the store.
-- **Upload stuck `IN_PROGRESS` or a previous submission still in review**:
-  the run fails without submitting anything. Re-run it after the store
-  settles — re-uploading the same version replaces the unsubmitted draft.
-- **Submission rejected after review**: no workflow fails; the verdict
-  arrives by store email days after a green run. Read the reasons in the
-  dashboard, then appeal, ship a fixed version through a new release, or
-  resubmit the same version from the dashboard if only listing metadata was
-  at fault.
-- **Staged submission expired**: start the workflow manually for the same
-  release tag.
-
-The local fallback uses the `Makefile` targets below and the local
-`go-webext` checkout. Store credentials and app IDs are stored in `.env`
-(gitignored).
-
-| Command | What it does |
-| --- | --- |
-| `make chrome_status` | Check the status of the Chrome Web Store item |
-| `make chrome_update` | Upload a new build to the Chrome Web Store |
-| `make edge_update` | Upload `edge.zip` to an existing Edge product |
-| `make edge_publish` | Submit the Edge draft for certification |
-| `make firefox_status` | Check the status of the AMO listing |
-| `make firefox_update` | Upload `firefox.zip` + `source.zip` to AMO for review |
-
-Firefox Add-ons deployment is started manually from **Actions → Deploy Firefox
-Add-ons → Run workflow** with a published release tag. It verifies the
-release's `firefox.zip`, `source.zip`, and `approval-notes.txt` against
-`SHA256SUMS`, the tag version, and the `kode-injector@maximtop.dev` gecko ID,
-then uploads the package and its source to the listed AMO channel with a pinned
-`go-webext`, passing the notes through the AMO `approval_notes` field. The
-workflow only submits: Mozilla reviews and signs asynchronously, from hours to
-days, and publishes the version automatically once approved, so there is no
-publish step on our side. It keeps its own concurrency group and runs
-independently of the Chrome deployment.
-
-AMO requires the source archive because the release bundle is minified.
-`source.zip` and `approval-notes.txt` are produced by the Firefox release
-build itself through `SourceArchivePlugin`: the archive is the committed
-repository state of the tag (`git archive`), with one difference — the
-`README.md` inside it gains a "Building Instructions for Firefox Add-ons
-Review Team" section in place of the invisible `<!-- TOC:AMO_REVIEW -->`
-anchor in the repository README's table of contents. Do not remove that
-anchor; the release build fails without it. Because the archive snapshots
-`HEAD` rather than the working tree, a local release build packages the last
-commit — CI always builds a clean tag checkout. Rebuilding from the archive
-with `pnpm release firefox` reproduces the submitted package; such builds are
-not git checkouts, so they skip the nested source archive with a warning.
-
-The workflow can also be started manually from the Actions tab for an
-already-published release tag. Releases published before these assets existed
-(v0.9.1 and older) are refused before anything reaches AMO: the workflow
-requires `firefox.zip`, `source.zip`, and `approval-notes.txt` to be present
-on the release and covered by `SHA256SUMS`. Submit those releases from the
-Developer Hub manually instead.
-
-Configure these sensitive repository secrets for Firefox:
-
-- `FIREFOX_CLIENT_ID` — the JWT issuer from the
-  [AMO API credentials page](https://addons.mozilla.org/en-US/developers/addon/api/key/)
-  (mirrored from the local `.env`)
-- `FIREFOX_CLIENT_SECRET` — the JWT secret from the same page
-
-AMO credentials belong to the Mozilla account, not to a single add-on. A
-`401 Unknown JWT iss (issuer)` means the issuer no longer exists: generate a
-new credential pair on the page above, then update both `.env` and the
-GitHub secrets. The local `.env` also needs
-`FIREFOX_APP_ID=kode-injector@maximtop.dev` for `make firefox_status`; the
-workflow reads the ID from the built manifest instead.
-
-Failure playbook:
-
-- **`json: cannot unmarshal array into Go struct field
-  AddonInfo.categories`**: a known go-webext v0.4.2 limitation, not a
-  deployment failure. AMO now returns `categories` as an array of slugs
-  while go-webext still expects the older object shape, so `status` and
-  `insert` cannot decode the response. The upload path (`update`) never
-  reads that struct and is unaffected; the workflow downgrades the status
-  step to a warning so a submitted version is not reported as a failed
-  deploy. `make firefox_status` surfaces the raw error until go-webext is
-  fixed — read the listing in the Developer Hub meanwhile.
-- **Authentication failure (401)**: see the credential runbook above.
-  Nothing was uploaded.
-- **Upload rejected during AMO validation**: the run fails before a version
-  is created. Read the validation messages in the log, fix the package, and
-  ship a new release.
-- **`version already exists` during version creation**: the tag was already
-  submitted — typically a re-run of a green deploy. The existing AMO
-  submission is untouched and there is nothing to redo. If that version
-  genuinely must be re-uploaded, delete it in the Developer Hub first, then
-  re-run the workflow.
-- **Submission rejected after review**: no workflow fails; the verdict
-  arrives by email days after a green run. Address the reasons and ship a
-  fixed version through a new release.
-
-Microsoft Edge Add-ons deployment is started manually from **Actions → Deploy
-Microsoft Edge Add-ons → Run workflow** with a published release tag. For
-updates to an already-published product, it verifies `edge.zip` against
-`SHA256SUMS` and the tag version, uploads it with pinned `go-webext` v0.4.2 and
-the Edge API v1.1, then submits the draft for certification. Microsoft
-processes certification asynchronously and publishes an accepted update
-according to the listing's availability settings.
-
-The Microsoft API cannot create a product or update its listing metadata. The
-first release must therefore be completed in Partner Center:
-
-1. Create the extension product and upload a store-ready `edge.zip` from a
-   published GitHub Release.
-2. Complete Availability, Properties, Privacy, and every enabled Store listing.
-   Use `assets/store/edge-listing.md`, the localized copy under
-   `assets/store/edge-listings/`, the other files under `assets/store/`, and
-   the public `PRIVACY.md` as the maintained sources.
-3. Submit the first release for certification and wait until it is **In the
-   store**. The Update API is for an existing published product.
-4. Copy the Product ID GUID from the Partner Center URL. This is the
-   `EDGE_PRODUCT_ID` used by `go-webext`; it is not the public extension ID.
-5. Open the Partner Center **Publish API** page, create a v1.1 API key, and
-   record its Client ID and one-time key value.
-6. Configure the GitHub Actions values below. Future published releases then
-   upload and submit automatically.
-
-Configure these sensitive repository secrets for Edge:
-
-- `EDGE_CLIENT_ID` — the Client ID shown on the Partner Center Publish API page
-- `EDGE_API_KEY` — an active v1.1 key from the same page
-
-Configure this repository variable:
-
-- `EDGE_PRODUCT_ID` — the Partner Center product GUID
-
-API keys expire after 72 days, and Partner Center shows the exact expiry.
-Rotate the key before that date and update `EDGE_API_KEY`; never print it or
-commit it to source control. For local fallback, put the credentials in the
-gitignored `.env`, using dotenv quoting when the key contains special
-characters, and use `make edge_update` followed by `make edge_publish`. These
-targets pin API v1.1 and let `go-webext` parse the credential values directly
-so make does not alter quoted or special characters.
-
-The Publish API accepts certification notes, but `go-webext` v0.4.2 does not
-send them and has no Edge notes option. Keep stable reviewer guidance in the
-Partner Center listing; if the review steps need to change for a release,
-update them manually before the workflow submits that release.
-
-The Edge Product ID and public Edge extension ID serve different purposes. The
-32-letter public ID becomes available from the store listing and belongs in
-the `KODE_INJECTOR_EDGE_ID` repository variable. Release builds use it only to
-authorize the optional Native Host origin. A missing value does not affect the
-default browser-managed file access, but the Advanced Native Host mode will not
-work for a store-installed Edge build until a later release and matching
-Helper packages are built with that ID.
-
-Edge failure playbook:
-
-- **Authentication failure (401/403)**: the v1.1 key is missing, expired, or
-  does not match the Client ID. Create a new key, update `EDGE_API_KEY`, and
-  re-run the workflow. Nothing is uploaded when authentication fails.
-- **Upload timeout after package processing remains `InProgress`**:
-  `go-webext` v0.4.2 bounds its processing wait at one minute. Check the draft
-  in Partner Center, wait for processing to settle, and re-run if no package
-  was accepted.
-- **Submission already in review**: Microsoft permits only one active
-  submission. Wait for certification to finish before starting another
-  deployment.
-- **Publish step reports `InProgress` in a green run**: the submission request
-  was accepted and continues asynchronously. `go-webext` v0.4.2 checks the
-  publish operation only once; monitor Partner Center for the final result.
-- **Listing or privacy metadata change**: update it manually in Partner Center;
-  the Update API manages packages and submissions only.
-- **Certification rejection**: the verdict arrives through Partner Center and
-  email after the workflow finishes. Address the feedback, then submit a fixed
-  release or metadata update.
-
-Mac App Store uploads are started manually from **Actions → Deploy Apple App
-Store → Run workflow** with a published release tag. The workflow runs on the
-Xcode 26 macOS image, builds a universal signed archive directly from the tag,
-verifies its nested layout and metadata, then uploads the build to App Store
-Connect. Uploading does not submit a version for App Review.
-
-The one-time app record, explicit identifiers, listing and privacy metadata,
-Apple Distribution certificate, protected GitHub Environment, and API-key
-configuration are documented in
-[`safari/APP_STORE.md`](safari/APP_STORE.md). These credentials are separate
-from the Developer ID and notarization credentials used for the downloadable
-Kode Injector Helper app.
-
-## Releases
-
-The version in `package.json` is the single source of truth (the manifest,
-the Safari bundles, and the AMO source archive all derive from it), and a
-release tag must point at a `master` commit that already carries that
-version. The **Start release** workflow does both steps:
-
-1. **Actions → Start release → Run workflow**, enter the next version
-   (`X.Y.Z`). The workflow bumps `package.json` on `master` (commit “Bump
-   version to <version>” by `github-actions[bot]`), creates the `v<version>`
-   tag on that commit, and starts the **Release** workflow on the tag, which
-   builds the store-ready `chrome.zip`, `edge.zip`, `firefox.zip`,
-   `source.zip`, `approval-notes.txt`, the signed Helper packages, and
-   creates a GitHub Draft Release. The version must be higher than the
-   current one and its tag must not exist yet.
-2. After checking the draft assets, publish the GitHub Release. Publishing
-   deploys nothing by itself; it makes the assets and the Helper download
-   links public. Start each desired store workflow independently, immediately
-   or later, with the same published tag: `Deploy Chrome Web Store`, `Deploy
-   Firefox Add-ons`, `Deploy Microsoft Edge Add-ons`, and `Deploy Apple App
-   Store`. Edge and Apple work only after their one-time store setup and
-   repository configuration are complete.
-3. When the store review completes, publish the approved version manually in
-   the Chrome Web Store Developer Dashboard.
-
-Bumping `package.json` by hand, merging it, and pushing the matching
-`vX.Y.Z` tag still triggers Release directly. If Start release fails after
-its commit landed (for example the tag push was interrupted), push the tag by
-hand: `git tag v<version> origin/master && git push origin v<version>`.
+Tagged releases publish a GitHub Release with the store archives, the source
+archive, `SHA256SUMS.txt` and the signed Kode Injector Helper packages. Store
+submission is a separate manual workflow per store (Chrome Web Store, Edge
+Add-ons, Firefox Add-ons, Apple App Store); nothing is sent to a store
+automatically. See [docs/RELEASE.md](docs/RELEASE.md) for the release
+process, store deployment, store configuration, local store commands and the
+failure playbook, and [safari/APP_STORE.md](safari/APP_STORE.md) for the Mac
+App Store specifics.
 
 ## Native host development and releases
 
@@ -660,8 +401,9 @@ Options constructs a version-matched public URL of the form
 `https://github.com/maximtop/kode-injector/releases/download/v<version>/<asset>`
 from `runtime.getManifest().version` and `runtime.getPlatformInfo()`. It never
 uses a moving latest-release alias, guesses an unsupported target, or calls the GitHub API;
-unknown values fall back to the complete Releases page. Consequently the draft
-must be manually published before these end-user links become available.
+unknown values fall back to the complete Releases page. These end-user links
+become available once the `native` job of the release workflow has attached the
+helper packages to the published release, a few minutes after the tag.
 
 Each macOS disk image contains one architecture-specific `Kode Injector
 Helper.app` and an Applications symlink, with no root-level executable. The app
@@ -699,57 +441,46 @@ arguments.
 
 ### GitHub Actions validation
 
-The `CI` workflow runs for pushes to `master` and pull requests. It validates
-the extension with Node.js 24 and pnpm, runs the headless core injection E2E,
-builds every browser release artifact, and runs the Go 1.26 native-host suite
-with the race detector. CI has read-only repository permissions and never
+The `CI` workflow runs for pushes to `master` and pull requests. It runs
+`pnpm check` with Node.js 24 and pnpm 11, runs the headless core injection E2E,
+builds every browser release archive, runs the Go 1.26 native-host suite with
+the race detector, validates the macOS helper packages, and builds and
+validates the Safari app. CI has read-only repository permissions and never
 publishes a release.
 
-The `Release` workflow builds `chrome.zip`, `edge.zip`, `firefox.zip`, and the
-AMO review assets (`source.zip`, `approval-notes.txt`) on a GitHub-hosted
-Linux runner and retains them as store-ready artifacts. A separate
-GitHub-hosted macOS runner signs the two nested helpers inside-out and then
-signs the outer app; signing commands must not use `--deep`. Each architecture
-is notarized twice: first a ZIP of the app is submitted, accepted, stapled, and
-validated, then the disk image is rebuilt around that stapled app, signed,
-submitted, stapled, and validated. Final checks use `codesign`, `stapler`,
-`syspolicy_check distribution`, `spctl --type execute` for the mounted app, and
-`spctl --type open` for the DMG. `SHA256SUMS` is regenerated after final
-stapling and extended with the three browser-extension archives before the
-draft release is created.
+The `Release` workflow is the pipeline shared with the other extension
+repositories: on a `vX.Y.Z` tag it runs `pnpm check`, builds
+`kode-injector-<version>-{chrome,edge,firefox}.zip`, the source archive and
+`SHA256SUMS.txt`, and publishes the GitHub Release. Its `native` job then
+builds the helper packages on a GitHub-hosted macOS runner, signs the two
+nested helpers inside-out and then the outer app (signing commands must not
+use `--deep`), notarizes each architecture twice (first a ZIP of the app is
+submitted, accepted, stapled and validated, then the disk image is rebuilt
+around that stapled app, signed, submitted, stapled and validated), checks the
+result with `codesign`, `stapler`, `syspolicy_check distribution`,
+`spctl --type execute` for the mounted app and `spctl --type open` for the
+DMG, attaches the packages to the release, and appends their checksums to
+`SHA256SUMS.txt`. Running the workflow by hand is a dry run that builds and
+signs everything and retains the `kode-injector-<version>` and
+`kode-injector-helper-<version>` workflow artifacts (30 days) without
+publishing; use it as the signing preflight before tagging.
 
 The four store workflows are dispatched independently from their own **Run
-workflow** buttons with a published release tag. They can receive the same
-release at different times and use separate concurrency groups, so deploying
-one store does not start or block an unrelated store.
-
-The `Deploy Chrome Web Store` workflow re-verifies `chrome.zip` against the
-release `SHA256SUMS` and the tag version, uploads it with a pinned `go-webext`,
-and submits it for review with deferred publishing. It has read-only repository
-permissions and uses the `CHROME_*` secrets and variable listed in the
-Deployment section.
-
-The `Deploy Microsoft Edge Add-ons` workflow applies the same release-asset
-and version checks to `edge.zip`, uploads it to the configured existing
-product through API v1.1, and requests certification. Edge deployments use a
-separate concurrency group. A successful run means the package was processed
-and the submission request was accepted; certification and publication remain
-asynchronous in Partner Center.
-
-The `Deploy Apple App Store` workflow independently rebuilds the published tag
-on `macos-26`, creates and validates a universal Xcode archive, and uploads the
-build for App Store Connect processing. The protected `apple-app-store`
-environment contains the Apple Distribution certificate and App Store Connect
-API key. App Review submission remains manual.
+workflow** buttons with an optional published release tag (blank = latest
+release). They can receive the same release at different times and use
+separate concurrency groups, so deploying one store does not start or block
+an unrelated store. Chrome, Edge and Firefox share the `scripts/deploy`
+validation code with the other extension repositories and offer a `validate`
+mode that stops before the store; Apple keeps its own release resolution. See
+[docs/RELEASE.md](docs/RELEASE.md).
 
 For the canonical 1Password item layout, current field names, and migration
 mapping from older `.env` names, see
-[`scripts/release/ONEPASSWORD.md`](scripts/release/ONEPASSWORD.md). The checked-in
-[`1password.env.example`](scripts/release/1password.env.example) contains only
+[`scripts/release/ONEPASSWORD.md`](scripts/release/ONEPASSWORD.md). The
+checked-in [`1password.env.example`](1password.env.example) contains only
 `op://` references and no credentials.
 
-Configure
-these sensitive repository secrets:
+Configure these sensitive repository secrets for the helper signing:
 
 - `APPLE_CERTIFICATE_P12_BASE64`
 - `APPLE_CERTIFICATE_PASSWORD`
@@ -772,34 +503,25 @@ set `APPLE_NOTARY_KEY_PATH`, `APPLE_NOTARY_KEY_ID`, and
 two modes. Windows artifacts remain unsigned until a signing certificate is
 configured.
 
-Before creating a tag, run the signing preflight:
-
-1. Open **Actions** → **Release** and choose **Run workflow**.
-2. Wait for validation, packaging, signing, notarization, stapling, and checksum
-   verification to complete.
-3. Download and inspect the retained `kode-injector-helper-<version>` and
-   `kode-injector-extensions-<version>` workflow artifacts. They expire after
-   30 days. A manual run on a branch does not create a GitHub Release; a run
-   on a tag (which is how Start release starts it) does.
-
 To prepare a release:
 
-1. Run **Start release** with the intended semantic version. It commits the
-   `package.json` bump to `master`, creates the matching tag, such as
-   `v0.9.0`, on that commit, and starts Release on it.
-2. (Alternatively set `package.json` by hand, merge it, and push the tag.)
-3. Wait for the workflow to verify the tag, rebuild and sign the packages, and
-   create an unpublished [GitHub Draft Release](https://github.com/maximtop/kode-injector/releases).
-4. Download the draft assets and inspect `chrome.zip`, `edge.zip`,
-   `firefox.zip`, `source.zip`, `approval-notes.txt`,
-   the native platform archives, both notarized macOS DMGs, both
-   independently stapled apps, and `SHA256SUMS`. For the final manual
-   Gatekeeper gate, download each DMG through a browser on a clean test account,
-   verify quarantine is present, launch the app from the mounted image and
-   Applications without bypassing Gatekeeper, test Install/Repair/Uninstall,
-   and repeat once without network access to confirm the stapled tickets work.
-5. If the candidate is correct, click **Publish release** in the GitHub UI.
+1. Run **Release** by hand as the signing preflight and inspect the retained
+   artifacts: `kode-injector-<version>` (the browser archives) and
+   `kode-injector-helper-<version>` (the native platform archives, both
+   notarized macOS DMGs, both independently stapled apps, and `SHA256SUMS`).
+   For the final manual Gatekeeper gate, download each DMG through a browser
+   on a clean test account, verify quarantine is present, launch the app from
+   the mounted image and Applications without bypassing Gatekeeper, test
+   Install/Repair/Uninstall, and repeat once without network access to
+   confirm the stapled tickets work.
+2. Bump `version` in `package.json`, merge it to `master`, and push the
+   matching tag: `git tag vX.Y.Z && git push origin vX.Y.Z`.
+3. Wait for the workflow to publish the GitHub Release with the browser
+   archives and the helper packages, then start each desired store workflow
+   with that tag.
 
 The workflow refuses a tag that does not match `package.json`, does not point to
 a `master` commit, or already has a GitHub Release. It never silently replaces
-existing release assets.
+existing browser assets; the helper packages and `SHA256SUMS.txt` are
+attached by the `native` job of the same run.
+
