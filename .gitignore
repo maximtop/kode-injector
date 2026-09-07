@@ -12,3 +12,7 @@ deploy.sh
 
 # macOS folder metadata
 .DS_Store
+
+# Store deployment downloads (deploy-*.yml)
+store-upload/
+.env.1password

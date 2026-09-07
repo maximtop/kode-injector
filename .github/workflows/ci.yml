@@ -4,6 +4,7 @@ on:
   push:
     branches: [master]
   pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -16,13 +17,13 @@ jobs:
       changed: ${{ steps.filter.outputs.changed }}
     steps:
       - name: Check out repository
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
+          persist-credentials: false
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - name: Detect native changes
         id: filter
-        shell: bash
         env:
           EVENT_NAME: ${{ github.event_name }}
           BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
@@ -62,36 +63,66 @@ jobs:
           esac
 
   extension:
-    name: Validate and build extensions
+    name: Check and build extensions
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - name: Check out repository
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up pnpm
+        uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
       - name: Set up Node.js
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          node-version: '24'
+          node-version-file: package.json
+          cache: pnpm
       - name: Install dependencies
-        run: |
-          corepack enable
-          pnpm install --frozen-lockfile
-      - name: Validate project
-        run: pnpm validate
+        run: pnpm install --frozen-lockfile
+      - name: Run quality checks
+        run: pnpm check
       - name: Install Playwright Chromium
         run: pnpm exec playwright install --with-deps chromium
       - name: Run end-to-end tests
         run: pnpm test:e2e
       - name: Build release extensions
         run: pnpm release
+      - name: Verify built manifests
+        run: |
+          set -euo pipefail
+          PACKAGE_VERSION="$(jq -er '.version' package.json)"
+          for BROWSER in chrome edge firefox; do
+            MANIFEST="build/release/$BROWSER/manifest.json"
+            BUILT_VERSION="$(jq -er '.version' "$MANIFEST")"
+            if [[ "$BUILT_VERSION" != "$PACKAGE_VERSION" ]]; then
+              echo "$MANIFEST version $BUILT_VERSION != package.json $PACKAGE_VERSION" >&2
+              exit 1
+            fi
+            test -f "build/release/$BROWSER.zip"
+          done
+      - name: Retain extension archives
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: extension-archives
+          path: |
+            build/release/chrome.zip
+            build/release/edge.zip
+            build/release/firefox.zip
+          if-no-files-found: error
+          retention-days: 14
 
   native:
     name: Test native host
     needs: native-changes
     if: needs.native-changes.outputs.changed == 'true'
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - name: Check out repository
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - name: Set up Go
         uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6.5.0
         with:
@@ -106,48 +137,52 @@ jobs:
     needs: native-changes
     if: needs.native-changes.outputs.changed == 'true'
     runs-on: macos-latest
-    permissions:
-      contents: read
+    timeout-minutes: 30
     steps:
       - name: Check out repository
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up pnpm
+        uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
       - name: Set up Node.js
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          node-version: '24'
+          node-version-file: package.json
+          cache: pnpm
       - name: Set up Go
         uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6.5.0
         with:
           go-version: '1.26.x'
           cache-dependency-path: native-host/go.sum
       - name: Install dependencies
-        run: |
-          corepack enable
-          pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile
       - name: Validate macOS helper packages
         run: pnpm native:macos:validate
 
   safari:
     name: Build and validate Safari app
     runs-on: macos-26
-    permissions:
-      contents: read
+    timeout-minutes: 45
     steps:
       - name: Check out repository
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up pnpm
+        uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
       - name: Set up Node.js
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          node-version: '24'
+          node-version-file: package.json
+          cache: pnpm
       - name: Set up Go
         uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6.5.0
         with:
           go-version: '1.26.x'
           cache-dependency-path: native-host/go.sum
       - name: Install dependencies
-        run: |
-          corepack enable
-          pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile
       - name: Build and validate Safari app
         run: pnpm safari:validate
       - name: Build and validate unsigned App Store archive

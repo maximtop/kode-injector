@@ -42,6 +42,7 @@ module.exports = {
         {
             files: [
                 'scripts/build/**/*.ts',
+                'scripts/deploy/**/*.ts',
                 'scripts/locales/**/*.ts',
                 'scripts/safari/**/*.ts',
                 'tests/**/*.ts',

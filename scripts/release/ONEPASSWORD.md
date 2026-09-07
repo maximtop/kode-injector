@@ -156,7 +156,7 @@ Copy the reference template and replace `VAULT_NAME` without adding secret
 values to the file:
 
 ```sh
-cp scripts/release/1password.env.example .env.1password
+cp 1password.env.example .env.1password
 ```
 
 `.env.1password` is ignored by Git. After filling the 1Password items and
@@ -180,7 +180,8 @@ has been checked independently:
 
 - Repository secrets: Developer ID certificate/password, notary `.p8`, Chrome
   OAuth credentials, Edge API credentials, and Firefox AMO credentials.
-- Repository variables: public IDs for Apple notarization, Chrome, Edge, and
+- Repository variables: public IDs for Apple notarization, Chrome (`CHROME_APP_ID`
+  and `CHROME_PUBLISHER_ID`), Edge, Firefox (`FIREFOX_AMO_ID`), and
   `KODE_INJECTOR_EDGE_ID`.
 - `apple-app-store` Environment secrets: Apple Distribution
   certificate/password and App Store Connect `.p8`.
