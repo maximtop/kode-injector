@@ -1,15 +1,7 @@
 name: Release
 
-# One checked pipeline, with three entry points:
-# - Merging the PR created by Please release builds and verifies the selected
-#   version, creates its vX.Y.Z tag, and publishes the GitHub Release.
-# - Pushing a matching vX.Y.Z tag keeps the manual fallback available.
-# - Manual dispatch is a dry run that builds, verifies, and retains artifacts.
-# Store submissions are separate manual workflows (deploy-*.yml) that take a
-# published release; nothing is sent to a store from here.
-# GitHub Releases are created only here: a release created by hand for a new
-# tag makes the tag or release-PR run fail before anything is built.
-
+# CI produces the candidate once. Publish waits for every check and platform
+# artifact. Manual dispatch exercises the whole pipeline without publishing.
 on:
   push:
     tags:
@@ -25,19 +17,18 @@ permissions:
   contents: read
 
 concurrency:
-  group: release-${{ github.ref }}
+  group: release
   cancel-in-progress: false
 
 env:
+  DRY_RUN: ${{ github.event_name == 'workflow_dispatch' }}
   # Repository specifics; the rest of this workflow is identical across the
   # extension repositories.
-  ASSET_PREFIX: kode-injector
   RELEASE_TITLE: Kode Injector
-  BUILD_DIR: build/release
 
 jobs:
-  release:
-    name: Build artifacts and publish release
+  context:
+    name: Validate release request
     if: >-
       ${{
         github.event_name != 'pull_request' ||
@@ -47,12 +38,12 @@ jobs:
           startsWith(github.event.pull_request.head.ref, 'release-please--branches--master'))
       }}
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 5
     outputs:
       tag: ${{ steps.context.outputs.tag }}
+      version: ${{ steps.context.outputs.version }}
     permissions:
-      contents: write
-      pull-requests: write
+      contents: read
     env:
       # Only an explicit manual run is a dry run. A merged release PR and a
       # pushed tag both publish after every check succeeds.
@@ -61,7 +52,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.merge_commit_sha || github.ref }}
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.merged && github.event.pull_request.merge_commit_sha || github.sha }}
           # Full history brings refs/remotes/origin/master and tags along, so
           # the ancestry and collision checks need no credentialed fetch.
           fetch-depth: 0
@@ -125,163 +116,22 @@ jobs:
 
           echo "tag=$RELEASE_TAG" >> "$GITHUB_OUTPUT"
           echo "version=$PACKAGE_VERSION" >> "$GITHUB_OUTPUT"
-          echo "prefix=$ASSET_PREFIX-$PACKAGE_VERSION" >> "$GITHUB_OUTPUT"
 
-      - name: Set up pnpm
-        uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
-      - name: Set up Node.js
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-        with:
-          node-version-file: package.json
-          cache: pnpm
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+  checks:
+    name: Checks
+    needs: context
+    uses: ./.github/workflows/ci.yml
 
-      - name: Run quality checks
-        run: pnpm check
-
-      - name: Build release archives
-        run: pnpm release
-
-      - name: Assemble release assets with checksums
-        env:
-          VERSION: ${{ steps.context.outputs.version }}
-          PREFIX: ${{ steps.context.outputs.prefix }}
-        run: |
-          set -euo pipefail
-          mkdir -p release-artifacts
-          COUNT=0
-          # One archive per browser target the build produced.
-          for ZIP in "$BUILD_DIR"/*.zip; do
-            [[ -f "$ZIP" ]] || continue
-            BROWSER="$(basename "$ZIP" .zip)"
-            MANIFEST="$BUILD_DIR/$BROWSER/manifest.json"
-            BUILT_VERSION="$(jq -er '.version' "$MANIFEST")"
-            if [[ "$BUILT_VERSION" != "$VERSION" ]]; then
-              echo "$MANIFEST version $BUILT_VERSION does not match $VERSION" >&2
-              exit 1
-            fi
-            cp "$ZIP" "release-artifacts/$PREFIX-$BROWSER.zip"
-            COUNT=$((COUNT + 1))
-          done
-          if [[ "$COUNT" -eq 0 ]]; then
-            echo "No browser archives found in $BUILD_DIR" >&2
-            exit 1
-          fi
-          git archive --format=zip -o "release-artifacts/$PREFIX-source.zip" HEAD
-          # The checksum file lists bare asset names, so it is generated
-          # and later checked inside the directory holding the assets.
-          (cd release-artifacts && sha256sum -- *.zip > SHA256SUMS.txt)
-          cat release-artifacts/SHA256SUMS.txt
-
-      - name: Upload workflow artifacts
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: ${{ steps.context.outputs.prefix }}
-          path: release-artifacts/
-          if-no-files-found: error
-          retention-days: 30
-          # A re-run of the same tag is a new attempt of the same run.
-          overwrite: true
-
-      - name: Create tag for merged release PR
-        if: env.DRY_RUN == 'false' && github.event_name == 'pull_request'
-        env:
-          GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: ${{ steps.context.outputs.tag }}
-          VERSION: ${{ steps.context.outputs.version }}
-        run: |
-          set -euo pipefail
-          if git show-ref --verify --quiet "refs/tags/$RELEASE_TAG"; then
-            echo "Tag $RELEASE_TAG already points to this commit"
-            exit 0
-          fi
-          COMMIT="$(git rev-parse HEAD)"
-          TAG_OBJECT="$(gh api --method POST \
-            "repos/$GITHUB_REPOSITORY/git/tags" \
-            -f tag="$RELEASE_TAG" \
-            -f message="$RELEASE_TITLE $VERSION" \
-            -f object="$COMMIT" \
-            -f type=commit \
-            --jq .sha)"
-          gh api --method POST "repos/$GITHUB_REPOSITORY/git/refs" \
-            -f ref="refs/tags/$RELEASE_TAG" \
-            -f sha="$TAG_OBJECT" > /dev/null
-
-      - name: Publish GitHub Release
-        id: publish
-        if: env.DRY_RUN == 'false'
-        env:
-          GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: ${{ steps.context.outputs.tag }}
-          VERSION: ${{ steps.context.outputs.version }}
-        run: |
-          set -euo pipefail
-          # gh creates the release as a draft, uploads every asset, and
-          # publishes it last; a failed upload deletes the draft again.
-          NOTES="Store-ready extension archives, the source archive, and SHA-256 checksums."
-          NOTES="$NOTES Store submissions are run separately with the deploy workflows."
-          gh release create "$RELEASE_TAG" \
-            --repo "$GITHUB_REPOSITORY" \
-            --verify-tag \
-            --title "$RELEASE_TITLE $VERSION" \
-            --notes "$NOTES" \
-            --generate-notes \
-            release-artifacts/*.zip \
-            release-artifacts/SHA256SUMS.txt
-
-      - name: Mark the release PR as tagged
-        if: success() && github.event_name == 'pull_request'
-        continue-on-error: true
-        env:
-          GH_TOKEN: ${{ github.token }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-        run: |
-          set -euo pipefail
-          gh pr edit "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" \
-            --remove-label "autorelease: pending" \
-            --add-label "autorelease: tagged"
-
-      - name: Write release summary
-        if: always()
-        env:
-          PUBLISH_OUTCOME: ${{ steps.publish.outcome }}
-          RELEASE_TAG: ${{ steps.context.outputs.tag }}
-        run: |
-          set -euo pipefail
-          if [[ -f release-artifacts/SHA256SUMS.txt ]]; then
-            {
-              if [[ "$DRY_RUN" == "true" ]]; then
-                echo "## Dry run: nothing was published"
-              elif [[ "$PUBLISH_OUTCOME" == "success" ]]; then
-                echo "## Release $RELEASE_TAG"
-                echo
-                echo "Submit it to the stores with the deploy workflows (Actions tab or \`gh workflow run\`)."
-              else
-                echo "## Release $RELEASE_TAG was not published"
-                echo "Publish step outcome: \`$PUBLISH_OUTCOME\`"
-              fi
-              echo '```'
-              cat release-artifacts/SHA256SUMS.txt
-              echo '```'
-            } >> "$GITHUB_STEP_SUMMARY"
-          fi
-
-  # Repository-specific addition: the signed Kode Injector Helper packages are
-  # built on macOS and attached to the release created above, and their
-  # checksums are appended to SHA256SUMS.txt. On a dry run they are only
-  # retained as workflow artifacts.
   native:
     name: Build, sign, and notarize the helper
-    needs: release
+    needs: [context, checks]
     runs-on: macos-latest
     timeout-minutes: 90
     permissions:
-      contents: write
+      contents: read
     env:
       DRY_RUN: ${{ github.event_name == 'workflow_dispatch' }}
       GH_TOKEN: ${{ github.token }}
-      RELEASE_TAG: ${{ needs.release.outputs.tag }}
       KODE_INJECTOR_EDGE_ID: ${{ vars.KODE_INJECTOR_EDGE_ID }}
       APPLE_DEVELOPER_ID: ${{ vars.APPLE_DEVELOPER_ID }}
       APPLE_NOTARY_KEY_ID: ${{ vars.APPLE_NOTARY_KEY_ID }}
@@ -290,25 +140,17 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.merge_commit_sha || github.ref }}
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.merged && github.event.pull_request.merge_commit_sha || github.sha }}
           persist-credentials: false
       - name: Read the package version
         id: context
         run: echo "version=$(jq -er '.version' package.json)" >> "$GITHUB_OUTPUT"
-      - name: Set up pnpm
-        uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
-      - name: Set up Node.js
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-        with:
-          node-version-file: package.json
-          cache: pnpm
+      - uses: ./.github/actions/setup-toolchain
       - name: Set up Go
         uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6.5.0
         with:
           go-version: '1.26.x'
           cache-dependency-path: native-host/go.sum
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
       - name: Configure isolated Apple signing credentials
         env:
           APPLE_CERTIFICATE_P12_BASE64: ${{ secrets.APPLE_CERTIFICATE_P12_BASE64 }}
@@ -411,32 +253,11 @@ jobs:
       - name: Retain signed release candidate
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: kode-injector-helper-${{ steps.context.outputs.version }}
+          name: native-archives
+          overwrite: true
           path: build/native/${{ steps.context.outputs.version }}/
           if-no-files-found: error
-          retention-days: 30
-      - name: Attach the helper packages to the release
-        if: env.DRY_RUN == 'false'
-        env:
-          PACKAGE_VERSION: ${{ steps.context.outputs.version }}
-        run: |
-          set -euo pipefail
-          DIR="build/native/$PACKAGE_VERSION"
-          SUMS_DIR="$RUNNER_TEMP/sums"
-          mkdir -p "$SUMS_DIR"
-          gh release download "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" \
-            --pattern SHA256SUMS.txt --dir "$SUMS_DIR"
-          ASSETS=()
-          while IFS= read -r artifact; do
-            ASSETS+=("$DIR/$artifact")
-          done < <(pnpm exec tsx scripts/native-host/package.ts --list-artifacts)
-          # The release checksum file lists every asset with its bare name:
-          # the browser and source archives from the release job plus the
-          # helper packages from this job.
-          cat "$DIR/SHA256SUMS" >> "$SUMS_DIR/SHA256SUMS.txt"
-          (cd "$DIR" && shasum -a 256 --check --strict --ignore-missing "$SUMS_DIR/SHA256SUMS.txt")
-          gh release upload "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --clobber \
-            "${ASSETS[@]}" "$SUMS_DIR/SHA256SUMS.txt"
+          retention-days: 14
       - name: Remove Apple signing credentials
         if: always()
         run: |
@@ -446,3 +267,125 @@ jobs:
           rm -f \
             "${SIGNING_CERTIFICATE_PATH:-$RUNNER_TEMP/kode-injector-signing.p12}" \
             "$NOTARY_KEY_PATH"
+
+  publish:
+    name: Publish verified release
+    needs: [context, checks, native]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.merged && github.event.pull_request.merge_commit_sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Download verified browser and source archives
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7
+        with:
+          name: extension-archives
+          path: release-artifacts
+      - name: Verify downloaded checksums
+        working-directory: release-artifacts
+        run: sha256sum --check --strict SHA256SUMS.txt
+      - name: Download signed helper archives
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7
+        with:
+          name: native-archives
+          path: native-artifacts
+      - name: Combine verified release assets
+        run: |
+          set -euo pipefail
+          (cd native-artifacts && sha256sum --check --strict SHA256SUMS)
+          while read -r HASH FILE; do
+            FILE="${FILE#\*}"
+            test ! -e "release-artifacts/$FILE"
+            cp "native-artifacts/$FILE" "release-artifacts/$FILE"
+          done < native-artifacts/SHA256SUMS
+          cat native-artifacts/SHA256SUMS >> release-artifacts/SHA256SUMS.txt
+          (cd release-artifacts && sha256sum --check --strict SHA256SUMS.txt)
+      - name: Create tag for merged release PR
+        if: env.DRY_RUN == 'false' && github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ needs.context.outputs.tag }}
+          VERSION: ${{ needs.context.outputs.version }}
+        run: |
+          set -euo pipefail
+          if git show-ref --verify --quiet "refs/tags/$RELEASE_TAG"; then
+            echo "Tag $RELEASE_TAG already points to this commit"
+            exit 0
+          fi
+          COMMIT="$(git rev-parse HEAD)"
+          TAG_OBJECT="$(gh api --method POST \
+            "repos/$GITHUB_REPOSITORY/git/tags" \
+            -f tag="$RELEASE_TAG" \
+            -f message="$RELEASE_TITLE $VERSION" \
+            -f object="$COMMIT" \
+            -f type=commit \
+            --jq .sha)"
+          gh api --method POST "repos/$GITHUB_REPOSITORY/git/refs" \
+            -f ref="refs/tags/$RELEASE_TAG" \
+            -f sha="$TAG_OBJECT" > /dev/null
+
+      - name: Publish GitHub Release
+        id: publish
+        if: env.DRY_RUN == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ needs.context.outputs.tag }}
+          VERSION: ${{ needs.context.outputs.version }}
+        run: |
+          set -euo pipefail
+          # gh creates the release as a draft, uploads every asset, and
+          # publishes it last; a failed upload deletes the draft again.
+          NOTES="Store-ready extension archives, the source archive, and SHA-256 checksums."
+          NOTES="$NOTES Store submissions are run separately with the deploy workflows."
+          gh release create "$RELEASE_TAG" \
+            --repo "$GITHUB_REPOSITORY" \
+            --verify-tag \
+            --title "$RELEASE_TITLE $VERSION" \
+            --notes "$NOTES" \
+            --generate-notes \
+            release-artifacts/*
+
+      - name: Mark the release PR as tagged
+        if: success() && github.event_name == 'pull_request'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          set -euo pipefail
+          gh label create "autorelease: tagged" --repo "$GITHUB_REPOSITORY" --force
+          gh pr edit "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" \
+            --remove-label "autorelease: pending" \
+            --add-label "autorelease: tagged"
+
+      - name: Write release summary
+        if: always()
+        env:
+          PUBLISH_OUTCOME: ${{ steps.publish.outcome }}
+          RELEASE_TAG: ${{ needs.context.outputs.tag }}
+        run: |
+          set -euo pipefail
+          if [[ -f release-artifacts/SHA256SUMS.txt ]]; then
+            {
+              if [[ "$DRY_RUN" == "true" ]]; then
+                echo "## Dry run: nothing was published"
+              elif [[ "$PUBLISH_OUTCOME" == "success" ]]; then
+                echo "## Release $RELEASE_TAG"
+                echo
+                echo "Submit it to the stores with the deploy workflows (Actions tab or \`gh workflow run\`)."
+              else
+                echo "## Release $RELEASE_TAG was not published"
+                echo "Publish step outcome: \`$PUBLISH_OUTCOME\`"
+              fi
+              echo '```'
+              cat release-artifacts/SHA256SUMS.txt
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
