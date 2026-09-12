@@ -6,8 +6,10 @@
  */
 
 import { createHash } from 'node:crypto';
+
 import AdmZip from 'adm-zip';
 import { describe, expect, it } from 'vitest';
+
 import {
     AMO_REVIEW_NOTES_PATH,
     GECKO_ID,
@@ -39,6 +41,11 @@ const firefoxManifest = JSON.stringify({
     version: '1.2.3',
     browser_specific_settings: { gecko: { id: GECKO_ID } },
     background: { scripts: ['background.js'] },
+});
+const firefoxManifestWithoutBackground = JSON.stringify({
+    manifest_version: 3,
+    version: '1.2.3',
+    browser_specific_settings: { gecko: { id: GECKO_ID } },
 });
 const sourceFiles: Record<string, string> = Object.fromEntries(
     SOURCE_REQUIRED_FILES.map((file) => [file, 'fixture']),
@@ -110,18 +117,34 @@ describe('published release contract', () => {
             verifyManifest(nested, '1.2.3', 'chrome');
         }).toThrow('exactly one');
     });
-    it.runIf(GECKO_ID)('accepts a Firefox package only with the configured Gecko ID', () => {
-        const bytes = pack({ 'manifest.json': firefoxManifest });
-        expect(() => {
-            verifyManifest(bytes, '1.2.3', 'firefox');
-        }).not.toThrow();
-        const other = pack({
-            'manifest.json': firefoxManifest.replace(GECKO_ID, 'another-addon@example.test'),
-        });
-        expect(() => {
-            verifyManifest(other, '1.2.3', 'firefox');
-        }).toThrow('Gecko');
-    });
+    it.runIf(GECKO_ID)(
+        'accepts Firefox packages with the configured Gecko ID and valid background',
+        () => {
+            const bytes = pack({ 'manifest.json': firefoxManifest });
+            expect(() => {
+                verifyManifest(bytes, '1.2.3', 'firefox');
+            }).not.toThrow();
+            const withoutBackground = pack({
+                'manifest.json': firefoxManifestWithoutBackground,
+            });
+            expect(() => {
+                verifyManifest(withoutBackground, '1.2.3', 'firefox');
+            }).not.toThrow();
+            const other = pack({
+                'manifest.json': firefoxManifest.replace(GECKO_ID, 'another-addon@example.test'),
+            });
+            expect(() => {
+                verifyManifest(other, '1.2.3', 'firefox');
+            }).toThrow('Gecko');
+            const invalidBackground = firefoxManifest.replace(
+                '["background.js"]',
+                '"background.js"',
+            );
+            expect(() => {
+                verifyManifest(pack({ 'manifest.json': invalidBackground }), '1.2.3', 'firefox');
+            }).toThrow('background');
+        },
+    );
     it('requires matching source and notes for new submissions, permits historical checks', () => {
         expect(verifySource(pack(sourceFiles), '1.2.3', true)).toContain('Reviewer instructions');
         expect(() => {

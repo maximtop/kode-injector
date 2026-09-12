@@ -1,11 +1,13 @@
 /**
  * @file Minimal read-only AMO client for duplicate prevention and signed artifact verification.
- * Identical in every extension repository that deploys to Firefox; repository specifics live
- * in ./constants.
+ * Shared deployment contract for extension repositories; repository specifics live in
+ * ./constants.
  */
 
 import { createHash, createHmac, randomUUID } from 'node:crypto';
+
 import AdmZip from 'adm-zip';
+
 import { verifyManifest } from './release';
 
 /**
@@ -23,9 +25,59 @@ const AMO_JWT_LIFETIME_SECONDS = 60;
 const MILLISECONDS_PER_SECOND = 1000;
 
 /**
+ * AMO states understood by status reporting and signed artifact checks. Unknown API states
+ * remain valid input and are reported conservatively.
+ */
+export const AMO_STATUS = {
+    Public: 'public',
+    Disabled: 'disabled',
+    Unreviewed: 'unreviewed',
+} as const;
+
+/**
+ * Review state and signed artifact fields returned for one AMO file.
+ */
+export type AmoFile = {
+    /**
+     * Review state of the file.
+     */
+    status: string;
+
+    /**
+     * Download URL after AMO signs the file.
+     */
+    url?: string;
+
+    /**
+     * Content hash supplied for the signed file.
+     */
+    hash?: string;
+};
+
+/**
+ * Public version summary embedded in an AMO add-on response.
+ */
+export type AmoCurrentVersion = {
+    /**
+     * Public version string.
+     */
+    version: string;
+};
+
+/**
+ * Optional disabled state returned under AMO's snake-case API field.
+ */
+type AmoDisabledState = Partial<Record<'is_disabled', boolean>>;
+
+/**
+ * Optional public-version fields returned under AMO's snake-case API names.
+ */
+type AmoPublicVersionState = Partial<Record<'current_version', AmoCurrentVersion | null>>;
+
+/**
  * AMO fields needed to distinguish review, approval, signing and publication.
  */
-export type AmoVersion = {
+export type AmoVersion = AmoDisabledState & {
     /**
      * Numeric AMO version identifier.
      */
@@ -47,20 +99,15 @@ export type AmoVersion = {
     source?: string | null;
 
     /**
-     * Whether the version was disabled by Mozilla or the developer.
-     */
-    'is_disabled'?: boolean;
-
-    /**
      * Review state of the file and, once signed, its download URL and hash.
      */
-    file: { status: string; url?: string; hash?: string };
+    file: AmoFile;
 };
 
 /**
  * Add-on identity and current publicly listed version.
  */
-export type AmoAddon = {
+export type AmoAddon = AmoDisabledState & AmoPublicVersionState & {
     /**
      * Extension ID (`browser_specific_settings.gecko.id`).
      */
@@ -76,15 +123,6 @@ export type AmoAddon = {
      */
     status: string;
 
-    /**
-     * Whether the listing is disabled.
-     */
-    'is_disabled'?: boolean;
-
-    /**
-     * Currently published version, absent before the first approval.
-     */
-    'current_version'?: { version: string } | null;
 };
 
 /**
@@ -140,7 +178,7 @@ export const readAmo = async <T>(
         return null;
     }
     if (!response.ok) {
-        const body = await response.json().catch(() => null) as { detail?: unknown } | null;
+        const body = await response.json().catch((): null => null) as { detail?: unknown } | null;
         const detail = typeof body?.detail === 'string' ? body.detail : '';
         // Report only known authentication diagnostics, never arbitrary response values or
         // credentials.
@@ -166,14 +204,15 @@ export const describeAmoStatus = (addon: AmoAddon, version: AmoVersion | null): 
     if (!version) {
         return 'Version not submitted';
     }
-    if (version.is_disabled || addon.is_disabled || version.file.status === 'disabled') {
+    if (version.is_disabled || addon.is_disabled || version.file.status === AMO_STATUS.Disabled) {
         return 'Disabled, rejected or unavailable; inspect Developer Hub';
     }
-    if (version.file.status === 'unreviewed') {
+    if (version.file.status === AMO_STATUS.Unreviewed) {
         return 'Submitted; awaiting Mozilla review and signing';
     }
-    if (version.file.status === 'public') {
-        return addon.status === 'public' && addon.current_version?.version === version.version
+    if (version.file.status === AMO_STATUS.Public) {
+        const isCurrent = addon.current_version?.version === version.version;
+        return addon.status === AMO_STATUS.Public && isCurrent
             ? 'Approved and published on AMO'
             : 'Approved; not the current publicly listed version';
     }

@@ -4,7 +4,9 @@
  */
 
 import { createHash } from 'node:crypto';
+
 import AdmZip from 'adm-zip';
+
 import {
     AMO_REVIEW_NOTES_PATH,
     GECKO_ID,
@@ -123,8 +125,11 @@ export const verifyManifest = (bytes: Buffer, version: string, browser: string):
     }
     const serviceWorker = read(manifest, 'background', 'service_worker');
     if (browser === 'firefox') {
+        const backgroundScripts = read(manifest, 'background', 'scripts');
+        const hasValidBackground = backgroundScripts === undefined
+            || Array.isArray(backgroundScripts);
         if (read(manifest, 'browser_specific_settings', 'gecko', 'id') !== GECKO_ID
-            || !Array.isArray(read(manifest, 'background', 'scripts'))
+            || !hasValidBackground
             || serviceWorker) {
             throw new Error('Incorrect Firefox Gecko ID or background');
         }
