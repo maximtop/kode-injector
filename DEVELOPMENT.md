@@ -507,8 +507,8 @@ configured.
 To prepare a release:
 
 1. Run **Release** by hand as the signing preflight and inspect the retained
-   artifacts: `kode-injector-<version>` (the browser archives) and
-   `kode-injector-helper-<version>` (the native platform archives, both
+   artifacts: `extension-archives` (the browser archives) and
+   `native-archives` (the native platform archives, both
    notarized macOS DMGs, both independently stapled apps, and `SHA256SUMS`).
    For the final manual Gatekeeper gate, download each DMG through a browser
    on a clean test account, verify quarantine is present, launch the app from
