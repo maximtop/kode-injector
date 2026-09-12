@@ -9,6 +9,7 @@ import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { appendFileSync, readFileSync } from 'node:fs';
 import path from 'node:path';
+
 import AdmZip from 'adm-zip';
 import {
     beforeEach,
@@ -17,6 +18,7 @@ import {
     it,
     vi,
 } from 'vitest';
+
 import {
     AMO_REVIEW_NOTES_PATH,
     GECKO_ID,

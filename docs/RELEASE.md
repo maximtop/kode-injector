@@ -3,6 +3,8 @@
 This document has the same structure in every extension repository; only the
 store list, the identifiers, and the repository-specific notes differ.
 
+The cross-repository contract and extraction boundary are documented in [Shared store deployment](STORE_DEPLOYMENT.md).
+
 - [Cut a release](#cut-a-release)
 - [Store deployment](#store-deployment)
   - [Chrome Web Store](#chrome-web-store)
