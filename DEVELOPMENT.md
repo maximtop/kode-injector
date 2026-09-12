@@ -514,8 +514,9 @@ To prepare a release:
    the mounted image and Applications without bypassing Gatekeeper, test
    Install/Repair/Uninstall, and repeat once without network access to
    confirm the stapled tickets work.
-2. Bump `version` in `package.json`, merge it to `master`, and push the
-   matching tag: `git tag vX.Y.Z && git push origin vX.Y.Z`.
+2. Run **Please release** with the desired newer `X.Y.Z` version and merge its
+   release PR. The workflow raises `package.json`; the manual version-and-tag
+   path remains available as a fallback.
 3. Wait for the workflow to publish the GitHub Release with the browser
    archives and the helper packages, then start each desired store workflow
    with that tag.
@@ -524,4 +525,3 @@ The workflow refuses a tag that does not match `package.json`, does not point to
 a `master` commit, or already has a GitHub Release. It never silently replaces
 existing browser assets; the helper packages and `SHA256SUMS.txt` are
 attached by the `native` job of the same run.
-
