@@ -27,7 +27,7 @@ jobs:
       APP_STORE_CONNECT_API_ISSUER_ID: ${{ vars.APP_STORE_CONNECT_API_ISSUER_ID }}
     steps:
       - name: Check out deployment helpers
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
           ref: ${{ github.workflow_sha }}
@@ -73,16 +73,20 @@ jobs:
 
       - name: Check out released source
         if: steps.release.outputs.deploy == 'true'
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
           ref: ${{ steps.release.outputs.tag }}
 
+      - name: Set up pnpm
+        if: steps.release.outputs.deploy == 'true'
+        uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
       - name: Set up Node.js
         if: steps.release.outputs.deploy == 'true'
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          node-version: '24'
+          node-version-file: package.json
+          cache: pnpm
 
       - name: Set up Go
         if: steps.release.outputs.deploy == 'true'
@@ -108,7 +112,6 @@ jobs:
       - name: Install dependencies
         if: steps.release.outputs.deploy == 'true'
         run: |
-          corepack enable
           pnpm install --frozen-lockfile
 
       - name: Configure isolated Apple credentials

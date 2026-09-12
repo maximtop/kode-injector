@@ -402,8 +402,8 @@ Options constructs a version-matched public URL of the form
 from `runtime.getManifest().version` and `runtime.getPlatformInfo()`. It never
 uses a moving latest-release alias, guesses an unsupported target, or calls the GitHub API;
 unknown values fall back to the complete Releases page. These end-user links
-become available once the `native` job of the release workflow has attached the
-helper packages to the published release, a few minutes after the tag.
+become available when the release is published: publication waits for the
+`native` job and includes the verified helper packages from the start.
 
 Each macOS disk image contains one architecture-specific `Kode Injector
 Helper.app` and an Applications symlink, with no root-level executable. The app
@@ -449,9 +449,9 @@ validates the Safari app. CI has read-only repository permissions and never
 publishes a release.
 
 The `Release` workflow is the pipeline shared with the other extension
-repositories: on a `vX.Y.Z` tag it runs `pnpm check`, builds
+repositories: after a release PR merge or on a `vX.Y.Z` tag it reuses CI to build
 `kode-injector-<version>-{chrome,edge,firefox}.zip`, the source archive and
-`SHA256SUMS.txt`, and publishes the GitHub Release. Its `native` job then
+`SHA256SUMS.txt`. Before publication, its `native` job
 builds the helper packages on a GitHub-hosted macOS runner, signs the two
 nested helpers inside-out and then the outer app (signing commands must not
 use `--deep`), notarizes each architecture twice (first a ZIP of the app is
@@ -459,10 +459,11 @@ submitted, accepted, stapled and validated, then the disk image is rebuilt
 around that stapled app, signed, submitted, stapled and validated), checks the
 result with `codesign`, `stapler`, `syspolicy_check distribution`,
 `spctl --type execute` for the mounted app and `spctl --type open` for the
-DMG, attaches the packages to the release, and appends their checksums to
+DMG. The final publication job combines the browser and helper packages,
+verifies them, and includes their checksums in
 `SHA256SUMS.txt`. Running the workflow by hand is a dry run that builds and
-signs everything and retains the `kode-injector-<version>` and
-`kode-injector-helper-<version>` workflow artifacts (30 days) without
+signs everything and retains the `extension-archives` and
+`native-archives` workflow artifacts (14 days) without
 publishing; use it as the signing preflight before tagging.
 
 The four store workflows are dispatched independently from their own **Run
@@ -506,8 +507,8 @@ configured.
 To prepare a release:
 
 1. Run **Release** by hand as the signing preflight and inspect the retained
-   artifacts: `kode-injector-<version>` (the browser archives) and
-   `kode-injector-helper-<version>` (the native platform archives, both
+   artifacts: `extension-archives` (the browser archives) and
+   `native-archives` (the native platform archives, both
    notarized macOS DMGs, both independently stapled apps, and `SHA256SUMS`).
    For the final manual Gatekeeper gate, download each DMG through a browser
    on a clean test account, verify quarantine is present, launch the app from
@@ -524,4 +525,4 @@ To prepare a release:
 The workflow refuses a tag that does not match `package.json`, does not point to
 a `master` commit, or already has a GitHub Release. It never silently replaces
 existing browser assets; the helper packages and `SHA256SUMS.txt` are
-attached by the `native` job of the same run.
+assembled from the `native` job before the final publication step.

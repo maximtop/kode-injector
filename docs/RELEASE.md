@@ -30,13 +30,11 @@ full checks, builds the archives, creates `vX.Y.Z`, and publishes the GitHub
 Release. Nothing is sent to a browser store. Use `-f mode=validate` to check a
 version without creating a branch or PR.
 
-The workflow uses the built-in `GITHUB_TOKEN` unless an optional
-`RELEASE_PLEASE_TOKEN` is configured. The built-in token requires the repository
-setting that allows Actions to create pull requests. It does not start ordinary
-PR workflows for the PR it creates, so `release.yml` deliberately repeats the
-full quality and artifact checks after merge and creates no tag or release if
-they fail. A fine-grained token can be used when CI on the release PR itself is
-also wanted.
+`Please release` explicitly dispatches CI on its release branch, including
+when using the built-in `GITHUB_TOKEN`. No additional token is required.
+Wait for the required `check` before merging. The release workflow reuses
+the same CI workflow and publishes its verified artifacts without rebuilding.
+For Kode Injector, publication also waits for the signed native helpers.
 
 The manual version-and-tag fallback remains available:
 
@@ -61,7 +59,7 @@ The manual version-and-tag fallback remains available:
    - `SHA256SUMS.txt`, GNU `sha256sum` lines with the bare asset names
    - the signed Kode Injector Helper packages (`kode-injector-helper-*.dmg`,
      `kode-injector-native-*.tar.gz`, `kode-injector-native-*.zip`), built,
-     notarized and attached by the `native` job of the same workflow, which
+     notarized by the `native` job before publication, which
      also appends their checksums to `SHA256SUMS.txt`
 
 Release notes are a fixed sentence followed by the notes GitHub generates from
@@ -176,7 +174,7 @@ is a build input for the native host origin, not a deployment setting.
 - `status`: read review/publication status without uploading. Once AMO offers
   the signed XPI, download it, check the AMO SHA-256, manifest version, Gecko
   ID and Mozilla signature envelope, then retain it as an Actions artifact
-  for 30 days. The AMO hash authenticates the download; this is not a separate
+  for 14 days. The AMO hash authenticates the download; this is not a separate
   cryptographic verification of Mozilla's signing certificate chain.
 
 Firefox publishes automatically after Mozilla approval. The summary separates
@@ -343,3 +341,36 @@ Firefox Add-ons:
   to follow the review, or ship a new version.
 - **Status endpoint unavailable after a successful upload:** the submission
   stands; re-run in `status` mode later.
+
+## CI and branch protection
+
+CI runs for pull requests, master pushes, and manual dispatch, and is reusable
+by `Release`. Lint, type checking, tests, packaging, and applicable locale,
+E2E, or platform checks appear as separate jobs. `check` aggregates their
+results and fails if any required job fails or is cancelled.
+
+All jobs have explicit timeouts and use the pinned package manager with the
+pnpm cache. Release candidates and failure diagnostics are retained for 14
+days. The common package action verifies actual ZIP integrity, version,
+background entry points, icons, and presence of source locale catalogs; it
+does not re-review translations or require byte identity with source JSON.
+
+Master requires a pull request, resolved review conversations, and the green
+`check` against an up-to-date branch. No second-person approval is required.
+Force pushes and deleting master are disabled. Feature branches can be deleted
+after merge.
+
+## Deploy one store or all three
+
+Run **Deploy stores**, select `chrome`, `firefox`, `edge`, or `all`, choose a
+release tag (blank selects the latest stable release once), and choose
+`validate` or `submit`. Every selected store must pass validation before any
+submission begins. Submission results and moderation remain independent;
+successful submissions are not rolled back if another store later fails.
+
+```sh
+gh workflow run deploy-stores.yml -f target=all -f tag=vX.Y.Z -f mode=submit
+```
+
+The individual store workflows remain available, including Edge upload-only
+and Firefox status. Chrome still requires final publication after approval.
