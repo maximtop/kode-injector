@@ -308,3 +308,10 @@ one type, point the other field at an empty file.
 - [Privacy policy](PRIVACY.md) — information processed by the extension
 - [LLM agent rules](AGENTS.md) — AI-assisted development guidelines
 - [Report an issue](https://github.com/maximtop/kode-injector/issues/new)
+
+## Developer workflow
+
+Use `make install`, `make build`, `make start`, `make check`, and
+`make package`. Builds default to Chrome; packaging is local only. See
+[development guide](DEVELOPMENT.md) for browser targets, output paths,
+and the equivalent pnpm commands.

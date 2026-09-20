@@ -1,5 +1,32 @@
 # Development
 
+## Shared developer commands
+
+| Make | pnpm | Meaning |
+| --- | --- | --- |
+| `make install` | `pnpm install` | Install dependencies; `make setup` and `make init` are aliases. |
+| `make build [browser]` | `pnpm build [browser]` | Build once in development mode; Chrome by default. |
+| `make dev [browser]` | `pnpm dev [browser]` | Alias for the one-shot development build. |
+| `make start [browser]` | `pnpm start [browser]` | Watch development files; Chrome by default. |
+| `make release [browser]` | `pnpm release [browser]` | Build local production archives; all store targets by default. |
+| `make package [browser]` | `pnpm package [browser]` | Alias for local release packaging. |
+| `make check` | `pnpm check` | Static checks and automated tests, without store submission. |
+
+`make` defaults to `make build`. Pass at most one supported browser as an
+extra goal, for example `make build firefox`. Unknown targets fail before
+building. `lint`, `typecheck`, and `test` also have matching Make targets;
+`make validate` is a compatibility alias for `make check`.
+Store upload/publish commands and CI deployment workflows are separate:
+`release` and `package` never submit to a store or create a GitHub release.
+
+Rspack writes `build/dev/<browser>` and `build/release/<browser>`, with
+matching ZIPs beside the directories. Chrome, Edge, and Firefox are the
+default release targets. Safari is an explicit web-extension target;
+`make build safari` and `make release safari` do not build, sign, or upload
+the containing macOS app. Existing `safari:*` and native-host commands retain
+their separate roles.
+
+
 This document describes how to set up the development environment, build the
 extension, and contribute to the project. Coding conventions, architecture
 notes, and safety rules live in [AGENTS.md](AGENTS.md).
@@ -30,7 +57,7 @@ Convenience targets are defined in the `Makefile` and map to `pnpm` scripts:
 | --- | --- |
 | `make install` | Install dependencies (`pnpm install`) |
 | `make start` | Watch the Chrome development build |
-| `make build` | Create release builds for every browser |
+| `make build` | Create a Chrome development build |
 | `make lint` | Run ESLint over source, scripts, and tests |
 | `make typecheck` | Run TypeScript validation without emitting files |
 | `make test` | Run build and localization tests |
@@ -42,7 +69,7 @@ Equivalent `pnpm` scripts:
 
 ```sh
 pnpm install   # install dependencies
-pnpm dev       # one-shot development build for every browser
+pnpm dev       # one-shot Chrome development build
 pnpm dev chrome --watch # watch one development target
 pnpm release   # release build for every browser
 pnpm lint      # run ESLint over source, scripts, and the Rspack config

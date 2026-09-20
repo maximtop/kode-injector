@@ -43,7 +43,10 @@
         "check": "pnpm test && pnpm locales:validate && pnpm lint && pnpm typecheck",
         "validate": "pnpm check",
         "lint": "eslint --ext .js,.jsx,.ts,.tsx src scripts tests rspack.config.ts",
-        "typecheck": "tsc --noEmit"
+        "typecheck": "tsc --noEmit",
+        "build": "pnpm dev",
+        "start": "pnpm dev --watch",
+        "package": "pnpm release"
     },
     "dependencies": {
         "@adguard/translate": "2.0.1",

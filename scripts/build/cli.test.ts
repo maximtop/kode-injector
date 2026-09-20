@@ -49,14 +49,14 @@ const createTestProgram = (buildEnv: typeof CHANNEL_ENVS[keyof typeof CHANNEL_EN
 };
 
 test.each([CHANNEL_ENVS.DEV, CHANNEL_ENVS.RELEASE])(
-    '%s keeps the three store extension targets as the default build',
+    '%s selects its default browser targets',
     async (buildEnv) => {
         const { program, calls } = createTestProgram(buildEnv);
 
         await program.parseAsync(['node', 'bundle']);
 
         expect(calls).toEqual([{
-            targets: [
+            targets: buildEnv === CHANNEL_ENVS.DEV ? [BROWSER_TARGETS.CHROME] : [
                 BROWSER_TARGETS.CHROME,
                 BROWSER_TARGETS.EDGE,
                 BROWSER_TARGETS.FIREFOX,
@@ -90,12 +90,11 @@ test('watches one explicitly selected development target', async () => {
     }]);
 });
 
-test('rejects development watch mode without a browser target', async () => {
+test('watches Chrome by default', async () => {
     const { program, calls } = createTestProgram(CHANNEL_ENVS.DEV);
 
-    await expect(program.parseAsync(['node', 'bundle', '--watch']))
-        .rejects.toMatchObject({ code: 'commander.error' });
-    expect(calls).toEqual([]);
+    await program.parseAsync(['node', 'bundle', '--watch']);
+    expect(calls).toEqual([{ targets: [BROWSER_TARGETS.CHROME], watch: true }]);
 });
 
 test('rejects release watch mode', async () => {
