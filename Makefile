@@ -1,30 +1,39 @@
-.PHONY: install start build dev release chrome edge firefox lint typecheck test check validate \
-	native_test native_package chrome_status chrome_update chrome_publish .require-chrome-app-id
+# Local builds never upload, submit, or publish. See DEVELOPMENT.md for outputs.
+.DEFAULT_GOAL := build
+override BROWSERS := chrome edge firefox safari
+override BROWSER_GOALS := $(filter $(BROWSERS),$(MAKECMDGOALS))
+override BUILD_GOALS := $(filter build dev start release package,$(MAKECMDGOALS))
+override COMMAND_GOALS := install setup init build dev start release package lint typecheck test check validate native_test native_package chrome_status chrome_update chrome_publish .require-chrome-app-id
+override UNKNOWN_GOALS := $(filter-out $(COMMAND_GOALS) $(BROWSERS),$(MAKECMDGOALS))
+ifneq ($(UNKNOWN_GOALS),)
+  $(error Unknown command or unsupported browser: $(UNKNOWN_GOALS). Supported browsers: $(BROWSERS))
+endif
+ifneq ($(word 2,$(BROWSER_GOALS)),)
+  $(error Choose at most one browser: $(BROWSERS))
+endif
+ifneq ($(BROWSER_GOALS),)
+  ifneq ($(words $(BUILD_GOALS)),1)
+    $(error A browser requires exactly one build command: build, dev, start, release or package)
+  endif
+endif
+override BROWSER_TARGET := $(firstword $(BROWSER_GOALS))
 
-BROWSERS := chrome edge firefox
-BROWSER_TARGET := $(firstword $(filter $(BROWSERS),$(MAKECMDGOALS)))
+.PHONY: $(COMMAND_GOALS) $(BROWSERS)
 
-install:
+install setup init:
 	pnpm install
 
+build dev:
+	pnpm build $(BROWSER_TARGET)
+
 start:
-	pnpm dev chrome --watch
+	pnpm start $(BROWSER_TARGET)
 
-build:
+release package:
 	pnpm release $(BROWSER_TARGET)
-
-dev:
-	pnpm dev $(BROWSER_TARGET)
-
-release:
-	pnpm release $(BROWSER_TARGET)
-
-chrome edge firefox:
-	@:
 
 lint:
 	pnpm lint
-	pnpm typecheck
 
 typecheck:
 	pnpm typecheck
@@ -32,11 +41,11 @@ typecheck:
 test:
 	pnpm test
 
-check:
+check validate:
 	pnpm check
 
-validate:
-	pnpm check
+$(BROWSERS):
+	@:
 
 native_test:
 	pnpm native:test

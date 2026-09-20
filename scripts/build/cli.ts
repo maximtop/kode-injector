@@ -39,13 +39,11 @@ type BuildCommandOptions = {
  *
  * @param program Commander program used to report validation failures.
  * @param buildEnv Selected build channel.
- * @param target Selected browser, when present.
  * @param watch Whether watch mode was requested.
  */
 const validateWatch = (
     program: Command,
     buildEnv: BuildEnv,
-    target: BrowserTarget | undefined,
     watch: boolean,
 ): void => {
     if (!watch) {
@@ -54,10 +52,6 @@ const validateWatch = (
 
     if (buildEnv === CHANNEL_ENVS.RELEASE) {
         program.error('Release builds do not support watch mode.');
-    }
-
-    if (!target) {
-        program.error('Watch mode requires a browser target.');
     }
 };
 
@@ -90,14 +84,17 @@ export const createBuildProgram = (
                 const options = command.parent?.opts<BuildCommandOptions>()
                     ?? { watch: false };
 
-                validateWatch(program, buildEnv, target, options.watch);
+                validateWatch(program, buildEnv, options.watch);
                 await build([target], options.watch);
             });
     }
 
     program.action(async (options: BuildCommandOptions) => {
-        validateWatch(program, buildEnv, undefined, options.watch);
-        await build([...DEFAULT_BROWSER_TARGETS], options.watch);
+        const targets = buildEnv === CHANNEL_ENVS.DEV
+            ? [BROWSER_TARGETS.CHROME]
+            : [...DEFAULT_BROWSER_TARGETS];
+        validateWatch(program, buildEnv, options.watch);
+        await build(targets, options.watch);
     });
 
     return program;
