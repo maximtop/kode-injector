@@ -1,8 +1,9 @@
 # Building instructions for the Firefox Add-ons review team
 
-These notes are uploaded to the AMO `approval_notes` field with every new
-version and ship inside the source archive attached to the submission. The
-archive is the committed repository state that produced the submitted package.
+The AMO `approval_notes` field carries a short summary that links these notes,
+pinned to the release tag. They also ship inside the source archive attached to
+the submission. The archive is the committed repository state that produced the
+submitted package.
 
 ## Prerequisites
 
