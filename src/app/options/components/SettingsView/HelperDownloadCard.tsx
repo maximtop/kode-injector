@@ -2,8 +2,8 @@
  * @file Card offering the platform-matched Kode Injector Helper download.
  */
 
-import React from 'react';
 import { Button } from '@mantine/core';
+import React from 'react';
 
 import {
     NativeHostDownloadKind,
@@ -67,6 +67,10 @@ interface HelperDownloadCardProps {
  * Renders the helper download card.
  *
  * @param props HelperDownloadCard props.
+ * @param props.download
+ * @param props.disabled
+ * @param props.onDownload
+ * @param props.onViewAllDownloads
  *
  * @returns Download card element.
  */

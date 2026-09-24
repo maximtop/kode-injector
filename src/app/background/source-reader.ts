@@ -2,10 +2,10 @@
  * @file Routes configured source URLs to the browser or native host.
  */
 
-/* eslint-disable jsdoc/require-jsdoc, no-useless-constructor, no-empty-function */
+/* eslint-disable jsdoc/require-jsdoc */
 
-import { log } from '../common/log';
 import { LocalSourceAccessMethod } from '../common/contracts';
+import { log } from '../common/log';
 import { NativeErrorCode } from '../common/native-host-protocol';
 import { urlUtils } from '../common/url-utils';
 

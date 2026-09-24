@@ -2,10 +2,11 @@
  * @file
  */
 
-import type { Page, Worker } from '@playwright/test';
-
 import { STORAGE_KEYS } from '../../src/app/common/constants';
+
 import { createRule, expect, test } from './fixtures';
+
+import type { Page, Worker } from '@playwright/test';
 
 const RULE_ROW = '[data-testid="rule-row"]';
 const RULE_CHIP = '.chip';

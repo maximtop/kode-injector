@@ -2,10 +2,9 @@
  * @file Builds a universal Xcode archive for Mac App Store distribution.
  */
 
-/* eslint-disable no-console */
-
 import fs from 'node:fs';
 import path from 'node:path';
+
 import {
     GENERATED_HELPER_PATH,
     ROOT_PATH,

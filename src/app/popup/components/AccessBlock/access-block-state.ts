@@ -2,7 +2,6 @@
  * @file Maps local-source access state onto the compact popup notice.
  */
 
-import { BrowserTarget } from '../../../common/browser-target';
 import { getBrowserCapabilities } from '../../../common/browser-capabilities';
 import {
     LocalSourceAccessMethod,
@@ -10,6 +9,8 @@ import {
 } from '../../../common/contracts';
 import { NativeHostStatus } from '../../../common/native-host-protocol';
 import { translator } from '../../../common/translator';
+
+import type { BrowserTarget } from '../../../common/browser-target';
 
 /**
  * Action offered by the compact access notice.

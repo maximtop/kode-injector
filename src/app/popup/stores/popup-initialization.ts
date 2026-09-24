@@ -3,6 +3,7 @@
  */
 
 import { SETTINGS } from '../../common/constants';
+
 import type {
     InjectionRule,
     LocalSourceAccessState,

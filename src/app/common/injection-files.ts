@@ -3,6 +3,7 @@
  */
 
 import { InjectionField } from './constants';
+
 import type { InjectionFileField, InjectionRule } from './contracts';
 
 export type { InjectionFileField };

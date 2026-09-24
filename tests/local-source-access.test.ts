@@ -132,7 +132,9 @@ test('a stale readiness probe cannot overwrite a later read failure', async () =
     );
 
     const state = access.getState();
-    await vi.waitFor(() => { expect(ping).toHaveBeenCalledOnce(); });
+    await vi.waitFor(() => {
+        expect(ping).toHaveBeenCalledOnce();
+    });
     access.markReadFailed();
     resolvePing?.({ protocolVersion: 1, hostVersion: '0.8.3' });
 
@@ -186,7 +188,9 @@ test('a stale native read failure is ignored after switching to browser access',
     );
 
     const state = access.getState();
-    await vi.waitFor(() => { expect(ping).toHaveBeenCalledOnce(); });
+    await vi.waitFor(() => {
+        expect(ping).toHaveBeenCalledOnce();
+    });
     method = LocalSourceAccessMethod.Browser;
     access.methodChanged(method);
     access.markReadFailed();

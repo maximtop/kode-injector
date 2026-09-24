@@ -2,16 +2,18 @@
  * @file Builds deterministic native-host release packages.
  */
 
-/* eslint-disable jsdoc/require-jsdoc, no-restricted-syntax, no-await-in-loop */
+/* eslint-disable jsdoc/require-jsdoc */
 /* eslint-disable import/no-extraneous-dependencies */
 
+import { execFileSync } from 'node:child_process';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { execFileSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
+
 import AdmZip from 'adm-zip';
+
 import {
     getNativeHostPublishedAsset,
     NativeHostPackageTarget,

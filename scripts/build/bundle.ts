@@ -2,12 +2,12 @@
  * @file
  */
 
-/* eslint-disable no-console */
 import { createRspackConfig } from '../../rspack.config';
 import {
     CHANNEL_ENVS,
     type BuildEnv,
 } from '../constants';
+
 import { bundleRunner } from './bundle-runner';
 import { createBuildProgram, type BuildCommandHandler } from './cli';
 
@@ -17,7 +17,7 @@ if (channelEnv !== CHANNEL_ENVS.DEV && channelEnv !== CHANNEL_ENVS.RELEASE) {
     throw new Error(`Unsupported CHANNEL_ENV: ${channelEnv ?? '(missing)'}`);
 }
 
-const buildEnv = channelEnv as BuildEnv;
+const buildEnv = channelEnv;
 
 /**
  * Builds the browser configurations selected by the command line.

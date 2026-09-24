@@ -2,33 +2,35 @@
  * @file Settings tab: file access, language, and appearance groups.
  */
 
-import React, { useContext, useMemo } from 'react';
-import { observer } from 'mobx-react';
 import {
     SegmentedControl,
     Select,
     useMantineColorScheme,
 } from '@mantine/core';
+import { observer } from 'mobx-react';
+import React, { useContext, useMemo } from 'react';
 
-import { rootStore } from '../../stores/RootStore';
-import { COLOR_SCHEMES } from '../../../common/color-scheme';
-import type { BrowserTarget } from '../../../common/browser-target';
 import { getBrowserCapabilities } from '../../../common/browser-capabilities';
-import { isBuiltInDemoOffered } from '../../../common/demo-contracts';
+import { COLOR_SCHEMES } from '../../../common/color-scheme';
 import {
     LocalSourceAccessMethod,
 } from '../../../common/contracts';
-import { NativeHostStatus } from '../../../common/native-host-protocol';
-import type { NativeHostDownload } from '../../../common/native-host-download';
+import { isBuiltInDemoOffered } from '../../../common/demo-contracts';
 import { i18n } from '../../../common/i18n';
-import { messenger } from '../../../common/messenger';
 import { log } from '../../../common/log';
+import { messenger } from '../../../common/messenger';
+import { NativeHostStatus } from '../../../common/native-host-protocol';
 import { translator } from '../../../common/translator';
-import type { LocalePreference } from '../../../common/locale';
+import { rootStore } from '../../stores/RootStore';
+
 import { AccessMethodCards } from './AccessMethodCards';
-import { MethodStatus } from './MethodStatus';
 import { HelperDownloadCard } from './HelperDownloadCard';
 import { buildLanguageOptions } from './language-options';
+import { MethodStatus } from './MethodStatus';
+
+import type { BrowserTarget } from '../../../common/browser-target';
+import type { LocalePreference } from '../../../common/locale';
+import type { NativeHostDownload } from '../../../common/native-host-download';
 
 import './settings-view.pcss';
 
@@ -221,7 +223,7 @@ export const SettingsView = observer(({
                 <SegmentedControl
                     value={colorScheme}
                     onChange={(value) => {
-                        setColorScheme(value as typeof THEME_VALUES[number]);
+                        setColorScheme(value);
                     }}
                     data={THEME_VALUES.map((value) => ({
                         value,

@@ -4,6 +4,7 @@
 
 /* eslint-disable import/no-unresolved */
 import path from 'node:path';
+
 import { rspack, type Configuration } from '@rspack/core';
 
 import packageJson from './package.json';

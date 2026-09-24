@@ -2,8 +2,9 @@
  * @file
  */
 
-import browser from 'webextension-polyfill';
 import isNil from 'lodash/isNil';
+import browser from 'webextension-polyfill';
+
 import { app } from './app';
 import { injections } from './injections';
 
@@ -145,7 +146,7 @@ class UpdateService {
      */
     init = (): void => {
         browser.runtime.onInstalled.addListener(this.onInstalled);
-    }
+    };
 }
 
 export const updateService = new UpdateService();

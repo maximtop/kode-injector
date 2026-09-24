@@ -5,22 +5,24 @@
 import { expect, test, vi } from 'vitest';
 
 import {
-    DEMO_POLL_INTERVAL_MS,
-    DEMO_UI_WAIT_LIMIT_MS,
-    DemoStore,
-    DemoUiStatus,
-} from '../src/app/options/stores/DemoStore';
-import {
     DemoFailureReason,
     DemoLaunchStatus,
     type DemoLaunchState,
     type RunDemoResult,
 } from '../src/app/common/demo-contracts';
+import {
+    DEMO_POLL_INTERVAL_MS,
+    DEMO_UI_WAIT_LIMIT_MS,
+    DemoStore,
+    DemoUiStatus,
+} from '../src/app/options/stores/DemoStore';
 
-const flush = (): Promise<void> => new Promise((resolve) => { setTimeout(resolve, 0); });
+const flush = (): Promise<void> => new Promise((resolve) => {
+    setTimeout(resolve, 0);
+});
 
 const makeStore = () => {
-    const scheduled: Array<{ callback: () => void | Promise<void>; delayMs: number }> = [];
+    const scheduled: { callback: () => void | Promise<void>; delayMs: number }[] = [];
     const runDemo = vi.fn<() => Promise<RunDemoResult>>();
     const getDemoLaunchState = vi.fn<() => Promise<DemoLaunchState>>();
     const store = new DemoStore({
@@ -46,7 +48,9 @@ const makeStore = () => {
         await next.callback();
         await flush();
     };
-    return { store, runDemo, getDemoLaunchState, scheduled, tick };
+    return {
+        store, runDemo, getDemoLaunchState, scheduled, tick,
+    };
 };
 
 test('a refused run shows the reason without polling', async () => {
@@ -88,7 +92,9 @@ test('an accepted run polls until the background reports applied or failed', asy
 });
 
 test('a vanished launch is reported as interrupted and reset returns to idle', async () => {
-    const { store, runDemo, getDemoLaunchState, scheduled, tick } = makeStore();
+    const {
+        store, runDemo, getDemoLaunchState, scheduled, tick,
+    } = makeStore();
     runDemo.mockResolvedValue({ ok: true });
     getDemoLaunchState
         .mockResolvedValueOnce({ status: DemoLaunchStatus.None })
@@ -108,14 +114,15 @@ test('a vanished launch is reported as interrupted and reset returns to idle', a
 });
 
 test('polling stops with not confirmed after the UI wait limit', async () => {
-    const { store, runDemo, getDemoLaunchState, tick, scheduled } = makeStore();
+    const {
+        store, runDemo, getDemoLaunchState, tick, scheduled,
+    } = makeStore();
     runDemo.mockResolvedValue({ ok: true });
     getDemoLaunchState.mockResolvedValue({ status: DemoLaunchStatus.Waiting });
 
     await store.run();
     const ticks = DEMO_UI_WAIT_LIMIT_MS / DEMO_POLL_INTERVAL_MS;
     for (let index = 0; index < ticks; index += 1) {
-        // eslint-disable-next-line no-await-in-loop
         await tick();
     }
 

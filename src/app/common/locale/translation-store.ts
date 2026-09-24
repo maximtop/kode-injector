@@ -10,6 +10,7 @@ import {
 } from 'mobx';
 
 import { log } from '../log';
+
 import {
     BASE_LOCALE,
     LANGUAGE_AUTO,
@@ -17,8 +18,9 @@ import {
     type AvailableLocale,
     type LocalePreference,
 } from './locale-constants';
+
 import type { TextDirection } from './locale-types';
-import { TranslationService } from './translation-service';
+import type { TranslationService } from './translation-service';
 
 /**
  * Owns the observable locale state for one UI bundle.

@@ -16,16 +16,18 @@ import {
     type LocalSourceAccessState,
     type PopupTab,
 } from '../../common/contracts';
+import { i18n } from '../../common/i18n';
 import { FILE_ENABLED_FLAGS, isRuleActive } from '../../common/injection-files';
-import { messenger } from '../../common/messenger';
+import { applyLocalSourceAccessMethod } from '../../common/local-source-access-method';
 import { log } from '../../common/log';
+import { messenger } from '../../common/messenger';
+import { nativeMessagingPermission } from '../../common/native-messaging-permission';
 import { tabs } from '../../common/tabs';
 import { urlUtils } from '../../common/url-utils';
-import { i18n } from '../../common/i18n';
-import { applyLocalSourceAccessMethod } from '../../common/local-source-access-method';
-import { nativeMessagingPermission } from '../../common/native-messaging-permission';
-import type { RootStoreType } from './RootStore';
+
 import { preparePopupState } from './popup-initialization';
+
+import type { RootStoreType } from './RootStore';
 
 /**
  * Manages popup state and settings actions.
@@ -132,7 +134,7 @@ export class SettingsStore {
             this.siteIsBlacklisted = state.siteIsBlacklisted;
             this.popupDataReady = true;
         });
-    }
+    };
 
     /**
      * Explicitly returns Chromium to browser-managed local-file access.
@@ -212,7 +214,7 @@ export class SettingsStore {
         } catch (e) {
             log.error(e instanceof Error ? e.message : e);
         }
-    }
+    };
 
     /**
      * Enables the extension globally.
@@ -227,7 +229,7 @@ export class SettingsStore {
         } catch (e) {
             log.error(e instanceof Error ? e.message : e);
         }
-    }
+    };
 
     /**
      * Returns the active tab hostname.
@@ -266,7 +268,7 @@ export class SettingsStore {
         runInAction(() => {
             this.siteIsBlacklisted = true;
         });
-    }
+    };
 
     /**
      * Enables injections for the current site.
@@ -277,7 +279,7 @@ export class SettingsStore {
         runInAction(() => {
             this.siteIsBlacklisted = false;
         });
-    }
+    };
 
     /**
      * Toggles a single file of a matching rule and reloads the current tab.
@@ -309,7 +311,7 @@ export class SettingsStore {
         } catch (e) {
             log.error(e instanceof Error ? e.message : e);
         }
-    }
+    };
 
     /**
      * Opens the options page with the rule editor prefilled for this site.
@@ -325,5 +327,5 @@ export class SettingsStore {
         }
 
         await messenger.openTab(tabs.getOptionsUrlForSite(site));
-    }
+    };
 }

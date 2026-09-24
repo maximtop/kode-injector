@@ -2,11 +2,11 @@
  * @file Radio cards selecting the local-file access method.
  */
 
-import React from 'react';
 import classNames from 'classnames';
+import React from 'react';
 
-import { BrowserTarget } from '../../../common/browser-target';
 import { getBrowserCapabilities } from '../../../common/browser-capabilities';
+import { BrowserTarget } from '../../../common/browser-target';
 import { LocalSourceAccessMethod } from '../../../common/contracts';
 import { translator } from '../../../common/translator';
 
@@ -44,6 +44,10 @@ interface AccessMethodCardsProps {
  * fixed to the Helper and the selector is replaced with an explanation.
  *
  * @param props AccessMethodCards props.
+ * @param props.browserTarget
+ * @param props.method
+ * @param props.disabled
+ * @param props.onChange
  *
  * @returns Method selector element.
  */

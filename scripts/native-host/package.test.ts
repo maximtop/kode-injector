@@ -7,7 +7,9 @@
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+
 import { afterEach, expect, test } from 'vitest';
+
 import {
     getNativeHostPublishedAsset,
     NATIVE_HOST_PUBLISHED_ASSETS,

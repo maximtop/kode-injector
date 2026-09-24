@@ -4,17 +4,17 @@
 
 import { expect, test, vi } from 'vitest';
 
-import { SETTINGS } from '../src/app/common/constants';
 import {
     SettingsService,
     type SettingsStorage,
 } from '../src/app/background/settings-service';
+import { BrowserTarget } from '../src/app/common/browser-target';
+import { SETTINGS } from '../src/app/common/constants';
 import {
     LocalSourceAccessMethod,
     normalizeAppSettingsWithRepair,
     type AppSettings,
 } from '../src/app/common/contracts';
-import { BrowserTarget } from '../src/app/common/browser-target';
 
 class FakeStorage {
     private value: unknown;

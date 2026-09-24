@@ -6,7 +6,7 @@ import { expect, test } from 'vitest';
 
 import { AVAILABLE_LOCALES, checkLocale } from '../src/app/common/locale';
 
-const CASES: Array<[string | null, string | null]> = [
+const CASES: [string | null, string | null][] = [
     ['EN', 'en'],
     ['en-GB', 'en'],
     ['es-MX', 'es'],

@@ -2,12 +2,12 @@
  * @file Shared Mantine providers for the options page and the popup.
  */
 
-import React, { useEffect } from 'react';
 import {
     DirectionProvider,
     MantineProvider,
     useDirection,
 } from '@mantine/core';
+import React, { useEffect } from 'react';
 
 import { colorSchemeManager } from '../color-scheme';
 import { theme } from '../theme';
@@ -31,6 +31,7 @@ interface DirectionBridgeProps {
  * Keeps Mantine's direction context in sync with the active locale.
  *
  * @param props Bridge props.
+ * @param props.direction
  *
  * @returns Nothing; the component only synchronizes context.
  */
@@ -65,6 +66,8 @@ interface AppProvidersProps {
  * Wraps a page in the shared Mantine provider stack.
  *
  * @param props Provider props.
+ * @param props.direction
+ * @param props.children
  *
  * @returns Provider-wrapped subtree.
  */

@@ -4,24 +4,25 @@
 
 import browser from 'webextension-polyfill';
 
-import { NativeHostClient, type NativePort } from './native-host-client';
-import { SourceReader } from './source-reader';
-import { settings } from './settings';
 import { BrowserTarget, getCurrentBrowserTarget } from '../common/browser-target';
 import {
     SafariNativeClient,
     type SafariNativeMessenger,
 } from '../common/safari-native-client';
 
+import { NativeHostClient, type NativePort } from './native-host-client';
+import { settings } from './settings';
+import { SourceReader } from './source-reader';
+
 const browserTarget = getCurrentBrowserTarget();
 
 const externalNativeHostClient = new NativeHostClient((name) => {
-    return browser.runtime.connectNative(name) as unknown as NativePort;
+    return browser.runtime.connectNative(name);
 });
 
 const safariNativeClient = browserTarget === BrowserTarget.Safari
     ? new SafariNativeClient(
-        browser.runtime.sendNativeMessage.bind(browser.runtime) as SafariNativeMessenger,
+        browser.runtime.sendNativeMessage.bind(browser.runtime),
     )
     : undefined;
 

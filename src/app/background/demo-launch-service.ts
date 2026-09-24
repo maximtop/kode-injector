@@ -5,9 +5,6 @@
  * lifecycle is unit-testable without module mocks. `demo-launch.ts` wires it.
  */
 
-/* eslint-disable no-useless-constructor, no-empty-function */
-
-import type { CssInjectionCode, InjectionsCodeResponse } from '../common/contracts';
 import {
     DEMO_TARGET_URL,
     DemoFailureReason,
@@ -20,6 +17,8 @@ import {
     type RunDemoResult,
 } from '../common/demo-contracts';
 import { log } from '../common/log';
+
+import type { CssInjectionCode, InjectionsCodeResponse } from '../common/contracts';
 
 /**
  * Persistence of the single launch across background unloads.

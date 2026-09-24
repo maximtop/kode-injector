@@ -10,8 +10,8 @@ import {
     vi,
 } from 'vitest';
 
-import { injections } from '../src/app/background/injections';
 import { executeScript } from '../src/app/background/execute-script';
+import { injections } from '../src/app/background/injections';
 import { sourceReader } from '../src/app/background/native-host';
 import { InjectionField } from '../src/app/common/constants';
 import { log } from '../src/app/common/log';

@@ -3,12 +3,13 @@
  * invoking Apple tools.
  */
 
-/* eslint-disable import/no-extraneous-dependencies, jsdoc/require-jsdoc */
+/* eslint-disable import/no-extraneous-dependencies */
 
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+
 import {
     afterEach,
     beforeEach,

@@ -10,8 +10,8 @@ import {
     vi,
 } from 'vitest';
 
-import { contentScript } from '../src/app/content-script';
 import { messenger } from '../src/app/common/messenger';
+import { contentScript } from '../src/app/content-script';
 
 vi.mock('../src/app/common/messenger', () => ({
     messenger: { getInjectionsCode: vi.fn() },

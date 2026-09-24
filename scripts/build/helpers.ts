@@ -3,13 +3,14 @@
  */
 
 import lodash from 'lodash';
+
+import { BrowserPermission } from '../../src/app/common/constants';
 import {
     BROWSER_TARGETS,
     CHANNEL_ENVS,
     type BrowserTarget,
     type BuildEnv,
 } from '../constants';
-import { BrowserPermission } from '../../src/app/common/constants';
 
 const { capitalize } = lodash;
 

@@ -2,6 +2,7 @@
  * @file
  */
 
+import { checkLocale } from './check-locale';
 import {
     AVAILABLE_LOCALES,
     BASE_LOCALE,
@@ -9,7 +10,7 @@ import {
     type AvailableLocale,
     type LocalePreference,
 } from './locale-constants';
-import { checkLocale } from './check-locale';
+
 import type {
     FlattenedMessages,
     MessagesJson,

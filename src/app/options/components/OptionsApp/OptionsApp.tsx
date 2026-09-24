@@ -2,8 +2,8 @@
  * @file
  */
 
-/* eslint-disable jsdoc/multiline-blocks */
-
+import { Tabs } from '@mantine/core';
+import { observer } from 'mobx-react';
 import React, {
     useContext,
     useEffect,
@@ -11,60 +11,58 @@ import React, {
     useState,
 } from 'react';
 import browser from 'webextension-polyfill';
-import { observer } from 'mobx-react';
-import { Tabs } from '@mantine/core';
 
-import { AppProviders } from '../../../common/components/AppProviders';
-import { Topbar } from '../Topbar';
-import { Footer } from '../Footer';
-import { InjectionsView } from '../InjectionsView';
-import { SettingsView } from '../SettingsView';
-import { RuleEditorModal } from '../RuleEditorModal';
-import { rootStore } from '../../stores/RootStore';
+import { getBrowserCapabilities } from '../../../common/browser-capabilities';
 import { browserLanguageChannel } from '../../../common/browser-language-channel';
-import { applyDocumentLocale } from '../../../common/document-locale';
-import { i18n } from '../../../common/i18n';
-import { translator } from '../../../common/translator';
-import { log } from '../../../common/log';
-import { tabs } from '../../../common/tabs';
-import { subscribeLocalSourceAccessRefreshOnFocus } from '../../local-source-access-focus';
+import {
+    BrowserTarget,
+    getCurrentBrowserTarget,
+} from '../../../common/browser-target';
+import { AppProviders } from '../../../common/components/AppProviders';
 import {
     InjectionField,
     NATIVE_HOST_ALL_DOWNLOADS_URL,
     OPTIONS_TABS,
 } from '../../../common/constants';
 import {
-    BrowserTarget,
-    getCurrentBrowserTarget,
-} from '../../../common/browser-target';
-import { getBrowserCapabilities } from '../../../common/browser-capabilities';
-import {
-    LocalSourceAccessMethod,
     type InjectionRule,
-    type NewInjectionData,
+    type NewInjectionData, LocalSourceAccessMethod
 } from '../../../common/contracts';
-import { nativeMessagingPermission } from '../../../common/native-messaging-permission';
+import { applyDocumentLocale } from '../../../common/document-locale';
+import { i18n } from '../../../common/i18n';
 import { applyLocalSourceAccessMethod } from '../../../common/local-source-access-method';
+import { log } from '../../../common/log';
 import {
-    NativeHostDownload,
     NativeHostDownloadKind,
     resolveCurrentNativeHostDownload,
 } from '../../../common/native-host-download';
+import {
+    NativeErrorCode,
+} from '../../../common/native-host-protocol';
+import { nativeMessagingPermission } from '../../../common/native-messaging-permission';
+import {
+    SafariNativeClient,
+    type SafariNativeMessenger,
+} from '../../../common/safari-native-client';
+import { tabs } from '../../../common/tabs';
+import { translator } from '../../../common/translator';
+import { subscribeLocalSourceAccessRefreshOnFocus } from '../../local-source-access-focus';
 import {
     getPrefillSiteFromSearch,
     getRequestedTabFromSearch,
 } from '../../options-url-params';
 import {
-    NativeErrorCode,
-} from '../../../common/native-host-protocol';
-import {
-    SafariNativeClient,
-    type SafariNativeMessenger,
-} from '../../../common/safari-native-client';
-import {
     SafariRuleAuthorizationError,
     saveRuleWithSafariAuthorization,
 } from '../../safari-rule-authorization';
+import { rootStore } from '../../stores/RootStore';
+import { Footer } from '../Footer';
+import { InjectionsView } from '../InjectionsView';
+import { RuleEditorModal } from '../RuleEditorModal';
+import { SettingsView } from '../SettingsView';
+import { Topbar } from '../Topbar';
+
+import type { NativeHostDownload } from '../../../common/native-host-download';
 
 import './options-app.pcss';
 
@@ -108,7 +106,7 @@ const safariFolderAuthorizer = {
     authorizeFolder: (fileUrl: string): Promise<void> => {
         if (!safariNativeClient) {
             safariNativeClient = new SafariNativeClient(
-                browser.runtime.sendNativeMessage.bind(browser.runtime) as SafariNativeMessenger,
+                browser.runtime.sendNativeMessage.bind(browser.runtime),
             );
         }
         return safariNativeClient.authorizeFolder(fileUrl);

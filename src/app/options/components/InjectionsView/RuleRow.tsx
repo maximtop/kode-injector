@@ -2,8 +2,6 @@
  * @file One injection rule rendered as a row card.
  */
 
-import React, { useEffect, useRef } from 'react';
-import classNames from 'classnames';
 import {
     ActionIcon,
     Button,
@@ -11,16 +9,19 @@ import {
     Switch,
     Tooltip,
 } from '@mantine/core';
+import classNames from 'classnames';
+import React, { useEffect, useRef } from 'react';
 
-import type { InjectionFileField, InjectionRule } from '../../../common/contracts';
+import { IconDots } from '../../../common/components/icons';
 import {
     FILE_ENABLED_FLAGS,
     FILE_KINDS,
     FILE_KIND_LABELS,
 } from '../../../common/injection-files';
-import { translator } from '../../../common/translator';
 import { getDisplayPath, getFileName, truncateMiddle } from '../../../common/text-utils';
-import { IconDots } from '../../../common/components/icons';
+import { translator } from '../../../common/translator';
+
+import type { InjectionFileField, InjectionRule } from '../../../common/contracts';
 
 /**
  * RuleRow props.
@@ -102,6 +103,17 @@ interface RuleRowProps {
  * Renders one injection rule as a row card.
  *
  * @param props RuleRow props.
+ * @param props.rule
+ * @param props.fileIssues
+ * @param props.confirmingDelete
+ * @param props.onToggle
+ * @param props.onFileToggle
+ * @param props.onEdit
+ * @param props.onDuplicate
+ * @param props.onRequestDelete
+ * @param props.onCancelDelete
+ * @param props.onConfirmDelete
+ * @param props.onOpenFile
  *
  * @returns Rule row element.
  */

@@ -2,8 +2,7 @@
  * @file Native messaging protocol shared by the background runtime and tests.
  */
 
-/* eslint-disable jsdoc/require-jsdoc, no-useless-constructor, no-empty-function */
-/* eslint-disable no-restricted-syntax, max-len */
+/* eslint-disable jsdoc/require-jsdoc */
 
 export const PROTOCOL_VERSION = 1;
 export const MAX_FILE_BYTES = 5 * 1024 * 1024;

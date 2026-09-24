@@ -2,10 +2,12 @@
  * @file
  */
 
-import { beforeEach, expect, test, vi } from 'vitest';
+import {
+    beforeEach, expect, test, vi,
+} from 'vitest';
 
-import { messageHandler } from '../src/app/background/message-handler';
 import { localSourceAccess } from '../src/app/background/local-source-access';
+import { messageHandler } from '../src/app/background/message-handler';
 import { settings } from '../src/app/background/settings';
 import { InjectionField, MESSAGE_TYPES } from '../src/app/common/constants';
 import { LocalSourceAccessMethod } from '../src/app/common/contracts';

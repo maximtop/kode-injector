@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+
 import { expect, test } from 'vitest';
 
 import { validateLocales } from '../scripts/locales/validate';
@@ -34,13 +35,17 @@ const catalog = (entries: Record<string, string>): Record<string, unknown> => Ob
 test('reports catalog, usage, and hardcoded UI defects', () => {
     const rootPath = makeFixture({
         locales: {
-            en: catalog({ name: 'Kode Injector', options_title: 'Settings', popup_title: 'Popup', unused_key: 'Unused' }),
+            en: catalog({
+                name: 'Kode Injector', options_title: 'Settings', popup_title: 'Popup', unused_key: 'Unused',
+            }),
             ru: {
                 name: { message: 'Kode Injector' },
                 popup_title: { message: '' },
                 obsolete_key: { message: 'Old' },
             },
-            zz: catalog({ name: 'Kode Injector', options_title: 'Настройки', popup_title: 'Всплывающее окно', unused_key: 'Не используется' }),
+            zz: catalog({
+                name: 'Kode Injector', options_title: 'Настройки', popup_title: 'Всплывающее окно', unused_key: 'Не используется',
+            }),
         },
         manifest: '{"name":"__MSG_name__","options":"__MSG_options_title__"}',
         source: [

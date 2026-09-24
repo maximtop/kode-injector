@@ -2,11 +2,10 @@
  * @file Centered modal creating and editing injection rules.
  */
 
-import React, { useEffect, useState } from 'react';
 import { Button, Modal, TextInput } from '@mantine/core';
+import React, { useEffect, useState } from 'react';
 
 import { InjectionField } from '../../../common/constants';
-import type { InjectionRule, NewInjectionData } from '../../../common/contracts';
 import {
     isValidInjectionInput,
     validateInjectionInput,
@@ -14,6 +13,8 @@ import {
 } from '../../../common/injection-validation';
 import { translator } from '../../../common/translator';
 import { urlUtils } from '../../../common/url-utils';
+
+import type { InjectionRule, NewInjectionData } from '../../../common/contracts';
 
 import './rule-editor.pcss';
 
@@ -89,6 +90,12 @@ const getExamplePath = (fileName: string): string => {
  * Renders the rule editor modal.
  *
  * @param props RuleEditorModal props.
+ * @param props.opened
+ * @param props.rule
+ * @param props.prefillSite
+ * @param props.onClose
+ * @param props.onSave
+ * @param props.saveError
  *
  * @returns Modal element.
  */

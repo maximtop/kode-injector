@@ -2,8 +2,6 @@
  * @file Loads and validates the fixed built-in demo sources from the bundle.
  */
 
-/* eslint-disable no-useless-constructor, no-empty-function */
-
 import browser from 'webextension-polyfill';
 
 import {

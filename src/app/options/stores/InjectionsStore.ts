@@ -2,12 +2,12 @@
  * @file
  */
 
+import find from 'lodash/find';
 import {
     makeObservable,
     observable,
     runInAction,
 } from 'mobx';
-import find from 'lodash/find';
 
 import {
     type InjectionFileField,
@@ -17,10 +17,11 @@ import {
     type LocalSourceAccessState,
     type NewInjectionData,
 } from '../../common/contracts';
-import { messenger } from '../../common/messenger';
-import { log } from '../../common/log';
 import { i18n } from '../../common/i18n';
+import { log } from '../../common/log';
+import { messenger } from '../../common/messenger';
 import { NativeHostStatus } from '../../common/native-host-protocol';
+
 import type { RootStoreType } from './RootStore';
 
 /**
@@ -143,7 +144,7 @@ export class InjectionsStore {
             this.optionsDataReady = true;
         });
         this.refreshFileIssues();
-    }
+    };
 
     /**
      * Re-probes source-file readability for every rule.
@@ -157,7 +158,7 @@ export class InjectionsStore {
         } catch (e) {
             log.error(e instanceof Error ? e.message : e);
         }
-    }
+    };
 
     /**
      * Refreshes browser-owned local-file permission state.
@@ -228,7 +229,7 @@ export class InjectionsStore {
             log.error(e);
             return null;
         }
-    }
+    };
 
     /**
      * Updates an injection rule in place.
@@ -257,7 +258,7 @@ export class InjectionsStore {
             log.error(e instanceof Error ? e.message : e);
             return null;
         }
-    }
+    };
 
     /**
      * Enables or disables one file of a rule.
@@ -283,7 +284,7 @@ export class InjectionsStore {
         } catch (e) {
             log.error(e instanceof Error ? e.message : e);
         }
-    }
+    };
 
     /**
      * Duplicates an injection rule as a disabled copy.
@@ -312,7 +313,7 @@ export class InjectionsStore {
         } catch (e) {
             log.error(e instanceof Error ? e.message : e);
         }
-    }
+    };
 
     /**
      * Toggles the global injections switch.
@@ -331,7 +332,7 @@ export class InjectionsStore {
         } catch (e) {
             log.error(e instanceof Error ? e.message : e);
         }
-    }
+    };
 
     /**
      * Records a failed access-method change for inline display.
@@ -342,7 +343,7 @@ export class InjectionsStore {
         runInAction(() => {
             this.methodChangeError = message;
         });
-    }
+    };
 
     /**
      * Removes an injection rule and refreshes options data.
@@ -358,7 +359,7 @@ export class InjectionsStore {
         } catch (e) {
             log.error(e instanceof Error ? e.message : e);
         }
-    }
+    };
 
     /**
      * Toggles an injection rule and refreshes options data.
@@ -385,7 +386,7 @@ export class InjectionsStore {
         } catch (e) {
             log.error(e instanceof Error ? e.message : e);
         }
-    }
+    };
 }
 
 /**

@@ -9,7 +9,7 @@ import { urlUtils } from './url-utils';
 /**
  * Validation issues detected in injection rule input.
  */
-export type InjectionInputErrors = {
+export interface InjectionInputErrors {
     /**
      * Whether the site is not a valid hostname.
      */
@@ -29,7 +29,7 @@ export type InjectionInputErrors = {
      * Whether both source paths are empty.
      */
     missingSource?: boolean;
-};
+}
 
 /**
  * Validates user input for a new or edited injection rule.

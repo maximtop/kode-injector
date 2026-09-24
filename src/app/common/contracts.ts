@@ -15,16 +15,19 @@ import {
     type InferOutput,
 } from 'valibot';
 
-import { BrowserTarget } from './browser-target';
 import { getBrowserCapabilities } from './browser-capabilities';
-import { InjectionField, MESSAGE_TYPES, SETTINGS } from './constants';
+import { BrowserTarget } from './browser-target';
+import { InjectionField, SETTINGS } from './constants';
 import {
     localePreferenceSchema,
     localePreferenceValueSchema,
     type LocalePreference,
 } from './locale';
+import type { NativeHostStatus  } from './native-host-protocol';
+import { type NativeErrorCode  } from './native-host-protocol';
+
+import type { MESSAGE_TYPES } from './constants';
 import type { LanguageChangedMessage } from './language-channel';
-import { NativeHostStatus, type NativeErrorCode } from './native-host-protocol';
 
 /**
  * User-selected method for reading local injection sources.
@@ -159,7 +162,7 @@ export type InjectionFileField = InjectionField.JsPath | InjectionField.CssPath;
 /**
  * Injection data returned to the options page.
  */
-export type OptionsDataResponse = {
+export interface OptionsDataResponse {
     /**
      * Configured injection rules.
      */
@@ -180,7 +183,7 @@ export type OptionsDataResponse = {
      * Whether injections are enabled globally.
      */
     appEnabled: boolean;
-};
+}
 
 /**
  * Strict schema for persisted global application settings.
@@ -271,7 +274,7 @@ const getNormalizedAppSettingsSchema = (browserTarget: BrowserTarget) => {
 /**
  * Normalized settings and whether persistence needs repair.
  */
-export type AppSettingsNormalization = {
+export interface AppSettingsNormalization {
     /**
      * Valid settings with field-level fallbacks applied.
      */
@@ -281,7 +284,7 @@ export type AppSettingsNormalization = {
      * Whether the persisted input failed strict validation.
      */
     shouldRepair: boolean;
-};
+}
 
 /**
  * Browser tab data required by popup actions.
@@ -301,7 +304,7 @@ export interface PopupTab {
 /**
  * Extension state returned to the popup.
  */
-export type PopupDataResponse = {
+export interface PopupDataResponse {
     /** Native-host state for local source reads. */
     localSourceAccess: LocalSourceAccessState;
 
@@ -319,7 +322,7 @@ export type PopupDataResponse = {
      * Whether injections are disabled for the current site.
      */
     siteIsBlacklisted: boolean;
-};
+}
 
 /**
  * Source paths that could not be read, keyed by rule identifier.
@@ -332,14 +335,14 @@ export type InjectionFileIssues = Record<
 /**
  * CSS source prepared for content-script injection.
  */
-export type CssInjectionCode = {
+export interface CssInjectionCode {
     /**
      * CSS source content.
      */
     css: {
         code: string;
     };
-};
+}
 
 /**
  * Injection code returned for the current page.
@@ -349,7 +352,7 @@ export type InjectionsCodeResponse = CssInjectionCode[] | null;
 /**
  * Data required to execute JavaScript in a browser tab.
  */
-export type ExecuteScriptPayload = {
+export interface ExecuteScriptPayload {
     /**
      * JavaScript source to execute.
      */
@@ -364,13 +367,12 @@ export type ExecuteScriptPayload = {
      * Identity of the document that requested the injection.
      */
     documentToken: string;
-};
+}
 
 /**
  * Runtime messages exchanged with the background service worker.
  */
-export type RuntimeMessage =
-    | { type: typeof MESSAGE_TYPES.GET_OPTIONS_DATA; data?: undefined }
+export type RuntimeMessage = | { type: typeof MESSAGE_TYPES.GET_OPTIONS_DATA; data?: undefined }
     | { type: typeof MESSAGE_TYPES.GET_LOCAL_SOURCE_ACCESS_STATUS; data?: undefined }
     | {
         type: typeof MESSAGE_TYPES.SET_LOCAL_SOURCE_ACCESS_METHOD;

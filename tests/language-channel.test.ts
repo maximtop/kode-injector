@@ -7,7 +7,7 @@ import { expect, test } from 'vitest';
 import { LanguageChannel } from '../src/app/common/language-channel';
 
 class FakeRuntime {
-    private listeners: Array<(message: unknown) => unknown> = [];
+    private listeners: ((message: unknown) => unknown)[] = [];
 
     public onMessage = {
         addListener: (listener: (message: unknown) => unknown): void => {

@@ -12,14 +12,14 @@ import {
 
 import { executeScript } from '../src/app/background/execute-script';
 
-type CapturedInjection = {
+interface CapturedInjection {
     func: (
         script: string,
         documentToken: string,
         documentTokenAttribute: string,
     ) => void;
     args: [string, string, string];
-};
+}
 
 const currentDocumentToken = '00112233445566778899aabbccddeeff';
 const staleDocumentToken = 'ffeeddccbbaa99887766554433221100';

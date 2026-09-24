@@ -2,11 +2,10 @@
  * @file Builds the locally installable Safari containing application.
  */
 
-/* eslint-disable no-console */
-
 import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
+
 import {
     GENERATED_HELPER_PATH,
     ROOT_PATH,

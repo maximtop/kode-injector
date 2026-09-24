@@ -2,11 +2,12 @@
  * @file Derives the popup site status line.
  */
 
-import { BrowserTarget } from '../../../common/browser-target';
-import type { LocalSourceAccessState } from '../../../common/contracts';
 import { StatusTone } from '../../../common/status-tone';
 import { translator } from '../../../common/translator';
 import { getAccessBlockState } from '../AccessBlock/access-block-state';
+
+import type { BrowserTarget } from '../../../common/browser-target';
+import type { LocalSourceAccessState } from '../../../common/contracts';
 
 /**
  * Presentation of the site status line.

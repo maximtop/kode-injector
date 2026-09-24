@@ -2,11 +2,39 @@
  * @file
  */
 
-import throttle from 'lodash/throttle';
 import find from 'lodash/find';
-
+import throttle from 'lodash/throttle';
 import { nanoid } from 'nanoid';
+
+import { BrowserTarget, getCurrentBrowserTarget } from '../common/browser-target';
+import { InjectionField } from '../common/constants';
+import { hasInjectionSource, normalizeStoredInjectionsState } from '../common/contracts';
+import {
+    FILE_ENABLED_FLAGS,
+    FILE_KINDS,
+    isFileActive,
+} from '../common/injection-files';
+import { log } from '../common/log';
+import { runMigrations, SCHEMA_VERSION_KEY } from '../common/storage-migrations';
+import { urlUtils } from '../common/url-utils';
+
+import { app } from './app';
+import { executeScript } from './execute-script';
+import {
+    InjectionSourceCache,
+    type ActiveRuleSources,
+    type RuleSourceResolution,
+    type RuleSourceSnapshot,
+} from './injection-source-cache';
+import {
+    CURRENT_INJECTIONS_SCHEMA_VERSION,
+    INJECTIONS_MIGRATIONS,
+} from './injections-migrations';
+import { localSourceAccess } from './local-source-access';
+import { sourceReader } from './native-host';
+import { isNativeHostWideFailure } from './source-reader';
 import { storage } from './storage';
+
 import type {
     CssInjectionCode,
     InjectionFileField,
@@ -16,32 +44,6 @@ import type {
     NewInjectionData,
     StoredInjectionsState,
 } from '../common/contracts';
-import { InjectionField } from '../common/constants';
-import { hasInjectionSource, normalizeStoredInjectionsState } from '../common/contracts';
-import {
-    FILE_ENABLED_FLAGS,
-    FILE_KINDS,
-    isFileActive,
-} from '../common/injection-files';
-import {
-    CURRENT_INJECTIONS_SCHEMA_VERSION,
-    INJECTIONS_MIGRATIONS,
-} from './injections-migrations';
-import { runMigrations, SCHEMA_VERSION_KEY } from '../common/storage-migrations';
-import { log } from '../common/log';
-import { urlUtils } from '../common/url-utils';
-import { app } from './app';
-import { executeScript } from './execute-script';
-import { sourceReader } from './native-host';
-import { isNativeHostWideFailure } from './source-reader';
-import { localSourceAccess } from './local-source-access';
-import { BrowserTarget, getCurrentBrowserTarget } from '../common/browser-target';
-import {
-    InjectionSourceCache,
-    type ActiveRuleSources,
-    type RuleSourceResolution,
-    type RuleSourceSnapshot,
-} from './injection-source-cache';
 
 /**
  * Manages injection rules, site blocklisting, and code retrieval.
@@ -312,7 +314,7 @@ export class Injections {
             return null;
         }
         return this.getInjectionsByUrl(url);
-    }
+    };
 
     /**
      * Resolves one document-bound snapshot, starts JavaScript execution, and

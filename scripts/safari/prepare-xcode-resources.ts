@@ -4,6 +4,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
+
 import { SAFARI_BUILD_PATH } from './config';
 
 const RESOURCE_LIST_PATH = path.join(

@@ -3,6 +3,7 @@
  */
 
 import { createHash } from 'node:crypto';
+
 import {
     afterEach,
     expect,
@@ -10,12 +11,12 @@ import {
     vi,
 } from 'vitest';
 
+import { RAW_CHUNK_BYTES } from '../src/app/common/native-host-protocol';
 import {
     SafariNativeClient,
     SafariNativeOperation,
     type SafariNativeMessenger,
 } from '../src/app/common/safari-native-client';
-import { RAW_CHUNK_BYTES } from '../src/app/common/native-host-protocol';
 
 interface Request {
     protocolVersion: number;

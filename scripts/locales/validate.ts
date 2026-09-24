@@ -4,11 +4,13 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
-import ts from 'typescript';
 import { pathToFileURL } from 'node:url';
+
 import { validator, type Locale } from '@adguard/translate';
+import ts from 'typescript';
 
 import { AVAILABLE_LOCALES, BASE_LOCALE } from '../../src/app/common/locale/locale-constants';
+
 import type { MessagesJson } from '../../src/app/common/locale/locale-types';
 
 /**
@@ -303,6 +305,7 @@ const validateCatalog = (
  * Validates locale directories, catalog structure, source usage, and UI literals.
  *
  * @param options Repository paths used by the validator.
+ *
  * @returns Human-readable validation errors.
  */
 export const validateLocales = (options: LocaleValidationOptions): string[] => {

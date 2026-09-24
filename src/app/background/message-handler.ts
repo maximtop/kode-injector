@@ -4,6 +4,21 @@
 
 import browser from 'webextension-polyfill';
 
+import { browserLanguageChannel } from '../common/browser-language-channel';
+import { InjectionField, MESSAGE_TYPES } from '../common/constants';
+import { LocalSourceAccessMethod } from '../common/contracts';
+import { isDocumentToken } from '../common/document-injection';
+import { toLocalePreference, type LocalePreference } from '../common/locale';
+import { log } from '../common/log';
+import { tabs } from '../common/tabs';
+
+import { app } from './app';
+import { demoLaunch } from './demo-launch';
+import { injections } from './injections';
+import { localSourceAccess } from './local-source-access';
+import { gateMessageHandler } from './message-readiness';
+import { settings } from './settings';
+
 import type {
     InjectionFileIssues,
     InjectionRule,
@@ -13,26 +28,12 @@ import type {
     PopupDataResponse,
     RuntimeMessage,
 } from '../common/contracts';
-import { LocalSourceAccessMethod } from '../common/contracts';
-import { InjectionField, MESSAGE_TYPES } from '../common/constants';
-import { toLocalePreference, type LocalePreference } from '../common/locale';
-import { browserLanguageChannel } from '../common/browser-language-channel';
-import { log } from '../common/log';
-import { injections } from './injections';
-import { settings } from './settings';
-import { tabs } from '../common/tabs';
-import { app } from './app';
-import { gateMessageHandler } from './message-readiness';
-import { localSourceAccess } from './local-source-access';
-import { isDocumentToken } from '../common/document-injection';
-import { demoLaunch } from './demo-launch';
 import type { DemoLaunchState, RunDemoResult } from '../common/demo-contracts';
 
 /**
  * Values returned by background runtime message handlers.
  */
-type MessageResponse =
-    | OptionsDataResponse
+type MessageResponse = | OptionsDataResponse
     | InjectionRule
     | InjectionFileIssues
     | PopupDataResponse
@@ -202,7 +203,7 @@ class MessageHandler {
         }
 
         return undefined;
-    }
+    };
 
     /**
      * Registers the runtime message listener.

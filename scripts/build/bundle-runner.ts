@@ -2,7 +2,7 @@
  * @file
  */
 
-/* eslint-disable import/no-unresolved, no-console */
+/* eslint-disable import/no-unresolved */
 import {
     rspack,
     type Configuration,

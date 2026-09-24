@@ -2,11 +2,11 @@
  * @file Amber strip shown while injecting is paused everywhere.
  */
 
-import React, { useContext } from 'react';
 import { observer } from 'mobx-react';
+import React, { useContext } from 'react';
 
-import { rootStore } from '../../stores/RootStore';
 import { translator } from '../../../common/translator';
+import { rootStore } from '../../stores/RootStore';
 
 /**
  * Renders the global-pause strip, or nothing while enabled.

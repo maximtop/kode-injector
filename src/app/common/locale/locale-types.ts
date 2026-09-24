@@ -22,11 +22,10 @@ export interface PlaceholderDefinition {
 /**
  * Result of matching a browser locale against supported locales.
  */
-export type CheckLocaleResult =
-    | {
-        suitable: true;
-        locale: AvailableLocale;
-    }
+export type CheckLocaleResult = | {
+    suitable: true;
+    locale: AvailableLocale;
+}
     | {
         suitable: false;
         locale: string;

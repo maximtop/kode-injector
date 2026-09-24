@@ -2,12 +2,12 @@
  * @file
  */
 
-import React, { useContext } from 'react';
-import { observer } from 'mobx-react';
 import { Button } from '@mantine/core';
+import { observer } from 'mobx-react';
+import React, { useContext } from 'react';
 
-import { translator } from '../../../common/translator';
 import { IconPause } from '../../../common/components/icons';
+import { translator } from '../../../common/translator';
 import { rootStore } from '../../stores/RootStore';
 
 export const Header = observer(() => {

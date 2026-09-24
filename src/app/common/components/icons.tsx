@@ -28,6 +28,8 @@ interface IconFrameProps extends IconProps {
  * Shared SVG frame with the prototype's stroke styling.
  *
  * @param props Frame props.
+ * @param props.size
+ * @param props.children
  *
  * @returns Decorative SVG element.
  */
@@ -54,6 +56,7 @@ const IconFrame = ({ size, children }: IconFrameProps): React.JSX.Element => {
  * Pause icon: two vertical bars.
  *
  * @param props Icon props.
+ * @param props.size
  *
  * @returns Decorative SVG element.
  */
@@ -69,6 +72,7 @@ export const IconPause = ({ size }: IconProps): React.JSX.Element => {
  * Moon icon used by the theme toggle.
  *
  * @param props Icon props.
+ * @param props.size
  *
  * @returns Decorative SVG element.
  */
@@ -84,6 +88,7 @@ export const IconMoon = ({ size }: IconProps): React.JSX.Element => {
  * Sun icon shown while the light scheme is active.
  *
  * @param props Icon props.
+ * @param props.size
  *
  * @returns Decorative SVG element.
  */
@@ -100,6 +105,7 @@ export const IconSun = ({ size }: IconProps): React.JSX.Element => {
  * Half-filled circle shown while the scheme follows the system.
  *
  * @param props Icon props.
+ * @param props.size
  *
  * @returns Decorative SVG element.
  */
@@ -116,6 +122,7 @@ export const IconContrast = ({ size }: IconProps): React.JSX.Element => {
  * GitHub mark.
  *
  * @param props Icon props.
+ * @param props.size
  *
  * @returns Decorative SVG element.
  */
@@ -132,6 +139,7 @@ export const IconGitHub = ({ size }: IconProps): React.JSX.Element => {
  * Search icon: magnifier.
  *
  * @param props Icon props.
+ * @param props.size
  *
  * @returns Decorative SVG element.
  */
@@ -148,6 +156,7 @@ export const IconSearch = ({ size }: IconProps): React.JSX.Element => {
  * Plus icon used by primary creation actions.
  *
  * @param props Icon props.
+ * @param props.size
  *
  * @returns Decorative SVG element.
  */
@@ -163,6 +172,7 @@ export const IconPlus = ({ size }: IconProps): React.JSX.Element => {
  * Vertical dots icon used by overflow menus.
  *
  * @param props Icon props.
+ * @param props.size
  *
  * @returns Decorative SVG element.
  */
@@ -180,6 +190,7 @@ export const IconDots = ({ size }: IconProps): React.JSX.Element => {
  * Close icon: diagonal cross.
  *
  * @param props Icon props.
+ * @param props.size
  *
  * @returns Decorative SVG element.
  */
@@ -195,6 +206,7 @@ export const IconClose = ({ size }: IconProps): React.JSX.Element => {
  * Gear icon used by options links.
  *
  * @param props Icon props.
+ * @param props.size
  *
  * @returns Decorative SVG element.
  */

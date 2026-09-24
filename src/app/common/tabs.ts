@@ -5,12 +5,13 @@
 import browser from 'webextension-polyfill';
 
 import {
-    BrowserTarget,
     getExtensionSettingsUrl,
 } from './browser-target';
 import { OPTIONS_PAGE_PATH, OPTIONS_QUERY_PARAMS } from './constants';
-import type { PopupTab } from './contracts';
 import { log } from './log';
+
+import type { BrowserTarget } from './browser-target';
+import type { PopupTab } from './contracts';
 
 /**
  * Provides browser tab and extension-page operations.
@@ -21,7 +22,7 @@ class Tabs {
      */
     openSettings = (): Promise<void> => {
         return browser.runtime.openOptionsPage();
-    }
+    };
 
     /**
      * Opens this extension's browser-managed settings page when supported.
@@ -44,7 +45,7 @@ class Tabs {
      */
     openTab = (url: string): Promise<browser.Tabs.Tab> => {
         return browser.tabs.create({ active: true, url });
-    }
+    };
 
     /**
      * Builds an options page URL that prefills the rule editor with a site.
@@ -79,7 +80,7 @@ class Tabs {
             id: current?.id,
             url: current?.url,
         };
-    }
+    };
 
     /**
      * Reloads a browser tab when an identifier is available.

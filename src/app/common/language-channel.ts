@@ -3,6 +3,7 @@
  */
 
 import { MESSAGE_TYPES } from './constants';
+
 import type { LocalePreference } from './locale';
 
 /**

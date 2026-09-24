@@ -2,26 +2,28 @@
  * @file Readiness state for the active local-source access method.
  */
 
-/* eslint-disable jsdoc/require-jsdoc, no-useless-constructor, no-empty-function */
+/* eslint-disable jsdoc/require-jsdoc */
+
+import { getBrowserCapabilities } from '../common/browser-capabilities';
+import { getCurrentBrowserTarget } from '../common/browser-target';
+import { LocalSourceAccessMethod } from '../common/contracts';
+import { log } from '../common/log';
+import {
+    isCompatibleHost,
+    type NativeHostInfo,
+    NativeHostStatus,
+} from '../common/native-host-protocol';
+import { nativeMessagingPermission } from '../common/native-messaging-permission';
+
+import { fileAccess } from './file-access';
+import { nativeHostClient } from './native-host';
+import { settings } from './settings';
 
 import type {
     LocalSourceAccessState,
     NativeHostAccessState,
     NativeHostState,
 } from '../common/contracts';
-import { LocalSourceAccessMethod } from '../common/contracts';
-import { log } from '../common/log';
-import { nativeMessagingPermission } from '../common/native-messaging-permission';
-import {
-    isCompatibleHost,
-    type NativeHostInfo,
-    NativeHostStatus,
-} from '../common/native-host-protocol';
-import { nativeHostClient } from './native-host';
-import { fileAccess } from './file-access';
-import { settings } from './settings';
-import { getBrowserCapabilities } from '../common/browser-capabilities';
-import { getCurrentBrowserTarget } from '../common/browser-target';
 
 interface NativeHostProbe {
     ping(): Promise<NativeHostInfo>;

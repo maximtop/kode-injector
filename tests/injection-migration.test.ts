@@ -4,11 +4,11 @@
 
 import { expect, test } from 'vitest';
 
-import { normalizeStoredInjectionsState } from '../src/app/common/contracts';
 import {
     CURRENT_INJECTIONS_SCHEMA_VERSION,
     INJECTIONS_MIGRATIONS,
 } from '../src/app/background/injections-migrations';
+import { normalizeStoredInjectionsState } from '../src/app/common/contracts';
 import { runMigrations } from '../src/app/common/storage-migrations';
 
 const legacyRule = {

@@ -2,12 +2,12 @@
  * @file Call to action shown when no rules match the current site.
  */
 
-import React, { useContext } from 'react';
-import { observer } from 'mobx-react';
 import { Button } from '@mantine/core';
+import { observer } from 'mobx-react';
+import React, { useContext } from 'react';
 
-import { rootStore } from '../../stores/RootStore';
 import { translator } from '../../../common/translator';
+import { rootStore } from '../../stores/RootStore';
 
 /**
  * Renders the add-rule call to action, or nothing when rules exist.

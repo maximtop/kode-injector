@@ -2,12 +2,11 @@
  * @file Runtime validation for built Safari application artifacts.
  */
 
-/* eslint-disable camelcase */
-
 import { execFileSync, spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+
 import {
     SAFARI_APP_BUNDLE_IDENTIFIER,
     SAFARI_APP_CATEGORY,

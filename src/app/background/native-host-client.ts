@@ -2,8 +2,8 @@
  * @file Persistent native messaging client.
  */
 
-/* eslint-disable jsdoc/require-jsdoc, no-useless-constructor, no-empty-function */
-/* eslint-disable no-param-reassign, no-restricted-syntax, max-len, object-curly-newline */
+/* eslint-disable jsdoc/require-jsdoc */
+/* eslint-disable no-param-reassign */
 
 import {
     ChunkAssembly,
@@ -80,7 +80,9 @@ export class NativeHostClient {
             const timeout = setTimeout(() => {
                 this.rejectPending(requestId, new Error('NATIVE_TIMEOUT'));
             }, this.timeoutMs);
-            this.pending.set(requestId, { operation, resolve, reject, timeout });
+            this.pending.set(requestId, {
+                operation, resolve, reject, timeout,
+            });
             port.postMessage({
                 protocolVersion: PROTOCOL_VERSION,
                 requestId,

@@ -2,12 +2,11 @@
  * @file Downloads the fixed Safari App Store provisioning profiles.
  */
 
-/* eslint-disable no-console */
-
 import { createPrivateKey, sign } from 'node:crypto';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+
 import {
     SAFARI_APP_STORE_APP_PROFILE,
     SAFARI_APP_STORE_EXTENSION_PROFILE,

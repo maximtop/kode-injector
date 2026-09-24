@@ -2,22 +2,24 @@
  * @file Injections tab: toolbar, notices, rule list, and empty state.
  */
 
-import React, { useContext, useState } from 'react';
-import { observer } from 'mobx-react';
 import { Button, TextInput } from '@mantine/core';
+import { observer } from 'mobx-react';
+import React, { useContext, useState } from 'react';
 
-import { rootStore } from '../../stores/RootStore';
-import type { InjectionRule, LocalSourceAccessState } from '../../../common/contracts';
+import { IconPause, IconPlus, IconSearch } from '../../../common/components/icons';
 import { LocalSourceAccessMethod } from '../../../common/contracts';
+import { isBuiltInDemoOffered } from '../../../common/demo-contracts';
+import { log } from '../../../common/log';
+import { messenger } from '../../../common/messenger';
 import { NativeHostStatus } from '../../../common/native-host-protocol';
 import { translator } from '../../../common/translator';
-import { messenger } from '../../../common/messenger';
-import { log } from '../../../common/log';
-import { IconPause, IconPlus, IconSearch } from '../../../common/components/icons';
-import { RuleRow } from './RuleRow';
-import { EmptyState } from './EmptyState';
+import { rootStore } from '../../stores/RootStore';
+
 import { DemoCard } from './DemoCard';
-import { isBuiltInDemoOffered } from '../../../common/demo-contracts';
+import { EmptyState } from './EmptyState';
+import { RuleRow } from './RuleRow';
+
+import type { InjectionRule, LocalSourceAccessState } from '../../../common/contracts';
 
 import './injections-view.pcss';
 

@@ -3,6 +3,7 @@
  */
 
 import { InjectionField } from '../common/constants';
+
 import type { StorageMigration } from '../common/storage-migrations';
 
 /**

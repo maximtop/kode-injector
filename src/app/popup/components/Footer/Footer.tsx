@@ -5,9 +5,9 @@
 import React from 'react';
 import browser from 'webextension-polyfill';
 
+import { IconGear } from '../../../common/components/icons';
 import { messenger } from '../../../common/messenger';
 import { translator } from '../../../common/translator';
-import { IconGear } from '../../../common/components/icons';
 
 /**
  * Renders the popup footer with the options link and version.

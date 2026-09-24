@@ -2,10 +2,12 @@
  * @file
  */
 
-import { beforeEach, expect, test, vi } from 'vitest';
+import {
+    beforeEach, expect, test, vi,
+} from 'vitest';
 
-import { injections } from '../src/app/background/injections';
 import { executeScript } from '../src/app/background/execute-script';
+import { injections } from '../src/app/background/injections';
 import { localSourceAccess } from '../src/app/background/local-source-access';
 import { sourceReader } from '../src/app/background/native-host';
 import { SourceReadErrorCode } from '../src/app/background/source-reader';

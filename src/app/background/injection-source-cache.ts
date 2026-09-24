@@ -359,7 +359,7 @@ export class InjectionSourceCache {
         this.entries.set(snapshot.ruleId, { snapshot, byteLength });
         this.totalBytes += byteLength;
         while (this.entries.size > this.maximumEntries || this.totalBytes > this.maximumBytes) {
-            const oldestRuleId = this.entries.keys().next().value as string | undefined;
+            const oldestRuleId = this.entries.keys().next().value;
             if (!oldestRuleId) {
                 break;
             }

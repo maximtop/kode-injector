@@ -2,12 +2,14 @@
  * @file
  */
 
-import { beforeEach, expect, test, vi } from 'vitest';
+import {
+    beforeEach, expect, test, vi,
+} from 'vitest';
 
-import { InjectionsStore } from '../src/app/options/stores/InjectionsStore';
-import { messenger } from '../src/app/common/messenger';
 import { LocalSourceAccessMethod } from '../src/app/common/contracts';
+import { messenger } from '../src/app/common/messenger';
 import { NativeHostStatus } from '../src/app/common/native-host-protocol';
+import { InjectionsStore } from '../src/app/options/stores/InjectionsStore';
 
 vi.mock('../src/app/common/messenger', () => ({
     messenger: {

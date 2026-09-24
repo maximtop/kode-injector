@@ -2,9 +2,9 @@
  * @file Status of the selected local-file access method.
  */
 
-import React from 'react';
-import classNames from 'classnames';
 import { Button } from '@mantine/core';
+import classNames from 'classnames';
+import React from 'react';
 
 import { BrowserTarget } from '../../../common/browser-target';
 import {
@@ -112,6 +112,13 @@ const getStatusPresentation = (state: LocalSourceAccessState): {
  * Renders the status box of the selected access method.
  *
  * @param props MethodStatus props.
+ * @param props.state
+ * @param props.browserTarget
+ * @param props.disabled
+ * @param props.methodChangeError
+ * @param props.onCheckAgain
+ * @param props.onOpenExtensionSettings
+ * @param props.onRequestPermission
  *
  * @returns Method status element.
  */

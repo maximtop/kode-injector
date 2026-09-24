@@ -102,8 +102,7 @@ export interface DemoLaunchState {
 /**
  * Result of a Run Demo request.
  */
-export type RunDemoResult =
-    | { ok: true }
+export type RunDemoResult = | { ok: true }
     | { ok: false; reason: DemoFailureReason };
 
 /**

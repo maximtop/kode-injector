@@ -2,15 +2,16 @@
  * @file Current site hostname, status line, and per-site switch.
  */
 
-import React, { useContext } from 'react';
-import { observer } from 'mobx-react';
-import classNames from 'classnames';
 import { Switch } from '@mantine/core';
+import classNames from 'classnames';
+import { observer } from 'mobx-react';
+import React, { useContext } from 'react';
 
-import { rootStore } from '../../stores/RootStore';
 import { getCurrentBrowserTarget } from '../../../common/browser-target';
 import { StatusTone } from '../../../common/status-tone';
 import { translator } from '../../../common/translator';
+import { rootStore } from '../../stores/RootStore';
+
 import { getSiteStatus } from './site-status';
 
 /**

@@ -2,8 +2,6 @@
  * @file Creates local Safari injection fixtures and serves a target page.
  */
 
-/* eslint-disable no-console */
-
 import fs from 'node:fs';
 import http from 'node:http';
 import path from 'node:path';
