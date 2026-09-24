@@ -1,6 +1,6 @@
 # Development
 
-## Shared developer commands
+## Developer commands
 
 | Make | pnpm | Meaning |
 | --- | --- | --- |
@@ -58,7 +58,7 @@ Convenience targets are defined in the `Makefile` and map to `pnpm` scripts:
 | `make install` | Install dependencies (`pnpm install`) |
 | `make start` | Watch the Chrome development build |
 | `make build` | Create a Chrome development build |
-| `make lint` | Run ESLint over source, scripts, and tests |
+| `make lint` | Run ESLint over the repository |
 | `make typecheck` | Run TypeScript validation without emitting files |
 | `make test` | Run build and localization tests |
 | `make validate` | Run tests, catalog validation, lint, and typecheck |
@@ -72,7 +72,7 @@ pnpm install   # install dependencies
 pnpm dev       # one-shot Chrome development build
 pnpm dev chrome --watch # watch one development target
 pnpm release   # release build for every browser
-pnpm lint      # run ESLint over source, scripts, and the Rspack config
+pnpm lint      # run ESLint over the repository
 pnpm typecheck # validate TypeScript and TSX without emitting files
 pnpm test      # run build-helper and localization tests
 pnpm exec playwright install chromium # one-time local Chromium installation
@@ -289,7 +289,7 @@ and target-page CSP behavior are outside this minimal scenario.
   persisted in the localStorage key `kode-injector-color-scheme` shared by
   the options page and popup
 - **Polyfill:** `webextension-polyfill` for cross-browser APIs
-- **Linting:** ESLint with the Airbnb config; 4-space indentation
+- **Linting:** ESLint with the Airbnb config and type-aware typescript-eslint rules; 4-space indentation
 
 ## Project structure
 
@@ -345,11 +345,16 @@ safari/                     # macOS containing app and Safari native bridge
 make lint
 ```
 
-ESLint uses the Airbnb base config with React plugins. Key conventions:
+ESLint checks the whole repository with `eslint.config.mjs`: Airbnb with
+TypeScript, JSX accessibility and React hooks, JSDoc rules, and type-aware
+typescript-eslint rules. Compiler options live in `tsconfig.base.json`.
+Repository-specific additions go to `eslint.local.mjs` (ignores, globals, extra
+rules) and `tsconfig.json` (types, JSX, decorators, included files); they do not
+override the rules and options of the base files. Key conventions:
 
-- 4-space indentation (JS and JSX)
-- Arrow body style is off; default exports are allowed alongside named exports
-- `react/prop-types` is disabled
+- 4-space indentation, 120 columns
+- JSDoc on functions, classes, interfaces and type aliases; tests are exempt
+- Promises are awaited or handled; `void` marks one that is deliberately not awaited
 
 ## Localization workflow
 
@@ -475,8 +480,7 @@ the race detector, validates the macOS helper packages, and builds and
 validates the Safari app. CI has read-only repository permissions and never
 publishes a release.
 
-The `Release` workflow is the pipeline shared with the other extension
-repositories: after a release PR merge or on a `vX.Y.Z` tag it reuses CI to build
+After a release PR merge or on a `vX.Y.Z` tag, the `Release` workflow reuses CI to build
 `kode-injector-<version>-{chrome,edge,firefox}.zip`, the source archive and
 `SHA256SUMS.txt`. Before publication, its `native` job
 builds the helper packages on a GitHub-hosted macOS runner, signs the two
@@ -498,8 +502,7 @@ workflow** buttons with an optional published release tag (blank = latest
 release). They can receive the same release at different times and use
 separate concurrency groups, so deploying one store does not start or block
 an unrelated store. Chrome, Edge and Firefox share the `scripts/deploy`
-validation code with the other extension repositories and offer a `validate`
-mode that stops before the store; Apple keeps its own release resolution. See
+validation code and offer a `validate` mode that stops before the store; Apple keeps its own release resolution. See
 [docs/RELEASE.md](docs/RELEASE.md).
 
 For the canonical 1Password item layout, current field names, and migration
