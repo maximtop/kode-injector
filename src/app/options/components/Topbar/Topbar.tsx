@@ -62,8 +62,8 @@ const SCHEME_LABEL_KEYS: Record<string, string> = {
  * Renders the options page header.
  *
  * @param props Topbar props.
- * @param props.localSourceAccess
- * @param props.onOpenSettingsTab
+ * @param props.localSourceAccess Current local-source access state.
+ * @param props.onOpenSettingsTab Opens the Settings tab.
  *
  * @returns Header element.
  */

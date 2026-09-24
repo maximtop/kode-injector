@@ -77,7 +77,7 @@ export const validateBuildNumber = (value: string): string => {
         );
     }
     const [major, minor, patch] = value.split('.').map(Number);
-    if (major > 9999 || (minor ?? 0) > 99 || (patch ?? 0) > 99) {
+    if (major! > 9999 || (minor ?? 0) > 99 || (patch ?? 0) > 99) {
         throw new Error(
             'SAFARI_BUILD_NUMBER components exceed Apple limits of four, two, and two digits',
         );

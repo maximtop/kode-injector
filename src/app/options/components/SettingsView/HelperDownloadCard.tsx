@@ -67,10 +67,10 @@ interface HelperDownloadCardProps {
  * Renders the helper download card.
  *
  * @param props HelperDownloadCard props.
- * @param props.download
- * @param props.disabled
- * @param props.onDownload
- * @param props.onViewAllDownloads
+ * @param props.download Resolved helper download destination.
+ * @param props.disabled Whether actions are temporarily disabled.
+ * @param props.onDownload Opens the resolved download.
+ * @param props.onViewAllDownloads Opens the complete downloads list.
  *
  * @returns Download card element.
  */

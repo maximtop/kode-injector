@@ -2,7 +2,6 @@
  * @file Builds deterministic native-host release packages.
  */
 
-/* eslint-disable jsdoc/require-jsdoc */
 import { execFileSync } from 'node:child_process';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
@@ -28,10 +27,28 @@ export enum NativeArch {
     Arm64 = 'arm64',
 }
 
+/**
+ * One OS/architecture pair the native host is built for.
+ */
 export interface NativeTarget {
+    /**
+     * Operating system to build for.
+     */
     os: NativeOS;
+
+    /**
+     * CPU architecture to build for.
+     */
     arch: NativeArch;
+
+    /**
+     * Published release asset name for this target.
+     */
     assetName: string;
+
+    /**
+     * Swift target triple, for macOS targets built with Swift.
+     */
     swiftTriple?: string;
 }
 
@@ -101,20 +118,59 @@ const CHROMIUM_ID_PATTERN = /^[a-p]{32}$/u;
 const HOST_COMMAND = './cmd/kode-injector-native';
 const INSTALLER_COMMAND = './cmd/kode-injector-installer';
 
+/**
+ * Source binaries and resources needed to assemble the macOS application.
+ */
 export interface MacApplicationSources {
+    /**
+     * Path to the built Swift main executable.
+     */
     mainExecutable: string;
+
+    /**
+     * Path to the built native-host executable.
+     */
     hostExecutable: string;
+
+    /**
+     * Path to the built installer executable.
+     */
     installerExecutable: string;
+
+    /**
+     * Path to the Info.plist template to render.
+     */
     infoPlistTemplate: string;
+
+    /**
+     * Path to the application icon.
+     */
     icon: string;
 }
 
+/**
+ * Lists published release asset names, optionally filtered by OS.
+ *
+ * @param nativeOS Operating system to filter by, or all targets when omitted.
+ *
+ * @returns Published asset names for the matching targets.
+ */
 export const getNativeArtifactNames = (nativeOS?: NativeOS): string[] => {
     return NATIVE_TARGETS
         .filter((target) => nativeOS === undefined || target.os === nativeOS)
         .map((target) => target.assetName);
 };
 
+/**
+ * Builds the linker flags used to embed identity into the installer binary.
+ *
+ * @param edgeID Edge Add-ons identifier to embed, when publishing for Edge.
+ * @param packageVersion Extension version to embed, when known.
+ *
+ * @returns Linker flags string for `go build`.
+ *
+ * @throws {Error} When `edgeID` is not a 32-letter Edge Add-ons identifier.
+ */
 export const getInstallerLdflags = (
     edgeID?: string,
     packageVersion?: string,
@@ -138,6 +194,13 @@ export const getInstallerLdflags = (
     return flags.join(' ');
 };
 
+/**
+ * Reads the package version from `package.json`.
+ *
+ * @param rootPath Repository root containing `package.json`.
+ *
+ * @returns Package version.
+ */
 const readVersion = (rootPath: string): string => {
     const packageJson = JSON.parse(
         fs.readFileSync(path.join(rootPath, 'package.json'), 'utf8'),
@@ -145,6 +208,14 @@ const readVersion = (rootPath: string): string => {
     return packageJson.version;
 };
 
+/**
+ * Runs a command, streaming its output to the current process.
+ *
+ * @param command Executable to run.
+ * @param args Arguments to pass to the executable.
+ * @param cwd Working directory for the command.
+ * @param env Extra environment variables to merge into the process environment.
+ */
 const run = (command: string, args: string[], cwd: string, env?: NodeJS.ProcessEnv): void => {
     execFileSync(command, args, {
         cwd,
@@ -153,6 +224,16 @@ const run = (command: string, args: string[], cwd: string, env?: NodeJS.ProcessE
     });
 };
 
+/**
+ * Runs a command and returns its trimmed standard output.
+ *
+ * @param command Executable to run.
+ * @param args Arguments to pass to the executable.
+ * @param cwd Working directory for the command.
+ * @param env Extra environment variables to merge into the process environment.
+ *
+ * @returns Trimmed standard output of the command.
+ */
 const runAndCapture = (
     command: string,
     args: string[],
@@ -166,6 +247,16 @@ const runAndCapture = (
     }).trim();
 };
 
+/**
+ * Renders the bundle version into an Info.plist template.
+ *
+ * @param template Info.plist template contents.
+ * @param version Version to render into the template.
+ *
+ * @returns Rendered Info.plist contents.
+ *
+ * @throws {Error} When the template is missing a required version key.
+ */
 const renderPlistVersion = (template: string, version: string): string => {
     const versionKeys = ['CFBundleShortVersionString', 'CFBundleVersion'];
     return versionKeys.reduce((plist, key) => {
@@ -182,11 +273,26 @@ const renderPlistVersion = (template: string, version: string): string => {
     }, template);
 };
 
+/**
+ * Copies a file and marks it executable.
+ *
+ * @param source Path of the executable to copy.
+ * @param destination Path to copy the executable to.
+ */
 const copyExecutable = (source: string, destination: string): void => {
     fs.copyFileSync(source, destination);
     fs.chmodSync(destination, 0o755);
 };
 
+/**
+ * Assembles the macOS `.app` bundle staged for packaging.
+ *
+ * @param stagePath Directory to assemble the staged package into; cleared first.
+ * @param sources Source binaries and resources to assemble.
+ * @param version Version to render into Info.plist.
+ *
+ * @returns Path to the assembled `.app` bundle.
+ */
 export const assembleMacApplication = (
     stagePath: string,
     sources: MacApplicationSources,
@@ -229,6 +335,16 @@ export const assembleMacApplication = (
     return appPath;
 };
 
+/**
+ * Builds the Swift main executable for one macOS target.
+ *
+ * @param rootPath Repository root passed as the Swift build's working directory.
+ * @param target Target to build; must declare a Swift triple.
+ *
+ * @returns Path to the built binary.
+ *
+ * @throws {Error} When the target has no Swift triple.
+ */
 const buildSwiftExecutable = (
     rootPath: string,
     target: NativeTarget,
@@ -252,6 +368,14 @@ const buildSwiftExecutable = (
     return path.join(binaryPath, MAC_HELPER_PRODUCT_NAME);
 };
 
+/**
+ * Asserts that a directory contains exactly the expected entries.
+ *
+ * @param directoryPath Directory whose entries should be checked.
+ * @param expectedEntries Complete expected entry names, order-independent.
+ *
+ * @throws {Error} When the directory's entries do not match exactly.
+ */
 const assertDirectoryEntries = (
     directoryPath: string,
     expectedEntries: string[],
@@ -267,6 +391,15 @@ const assertDirectoryEntries = (
     }
 };
 
+/**
+ * Reads one raw value from an Info.plist file.
+ *
+ * @param rootPath Working directory for the `plutil` invocation.
+ * @param infoPlistPath Path to the Info.plist file.
+ * @param key Plist key to extract.
+ *
+ * @returns Raw value of the key.
+ */
 const readPlistValue = (
     rootPath: string,
     infoPlistPath: string,
@@ -279,6 +412,16 @@ const readPlistValue = (
     );
 };
 
+/**
+ * Validates that an Info.plist key has the expected value.
+ *
+ * @param rootPath Working directory for the underlying `plutil` invocation.
+ * @param infoPlistPath Path to the Info.plist file.
+ * @param key Plist key to validate.
+ * @param expected Value the key must have.
+ *
+ * @throws {Error} When the key's value does not match `expected`.
+ */
 const validatePlistValue = (
     rootPath: string,
     infoPlistPath: string,
@@ -291,6 +434,15 @@ const validatePlistValue = (
     }
 };
 
+/**
+ * Maps a native architecture to its Mach-O architecture name.
+ *
+ * @param arch Native architecture to map.
+ *
+ * @returns Mach-O architecture name.
+ *
+ * @throws {Error} When the architecture is not recognized.
+ */
 const expectedMachArchitecture = (arch: NativeArch): string => {
     switch (arch) {
         case NativeArch.Amd64:
@@ -302,6 +454,15 @@ const expectedMachArchitecture = (arch: NativeArch): string => {
     }
 };
 
+/**
+ * Validates that a built executable contains exactly the expected architecture.
+ *
+ * @param rootPath Working directory for the underlying `lipo` invocation.
+ * @param executablePath Path to the executable to inspect.
+ * @param expectedArchitecture Mach-O architecture name the executable must contain.
+ *
+ * @throws {Error} When the executable's architectures do not match exactly.
+ */
 const validateExecutableArchitecture = (
     rootPath: string,
     executablePath: string,
@@ -319,6 +480,17 @@ const validateExecutableArchitecture = (
     }
 };
 
+/**
+ * Validates a staged macOS package against its structural and metadata contract.
+ *
+ * @param rootPath Working directory for the underlying shell invocations.
+ * @param stagePath Directory containing the staged package.
+ * @param target Target the package was built for.
+ * @param version Version the package's metadata must declare.
+ *
+ * @throws {Error} When the package's structure, Info.plist, or executable
+ * architectures do not match the contract.
+ */
 const validateMacApplication = (
     rootPath: string,
     stagePath: string,
@@ -393,6 +565,14 @@ const validateMacApplication = (
     }
 };
 
+/**
+ * Mounts a built disk image and validates the macOS package inside it.
+ *
+ * @param rootPath Working directory for the underlying shell invocations.
+ * @param artifactPath Path to the disk image to mount and validate.
+ * @param target Target the disk image was built for.
+ * @param version Version the package's metadata must declare.
+ */
 const validateMacDiskImage = (
     rootPath: string,
     artifactPath: string,
@@ -422,6 +602,15 @@ const validateMacDiskImage = (
     }
 };
 
+/**
+ * Cross-compiles one Go command for a target OS and architecture.
+ *
+ * @param nativeRoot Go module root passed as the build's working directory.
+ * @param target Target OS and architecture to build for.
+ * @param command Go command package to build.
+ * @param destination Path to write the built binary to.
+ * @param ldflags Linker flags to pass to the build.
+ */
 const buildBinary = (
     nativeRoot: string,
     target: NativeTarget,
@@ -436,6 +625,13 @@ const buildBinary = (
     });
 };
 
+/**
+ * Writes a `SHA256SUMS` file covering the given artifacts.
+ *
+ * @param outputPath Directory containing the artifacts; the checksum file is
+ * written here too.
+ * @param artifactNames Artifact file names to checksum.
+ */
 const createChecksums = (outputPath: string, artifactNames: string[]): void => {
     const lines = artifactNames.sort().map((name) => {
         const data = fs.readFileSync(path.join(outputPath, name));
@@ -444,6 +640,17 @@ const createChecksums = (outputPath: string, artifactNames: string[]): void => {
     fs.writeFileSync(path.join(outputPath, 'SHA256SUMS'), `${lines.join('\n')}\n`);
 };
 
+/**
+ * Builds and packages the native host for every supported target.
+ *
+ * @param rootPath Repository root to build from.
+ * @param validation Whether to run structural and signing validation on each
+ * built package, and to embed the validation Edge identifier.
+ *
+ * @returns Directory containing the packaged artifacts and their checksums.
+ *
+ * @throws {Error} When a target's package fails validation.
+ */
 export const packageNativeHost = (
     rootPath = process.cwd(),
     validation = false,

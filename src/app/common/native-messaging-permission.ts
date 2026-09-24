@@ -88,6 +88,7 @@ export class NativeMessagingPermissionService {
     };
 }
 
+// The polyfill types permission names as a closed union; the service passes only nativeMessaging.
 export const nativeMessagingPermission = new NativeMessagingPermissionService(
-    browser.permissions,
+    browser.permissions as NativeMessagingPermissionsApi,
 );

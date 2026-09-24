@@ -13,6 +13,8 @@ import { InjectionField, MESSAGE_TYPES } from '../src/app/common/constants';
 import { LocalSourceAccessMethod } from '../src/app/common/contracts';
 import { NativeHostStatus } from '../src/app/common/native-host-protocol';
 
+import type { Tabs } from 'webextension-polyfill';
+
 vi.mock('webextension-polyfill', () => ({
     default: {
         runtime: {
@@ -161,7 +163,7 @@ test('injection-code request binds JavaScript execution to its document token', 
         data: { documentToken },
     }, {
         url: 'https://example.com/page',
-        tab: { id: 7 },
+        tab: { id: 7 } as Tabs.Tab,
     });
 
     expect(injections.getPageInjections).toHaveBeenCalledWith(
@@ -179,7 +181,7 @@ test('injection-code request rejects an invalid document token', async () => {
         data: { documentToken: 'invalid' },
     }, {
         url: 'https://example.com/page',
-        tab: { id: 7 },
+        tab: { id: 7 } as Tabs.Tab,
     })).resolves.toBeNull();
 
     expect(injections.getPageInjections).not.toHaveBeenCalled();

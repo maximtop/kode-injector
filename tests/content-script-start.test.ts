@@ -23,7 +23,7 @@ vi.mock('../src/app/common/log', () => ({
 
 beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(messenger.getInjectionsCode).mockReturnValue(new Promise(() => undefined));
+    vi.mocked(messenger.getInjectionsCode).mockReturnValue(new Promise(() => {}));
     vi.stubGlobal('document', {
         readyState: 'loading',
         documentElement: { setAttribute: vi.fn(), getAttribute: vi.fn() },

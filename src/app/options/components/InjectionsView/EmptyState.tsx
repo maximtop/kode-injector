@@ -21,7 +21,7 @@ interface EmptyStateProps {
  * Renders the zero-rules onboarding state.
  *
  * @param props EmptyState props.
- * @param props.onCreate
+ * @param props.onCreate Opens the rule editor for a new rule.
  *
  * @returns Empty state element.
  */

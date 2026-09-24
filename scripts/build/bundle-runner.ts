@@ -45,7 +45,7 @@ export const bundleRunner = (
     watch: boolean,
 ): Promise<void> => {
     const options = configurations.length === 1
-        ? configurations[0]
+        ? configurations[0]!
         : configurations;
     const compiler = rspack(options);
 
@@ -59,7 +59,7 @@ export const bundleRunner = (
                         throw error;
                     }
 
-                    reportStats(stats);
+                    reportStats(stats!);
                     if (!initialBuildComplete) {
                         initialBuildComplete = true;
                         resolve();
@@ -102,7 +102,7 @@ export const bundleRunner = (
             }
 
             try {
-                reportStats(stats);
+                reportStats(stats!);
                 finish();
             } catch (buildError) {
                 finish(buildError instanceof Error

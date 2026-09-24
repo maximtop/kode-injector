@@ -44,7 +44,7 @@ vi.mock('../src/app/background/native-host', () => ({
 }));
 
 vi.mock('../src/app/background/storage', () => ({
-    storage: { get: vi.fn(), set: vi.fn() },
+    storage: { get: vi.fn(), set: vi.fn().mockResolvedValue(undefined) },
 }));
 
 const deferred = <T>() => {

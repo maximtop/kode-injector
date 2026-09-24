@@ -44,7 +44,10 @@ test('reports catalog, usage, and hardcoded UI defects', () => {
                 obsolete_key: { message: 'Old' },
             },
             zz: catalog({
-                name: 'Kode Injector', options_title: 'Настройки', popup_title: 'Всплывающее окно', unused_key: 'Не используется',
+                name: 'Kode Injector',
+                options_title: 'Настройки',
+                popup_title: 'Всплывающее окно',
+                unused_key: 'Не используется',
             }),
         },
         manifest: '{"name":"__MSG_name__","options":"__MSG_options_title__"}',
@@ -65,7 +68,9 @@ test('reports catalog, usage, and hardcoded UI defects', () => {
     expect(errors).toContain('ru: empty message popup_title');
     expect(errors).toContain('ru: unexpected key obsolete_key');
     expect(errors).toContain('Unused English message: unused_key');
-    expect(errors.some((error) => error.includes('Hardcoded UI string: src/app/options/components/Sample.tsx:4 "Save"'))).toBe(true);
+    expect(errors.some((error) => {
+        return error.includes('Hardcoded UI string: src/app/options/components/Sample.tsx:4 "Save"');
+    })).toBe(true);
 });
 
 test('accepts a complete fixture with matching usage', () => {

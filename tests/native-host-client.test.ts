@@ -53,6 +53,34 @@ class FakePort implements NativePort {
     };
 }
 
+const completeRead = (port: FakePort, requestId: string, content: string): void => {
+    const data = Buffer.from(content).toString('base64');
+    port.onMessage.emit({
+        protocolVersion: 1,
+        requestId,
+        type: NativeResponseType.ReadStart,
+        ok: true,
+        totalBytes: content.length,
+        chunkCount: 1,
+    });
+    port.onMessage.emit({
+        protocolVersion: 1,
+        requestId,
+        type: NativeResponseType.ReadChunk,
+        ok: true,
+        chunkIndex: 0,
+        data,
+    });
+    port.onMessage.emit({
+        protocolVersion: 1,
+        requestId,
+        type: NativeResponseType.ReadComplete,
+        ok: true,
+        totalBytes: content.length,
+        chunkCount: 1,
+    });
+};
+
 test('uses one connection for ping and concurrent out-of-order reads', async () => {
     const port = new FakePort();
     const connect = vi.fn(() => port);
@@ -86,12 +114,12 @@ test('rejects pending work on disconnect and reconnects on later demand', async 
     const connect = vi.fn(() => ports.shift() as FakePort);
     const client = new NativeHostClient(connect);
     const first = client.ping();
-    const connectedPort = connect.mock.results[0].value;
+    const connectedPort = connect.mock.results[0]!.value;
     connectedPort.remoteDisconnect();
     await expect(first).rejects.toThrowError('NATIVE_DISCONNECTED');
 
     const second = client.ping();
-    const nextPort = connect.mock.results[1].value;
+    const nextPort = connect.mock.results[1]!.value;
     const request = nextPort.posted[0] as { requestId: string };
     nextPort.onMessage.emit({
         protocolVersion: 1,
@@ -118,7 +146,7 @@ test('explicit disconnect closes the persistent port and reconnects on demand', 
     const connect = vi.fn(() => ports.shift() as FakePort);
     const client = new NativeHostClient(connect);
     const first = client.ping();
-    const firstPort = connect.mock.results[0].value;
+    const firstPort = connect.mock.results[0]!.value;
 
     client.disconnect();
 
@@ -126,7 +154,7 @@ test('explicit disconnect closes the persistent port and reconnects on demand', 
     await expect(first).rejects.toThrowError('NATIVE_DISCONNECTED');
     const second = client.ping();
     expect(connect).toHaveBeenCalledTimes(2);
-    connect.mock.results[1].value.remoteDisconnect();
+    connect.mock.results[1]!.value.remoteDisconnect();
     await expect(second).rejects.toThrowError('NATIVE_DISCONNECTED');
 });
 
@@ -135,14 +163,14 @@ test('a stale disconnect event cannot clear a replacement port', async () => {
     const connect = vi.fn(() => ports.shift() as FakePort);
     const client = new NativeHostClient(connect);
     const first = client.ping();
-    const firstPort = connect.mock.results[0].value;
+    const firstPort = connect.mock.results[0]!.value;
     const staleDisconnect = [...firstPort.onDisconnect.listeners][0];
 
     client.disconnect();
     await expect(first).rejects.toThrowError('NATIVE_DISCONNECTED');
 
     const second = client.ping();
-    const secondPort = connect.mock.results[1].value;
+    const secondPort = connect.mock.results[1]!.value;
     staleDisconnect?.();
     const request = secondPort.posted[0] as { requestId: string };
     secondPort.onMessage.emit({
@@ -155,31 +183,3 @@ test('a stale disconnect event cannot clear a replacement port', async () => {
 
     await expect(second).resolves.toMatchObject({ hostVersion: '0.8.3' });
 });
-
-const completeRead = (port: FakePort, requestId: string, content: string): void => {
-    const data = Buffer.from(content).toString('base64');
-    port.onMessage.emit({
-        protocolVersion: 1,
-        requestId,
-        type: NativeResponseType.ReadStart,
-        ok: true,
-        totalBytes: content.length,
-        chunkCount: 1,
-    });
-    port.onMessage.emit({
-        protocolVersion: 1,
-        requestId,
-        type: NativeResponseType.ReadChunk,
-        ok: true,
-        chunkIndex: 0,
-        data,
-    });
-    port.onMessage.emit({
-        protocolVersion: 1,
-        requestId,
-        type: NativeResponseType.ReadComplete,
-        ok: true,
-        totalBytes: content.length,
-        chunkCount: 1,
-    });
-};

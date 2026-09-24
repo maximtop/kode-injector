@@ -46,7 +46,7 @@ vi.mock('../src/app/background/native-host', () => ({
 }));
 
 vi.mock('../src/app/background/storage', () => ({
-    storage: { get: vi.fn(), set: vi.fn() },
+    storage: { get: vi.fn(), set: vi.fn().mockResolvedValue(undefined) },
 }));
 
 beforeEach(() => {
@@ -260,7 +260,7 @@ test('setInjectionFileEnabled flips only the targeted flag', () => {
     const updated = injections.setInjectionFileEnabled(created!.id, InjectionField.JsPath, false);
 
     expect(updated).toMatchObject({ jsEnabled: false, cssEnabled: true });
-    expect(injections.injections[0].jsEnabled).toBe(false);
+    expect(injections.injections[0]?.jsEnabled).toBe(false);
 });
 
 test('setInjectionFileEnabled returns null for an unknown id', () => {

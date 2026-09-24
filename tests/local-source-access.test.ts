@@ -12,6 +12,10 @@ vi.mock('webextension-polyfill', () => ({
     default: { runtime: { connectNative: vi.fn() } },
 }));
 
+const grantedPermission = () => ({
+    contains: vi.fn().mockResolvedValue(true),
+});
+
 test('maps compatible hosts to ready', async () => {
     const access = new LocalSourceAccess({
         ping: vi.fn().mockResolvedValue({ protocolVersion: 1, hostVersion: '0.8.3' }),
@@ -201,8 +205,4 @@ test('a stale native read failure is ignored after switching to browser access',
         permissionGranted: true,
         host: { status: NativeHostStatus.Checking },
     });
-});
-
-const grantedPermission = () => ({
-    contains: vi.fn().mockResolvedValue(true),
 });

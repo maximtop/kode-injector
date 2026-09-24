@@ -60,7 +60,7 @@ test('a rule with a corrupt flag is dropped, core rules survive', () => {
     });
 
     expect(injections).toHaveLength(1);
-    expect(injections[0].id).toBe('rule-1');
+    expect(injections[0]?.id).toBe('rule-1');
 });
 
 test('a rule missing core fields is still dropped', () => {

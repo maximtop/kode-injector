@@ -15,6 +15,8 @@ import {
     resolveNativeHostDownload,
 } from '../src/app/common/native-host-download';
 
+import type { Manifest, Runtime } from 'webextension-polyfill';
+
 vi.mock('webextension-polyfill', () => ({
     default: {
         runtime: {
@@ -98,9 +100,10 @@ test.each([
 test('reads the installed version and platform exactly once', async () => {
     const { runtime } = (await import('webextension-polyfill')).default;
     const getManifest = vi.mocked(runtime.getManifest)
-        .mockReturnValue({ version: '0.8.2' });
+        .mockReturnValue({ version: '0.8.2' } as Manifest.WebExtensionManifest);
+    // Chromium reports arm64, which the polyfill's types do not list.
     const getPlatformInfo = vi.mocked(runtime.getPlatformInfo)
-        .mockResolvedValue({ os: 'mac', arch: 'arm64', nacl_arch: 'arm64' });
+        .mockResolvedValue({ os: 'mac', arch: 'arm64', nacl_arch: 'arm64' } as unknown as Runtime.PlatformInfo);
     const fetchSpy = vi.spyOn(globalThis, 'fetch');
 
     await expect(resolveCurrentNativeHostDownload()).resolves.toEqual({
@@ -120,7 +123,7 @@ test('reads the installed version and platform exactly once', async () => {
 test('falls back when platform detection rejects without making a network request', async () => {
     const { runtime } = (await import('webextension-polyfill')).default;
     const getManifest = vi.mocked(runtime.getManifest)
-        .mockReturnValue({ version: '0.8.2' });
+        .mockReturnValue({ version: '0.8.2' } as Manifest.WebExtensionManifest);
     const getPlatformInfo = vi.mocked(runtime.getPlatformInfo)
         .mockRejectedValue(new Error('platform unavailable'));
     const fetchSpy = vi.spyOn(globalThis, 'fetch');

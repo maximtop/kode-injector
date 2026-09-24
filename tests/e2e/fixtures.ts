@@ -138,7 +138,7 @@ const closeServer = async (server: Server): Promise<void> => {
 export const test = base.extend<ExtensionFixtures & ExtensionOptions>({
     extensionPath: [CHROME_EXTENSION_PATH, { option: true }],
 
-    context: async ({ extensionPath: configuredPath }, use, testInfo) => {
+    context: async ({ extensionPath: configuredPath }, provide, testInfo) => {
         const extensionPath = path.resolve(configuredPath);
         const { headless } = testInfo.project.use;
         if (typeof headless !== 'boolean') {
@@ -158,7 +158,7 @@ export const test = base.extend<ExtensionFixtures & ExtensionOptions>({
                     `--load-extension=${extensionPath}`,
                 ],
             });
-            await use(context);
+            await provide(context);
         } finally {
             try {
                 await context?.close();
@@ -168,7 +168,7 @@ export const test = base.extend<ExtensionFixtures & ExtensionOptions>({
         }
     },
 
-    serviceWorker: async ({ context }, use) => {
+    serviceWorker: async ({ context }, provide) => {
         const serviceWorker = context.serviceWorkers()[0]
             ?? await context.waitForEvent('serviceworker');
         const fileAccessAllowed = await serviceWorker.evaluate(() => {
@@ -178,17 +178,17 @@ export const test = base.extend<ExtensionFixtures & ExtensionOptions>({
             fileAccessAllowed,
             'The isolated Chromium profile must allow extension file access',
         ).toBe(true);
-        await use(serviceWorker);
+        await provide(serviceWorker);
     },
 
-    extensionId: async ({ serviceWorker }, use) => {
+    extensionId: async ({ serviceWorker }, provide) => {
         const serviceWorkerUrl = new URL(serviceWorker.url());
         expect(serviceWorkerUrl.protocol).toBe(EXTENSION_SCHEME);
-        await use(serviceWorkerUrl.hostname);
+        await provide(serviceWorkerUrl.hostname);
     },
 
     // eslint-disable-next-line no-empty-pattern
-    testSite: async ({}, use) => {
+    testSite: async ({}, provide) => {
         const sourceDirectory = await fs.mkdtemp(path.join(os.tmpdir(), SOURCE_PREFIX));
         const javaScriptPath = path.join(sourceDirectory, 'injection.js');
         const cssPath = path.join(sourceDirectory, 'injection.css');
@@ -203,7 +203,7 @@ export const test = base.extend<ExtensionFixtures & ExtensionOptions>({
                 fs.writeFile(cssPath, CSS_SOURCE, 'utf8'),
             ]);
             const port = await listen(server);
-            await use({
+            await provide({
                 matchingHostname: MATCHING_HOSTNAME,
                 matchingUrl: `http://${MATCHING_HOSTNAME}:${port}/`,
                 nonMatchingUrl: `http://${NON_MATCHING_HOSTNAME}:${port}/`,

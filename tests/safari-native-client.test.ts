@@ -202,7 +202,7 @@ test('keeps authorization failures closed and times out unanswered reads', async
         .rejects.toThrowError('AUTHORIZATION_TARGET_NOT_FOUND');
 
     vi.useFakeTimers();
-    const unanswered: SafariNativeMessenger = () => new Promise(() => undefined);
+    const unanswered: SafariNativeMessenger = () => new Promise(() => {});
     const pending = new SafariNativeClient(unanswered, 50).readFile('file:///tmp/source.js');
     const assertion = expect(pending).rejects.toThrowError('NATIVE_TIMEOUT');
     await vi.advanceTimersByTimeAsync(50);

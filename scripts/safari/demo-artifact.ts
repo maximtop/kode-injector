@@ -63,7 +63,9 @@ export const validateBuiltInDemoResources = (resourcesPath: string): void => {
     try {
         vm.compileFunction(javascript, [], { filename: javascriptPath });
     } catch (error) {
-        throw new Error(`Safari built-in demo JavaScript does not parse: ${(error as Error).message}`);
+        throw new Error(`Safari built-in demo JavaScript does not parse: ${(error as Error).message}`, {
+            cause: error,
+        });
     }
     if (!isDemoCss(css)) {
         throw new Error('Safari built-in demo CSS is empty or lacks its marker property');
@@ -71,7 +73,7 @@ export const validateBuiltInDemoResources = (resourcesPath: string): void => {
     try {
         postcss.parse(css, { from: cssPath });
     } catch (error) {
-        throw new Error(`Safari built-in demo CSS does not parse: ${(error as Error).message}`);
+        throw new Error(`Safari built-in demo CSS does not parse: ${(error as Error).message}`, { cause: error });
     }
 
     const background = readArtifact(path.join(resourcesPath, BACKGROUND_BUNDLE), 'background bundle');

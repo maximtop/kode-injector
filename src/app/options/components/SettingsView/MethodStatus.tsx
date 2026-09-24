@@ -112,13 +112,13 @@ const getStatusPresentation = (state: LocalSourceAccessState): {
  * Renders the status box of the selected access method.
  *
  * @param props MethodStatus props.
- * @param props.state
- * @param props.browserTarget
- * @param props.disabled
- * @param props.methodChangeError
- * @param props.onCheckAgain
- * @param props.onOpenExtensionSettings
- * @param props.onRequestPermission
+ * @param props.state Current local-source access state.
+ * @param props.browserTarget Browser hosting the extension.
+ * @param props.disabled Whether a method transition is in progress.
+ * @param props.methodChangeError Inline description of the last failed method change, if any.
+ * @param props.onCheckAgain Rechecks the selected method.
+ * @param props.onOpenExtensionSettings Opens the browser's extension settings, when supported.
+ * @param props.onRequestPermission Requests the optional native-messaging permission.
  *
  * @returns Method status element.
  */

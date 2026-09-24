@@ -1,5 +1,5 @@
 /**
- * Validates the extension's locale catalogs and translation usage.
+ * @file Validates the extension's locale catalogs and translation usage.
  */
 
 import fs from 'node:fs';
@@ -79,7 +79,7 @@ const readJson = (filePath: string): unknown => {
     try {
         return JSON.parse(fs.readFileSync(filePath, 'utf8')) as unknown;
     } catch (error) {
-        throw new Error(`${filePath}: invalid JSON (${(error as Error).message})`);
+        throw new Error(`${filePath}: invalid JSON (${(error as Error).message})`, { cause: error });
     }
 };
 
@@ -141,17 +141,15 @@ const collectFiles = (directory: string): string[] => {
 const collectUsedKeys = (sourcePath: string, manifestPath: string): Set<string> => {
     const usedKeys = new Set<string>();
     const manifest = fs.existsSync(manifestPath) ? fs.readFileSync(manifestPath, 'utf8') : '';
-    for (const match of manifest.matchAll(MESSAGE_KEY_PATTERN)) {
-        usedKeys.add(match[1]);
+    for (const [, key] of manifest.matchAll(MESSAGE_KEY_PATTERN)) {
+        usedKeys.add(key!);
     }
 
-    for (const filePath of collectFiles(sourcePath)) {
-        if (!/\.(ts|tsx)$/.test(filePath)) {
-            continue;
-        }
+    const sourceFiles = collectFiles(sourcePath).filter((filePath) => /\.(ts|tsx)$/.test(filePath));
+    for (const filePath of sourceFiles) {
         const source = fs.readFileSync(filePath, 'utf8');
-        for (const match of source.matchAll(TRANSLATOR_KEY_PATTERN)) {
-            usedKeys.add(match[1]);
+        for (const [, key] of source.matchAll(TRANSLATOR_KEY_PATTERN)) {
+            usedKeys.add(key!);
         }
     }
 
@@ -178,11 +176,8 @@ const hasLetters = (value: string): boolean => /\p{L}/u.test(value);
 const reportHardcodedStrings = (rootPath: string, sourcePath: string): string[] => {
     const errors: string[] = [];
     const componentRoot = path.join(sourcePath);
-    for (const filePath of collectFiles(componentRoot)) {
-        if (!filePath.endsWith('.tsx')) {
-            continue;
-        }
-
+    const componentFiles = collectFiles(componentRoot).filter((filePath) => filePath.endsWith('.tsx'));
+    for (const filePath of componentFiles) {
         const sourceText = fs.readFileSync(filePath, 'utf8');
         const sourceFile = ts.createSourceFile(filePath, sourceText, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
         const relative = relativePath(rootPath, filePath);
@@ -226,7 +221,7 @@ const reportHardcodedStrings = (rootPath: string, sourcePath: string): string[] 
                 && ts.isIdentifier(node.expression.expression)
                 && node.expression.expression.text === 'window'
                 && node.arguments.length === 1
-                && ts.isStringLiteral(node.arguments[0])) {
+                && ts.isStringLiteral(node.arguments[0]!)) {
                 report(node.arguments[0], node.arguments[0].text);
             } else if (filePath.endsWith(path.join('InjectionsTable.tsx'))
                 && ts.isPropertyAssignment(node)
@@ -266,20 +261,14 @@ const validateCatalog = (
     const baseKeys = Object.keys(baseCatalog);
     const keys = Object.keys(catalog);
     for (const key of baseKeys) {
+        const message = key in catalog ? getMessageText(catalog[key]) : undefined;
         if (!(key in catalog)) {
             errors.push(`${locale}: missing key ${key}`);
-            continue;
-        }
-        const message = getMessageText(catalog[key]);
-        if (message === undefined) {
+        } else if (message === undefined) {
             errors.push(`${locale}: ${key} must contain a string message`);
-            continue;
-        }
-        if (message.trim() === '') {
+        } else if (message.trim() === '') {
             errors.push(`${locale}: empty message ${key}`);
-            continue;
-        }
-        if (validateFormats && locale !== BASE_LOCALE) {
+        } else if (validateFormats && locale !== BASE_LOCALE) {
             const baseMessage = getMessageText(baseCatalog[key]);
             try {
                 if (baseMessage !== undefined && !validator.isTranslationValid(
@@ -357,18 +346,18 @@ export const validateLocales = (options: LocaleValidationOptions): string[] => {
         const filePath = path.join(localesPath, locale, 'messages.json');
         if (!fs.existsSync(filePath)) {
             errors.push(`${locale}: missing messages.json`);
-            continue;
-        }
-        try {
-            validateCatalog(
-                locale,
-                readJson(filePath),
-                baseCatalog,
-                errors,
-                expectedLocales.includes(locale),
-            );
-        } catch (error) {
-            errors.push((error as Error).message);
+        } else {
+            try {
+                validateCatalog(
+                    locale,
+                    readJson(filePath),
+                    baseCatalog,
+                    errors,
+                    expectedLocales.includes(locale),
+                );
+            } catch (error) {
+                errors.push((error as Error).message);
+            }
         }
     }
 

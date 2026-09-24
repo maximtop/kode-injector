@@ -44,10 +44,10 @@ interface AccessMethodCardsProps {
  * fixed to the Helper and the selector is replaced with an explanation.
  *
  * @param props AccessMethodCards props.
- * @param props.browserTarget
- * @param props.method
- * @param props.disabled
- * @param props.onChange
+ * @param props.browserTarget Browser hosting the extension.
+ * @param props.method Currently selected access method.
+ * @param props.disabled Whether selection is temporarily disabled.
+ * @param props.onChange Applies a newly selected method.
  *
  * @returns Method selector element.
  */

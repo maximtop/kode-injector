@@ -2,8 +2,6 @@
  * @file Readiness state for the active local-source access method.
  */
 
-/* eslint-disable jsdoc/require-jsdoc */
-
 import { getBrowserCapabilities } from '../common/browser-capabilities';
 import { getCurrentBrowserTarget } from '../common/browser-target';
 import { LocalSourceAccessMethod } from '../common/contracts';
@@ -25,21 +23,42 @@ import type {
     NativeHostState,
 } from '../common/contracts';
 
+/**
+ * Native-host operations needed to probe readiness.
+ */
 interface NativeHostProbe {
     ping(): Promise<NativeHostInfo>;
     disconnect(): void;
 }
 
+/**
+ * Browser file URL access check.
+ */
 interface BrowserFileAccessProbe {
     isAllowed(): Promise<boolean>;
 }
 
+/**
+ * Native messaging permission check.
+ */
 interface NativeMessagingPermissionProbe {
     contains(): Promise<boolean>;
 }
 
+/**
+ * Reads the currently selected local-source access method.
+ *
+ * @returns Currently selected access method.
+ */
 type GetLocalSourceAccessMethod = () => LocalSourceAccessMethod;
 
+/**
+ * Maps a native-host probe failure to a reported status.
+ *
+ * @param errorMessage Message of the error raised by the probe.
+ *
+ * @returns Status describing the failure.
+ */
 const getFailureStatus = (errorMessage: string): NativeHostStatus => {
     if (errorMessage === 'UNSUPPORTED_PROTOCOL') {
         return NativeHostStatus.UpdateRequired;
@@ -50,6 +69,9 @@ const getFailureStatus = (errorMessage: string): NativeHostStatus => {
     return NativeHostStatus.NotInstalled;
 };
 
+/**
+ * Tracks and refreshes the readiness of the active local-source access method.
+ */
 export class LocalSourceAccess {
     private state: NativeHostAccessState = {
         kind: LocalSourceAccessMethod.NativeHost,
@@ -59,6 +81,14 @@ export class LocalSourceAccess {
 
     private stateRevision = 0;
 
+    /**
+     * Creates a local-source access tracker.
+     *
+     * @param client Native-host probe used to check readiness.
+     * @param browserFileAccess Browser file URL access check.
+     * @param nativePermission Native messaging permission check.
+     * @param getMethod Reads the currently selected access method.
+     */
     public constructor(
         private readonly client: NativeHostProbe,
         private readonly browserFileAccess: BrowserFileAccessProbe,

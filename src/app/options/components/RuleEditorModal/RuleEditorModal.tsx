@@ -91,12 +91,12 @@ const getExamplePath = (fileName: string): string => {
  * Renders the rule editor modal.
  *
  * @param props RuleEditorModal props.
- * @param props.opened
- * @param props.rule
- * @param props.prefillSite
- * @param props.onClose
- * @param props.onSave
- * @param props.saveError
+ * @param props.opened Whether the modal is open.
+ * @param props.rule Rule being edited, or null when creating a new rule.
+ * @param props.prefillSite Site prefilled into a new rule, or null.
+ * @param props.onClose Closes the modal without saving.
+ * @param props.onSave Persists the form values.
+ * @param props.saveError Save-time error that is not part of input syntax validation.
  *
  * @returns Modal element.
  */

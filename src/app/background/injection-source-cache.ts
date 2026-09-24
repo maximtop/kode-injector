@@ -17,12 +17,12 @@ export interface ActiveRuleSources {
     /**
      * Active local JavaScript URL, when configured.
      */
-    javascriptPath?: string;
+    javascriptPath?: string | undefined;
 
     /**
      * Active local CSS URL, when configured.
      */
-    cssPath?: string;
+    cssPath?: string | undefined;
 }
 
 /**
@@ -32,12 +32,12 @@ export interface RuleSourceSnapshot extends ActiveRuleSources {
     /**
      * Decoded JavaScript contents matching `javascriptPath`.
      */
-    javascriptCode?: string;
+    javascriptCode?: string | undefined;
 
     /**
      * Decoded CSS contents matching `cssPath`.
      */
-    cssCode?: string;
+    cssCode?: string | undefined;
 }
 
 /**

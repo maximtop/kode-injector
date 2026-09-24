@@ -103,17 +103,17 @@ interface RuleRowProps {
  * Renders one injection rule as a row card.
  *
  * @param props RuleRow props.
- * @param props.rule
- * @param props.fileIssues
- * @param props.confirmingDelete
- * @param props.onToggle
- * @param props.onFileToggle
- * @param props.onEdit
- * @param props.onDuplicate
- * @param props.onRequestDelete
- * @param props.onCancelDelete
- * @param props.onConfirmDelete
- * @param props.onOpenFile
+ * @param props.rule Rule displayed by this row.
+ * @param props.fileIssues Path fields of this rule whose files could not be read.
+ * @param props.confirmingDelete Whether the row shows the inline delete confirmation.
+ * @param props.onToggle Toggles the rule's enabled state.
+ * @param props.onFileToggle Toggles one file of the rule.
+ * @param props.onEdit Opens the rule editor for this rule.
+ * @param props.onDuplicate Duplicates this rule.
+ * @param props.onRequestDelete Requests the inline delete confirmation.
+ * @param props.onCancelDelete Cancels the inline delete confirmation.
+ * @param props.onConfirmDelete Deletes this rule permanently.
+ * @param props.onOpenFile Opens a rule file in a browser tab.
  *
  * @returns Rule row element.
  */

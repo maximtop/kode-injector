@@ -31,7 +31,7 @@ interface DirectionBridgeProps {
  * Keeps Mantine's direction context in sync with the active locale.
  *
  * @param props Bridge props.
- * @param props.direction
+ * @param props.direction Direction requested by the active locale.
  *
  * @returns Nothing; the component only synchronizes context.
  */
@@ -66,8 +66,8 @@ interface AppProvidersProps {
  * Wraps a page in the shared Mantine provider stack.
  *
  * @param props Provider props.
- * @param props.direction
- * @param props.children
+ * @param props.direction Direction requested by the active locale.
+ * @param props.children Application subtree.
  *
  * @returns Provider-wrapped subtree.
  */

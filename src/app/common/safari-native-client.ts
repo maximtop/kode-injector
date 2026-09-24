@@ -89,8 +89,6 @@ interface SafariMetadataResponse {
  *
  * @param code Error code exposed to the caller.
  *
- * @returns Never returns.
- *
  * @throws Always, using the supplied closed client error code.
  */
 const fail = (code: string): never => {

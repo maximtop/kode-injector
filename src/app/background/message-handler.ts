@@ -211,9 +211,11 @@ class MessageHandler {
      * @param backgroundReady Shared background initialization promise.
      */
     init = (backgroundReady: Promise<void>): void => {
-        browser.runtime.onMessage.addListener(
-            gateMessageHandler(backgroundReady, this.messageHandler),
-        );
+        // Runtime messages come from this extension's own pages and scripts.
+        const handler = gateMessageHandler(backgroundReady, this.messageHandler);
+        browser.runtime.onMessage.addListener((message: unknown, sender: browser.Runtime.MessageSender) => {
+            return handler(message as RuntimeMessage, sender);
+        });
     };
 }
 

@@ -2,8 +2,6 @@
  * @file
  */
 
-/* eslint-disable jsdoc/require-jsdoc, jsdoc/multiline-blocks */
-
 import {
     boolean,
     fallback,
@@ -36,9 +34,23 @@ export enum LocalSourceAccessMethod {
     NativeHost = 'nativeHost',
 }
 
+/**
+ * Native-host connection and read status.
+ */
 export interface NativeHostState {
+    /**
+     * Current native-host readiness status.
+     */
     status: NativeHostStatus;
+
+    /**
+     * Native host release version, when known.
+     */
     hostVersion?: string | undefined;
+
+    /**
+     * Failure code from the most recent native-host error, when any.
+     */
     errorCode?: NativeErrorCode;
 }
 
@@ -46,7 +58,14 @@ export interface NativeHostState {
  * Browser-owned file URL permission state.
  */
 export interface BrowserFileAccessState {
+    /**
+     * Discriminant identifying this as the browser access method.
+     */
     kind: LocalSourceAccessMethod.Browser;
+
+    /**
+     * Whether the browser has granted file URL access.
+     */
     allowed: boolean;
 }
 
@@ -54,8 +73,19 @@ export interface BrowserFileAccessState {
  * Native-host readiness state.
  */
 export interface NativeHostAccessState {
+    /**
+     * Discriminant identifying this as the native-host access method.
+     */
     kind: LocalSourceAccessMethod.NativeHost;
+
+    /**
+     * Whether the native messaging permission has been granted.
+     */
     permissionGranted: boolean;
+
+    /**
+     * Native-host connection and read status.
+     */
     host: NativeHostState;
 }
 
@@ -167,10 +197,14 @@ export interface OptionsDataResponse {
      */
     injections: InjectionRule[];
 
-    /** Native-host state for local source reads. */
+    /**
+     * Native-host state for local source reads.
+     */
     localSourceAccess: LocalSourceAccessState;
 
-    /** Selected method, independent of an asynchronous readiness probe. */
+    /**
+     * Selected method, independent of an asynchronous readiness probe.
+     */
     localSourceAccessMethod: LocalSourceAccessMethod;
 
     /**
@@ -292,19 +326,21 @@ export interface PopupTab {
     /**
      * Browser tab identifier.
      */
-    id?: number;
+    id?: number | undefined;
 
     /**
      * Browser tab URL.
      */
-    url?: string;
+    url?: string | undefined;
 }
 
 /**
  * Extension state returned to the popup.
  */
 export interface PopupDataResponse {
-    /** Native-host state for local source reads. */
+    /**
+     * Native-host state for local source reads.
+     */
     localSourceAccess: LocalSourceAccessState;
 
     /**
@@ -339,6 +375,9 @@ export interface CssInjectionCode {
      * CSS source content.
      */
     css: {
+        /**
+         * CSS source code.
+         */
         code: string;
     };
 }
@@ -379,7 +418,7 @@ export type RuntimeMessage = | { type: typeof MESSAGE_TYPES.GET_OPTIONS_DATA; da
     }
     | {
         type: typeof MESSAGE_TYPES.ADD_INJECTION;
-        data: { injectionData: NewInjectionData; enabled?: boolean };
+        data: { injectionData: NewInjectionData; enabled?: boolean | undefined };
     }
     | {
         type: typeof MESSAGE_TYPES.UPDATE_INJECTION;
