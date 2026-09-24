@@ -2,13 +2,14 @@
  * @file
  */
 
-import { log } from '../common/log';
-import { messenger } from '../common/messenger';
-import type { CssInjectionCode } from '../common/contracts';
 import {
     createDocumentToken,
     DOCUMENT_TOKEN_ATTRIBUTE,
 } from '../common/document-injection';
+import { log } from '../common/log';
+import { messenger } from '../common/messenger';
+
+import type { CssInjectionCode } from '../common/contracts';
 
 const dataSource = 'Kode Injector';
 const documentToken = createDocumentToken();

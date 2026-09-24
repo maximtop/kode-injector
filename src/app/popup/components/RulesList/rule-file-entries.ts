@@ -2,8 +2,9 @@
  * @file Flattens matching rules into one entry per source file.
  */
 
-import type { InjectionFileField, InjectionRule } from '../../../common/contracts';
 import { FILE_ENABLED_FLAGS, FILE_KINDS } from '../../../common/injection-files';
+
+import type { InjectionFileField, InjectionRule } from '../../../common/contracts';
 
 /**
  * One source file of a rule, ready for a popup row.

@@ -2,10 +2,12 @@
  * @file
  */
 
-import { beforeEach, expect, test, vi } from 'vitest';
+import {
+    beforeEach, expect, test, vi,
+} from 'vitest';
 
-import { injections } from '../src/app/background/injections';
 import { executeScript } from '../src/app/background/execute-script';
+import { injections } from '../src/app/background/injections';
 import { localSourceAccess } from '../src/app/background/local-source-access';
 import { sourceReader } from '../src/app/background/native-host';
 import { SourceReadErrorCode } from '../src/app/background/source-reader';
@@ -30,7 +32,7 @@ vi.mock('../src/app/background/native-host', () => ({
 }));
 
 vi.mock('../src/app/background/storage', () => ({
-    storage: { get: vi.fn(), set: vi.fn() },
+    storage: { get: vi.fn(), set: vi.fn().mockResolvedValue(undefined) },
 }));
 
 beforeEach(() => {
@@ -49,7 +51,7 @@ beforeEach(() => {
 });
 
 test('a browser file fetch failure does not mark native JavaScript access failed', async () => {
-    injections.injections[0].cssPath = '';
+    injections.injections[0]!.cssPath = '';
     vi.mocked(sourceReader.read).mockResolvedValue({
         ok: false,
         errorCode: SourceReadErrorCode.FetchFailed,
@@ -66,7 +68,7 @@ test('a browser file fetch failure does not mark native JavaScript access failed
 });
 
 test('a browser file fetch failure does not mark native CSS access failed', async () => {
-    injections.injections[0].jsPath = '';
+    injections.injections[0]!.jsPath = '';
     vi.mocked(sourceReader.read).mockResolvedValue({
         ok: false,
         errorCode: SourceReadErrorCode.FetchFailed,

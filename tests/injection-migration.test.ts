@@ -4,11 +4,11 @@
 
 import { expect, test } from 'vitest';
 
-import { normalizeStoredInjectionsState } from '../src/app/common/contracts';
 import {
     CURRENT_INJECTIONS_SCHEMA_VERSION,
     INJECTIONS_MIGRATIONS,
 } from '../src/app/background/injections-migrations';
+import { normalizeStoredInjectionsState } from '../src/app/common/contracts';
 import { runMigrations } from '../src/app/common/storage-migrations';
 
 const legacyRule = {
@@ -60,7 +60,7 @@ test('a rule with a corrupt flag is dropped, core rules survive', () => {
     });
 
     expect(injections).toHaveLength(1);
-    expect(injections[0].id).toBe('rule-1');
+    expect(injections[0]?.id).toBe('rule-1');
 });
 
 test('a rule missing core fields is still dropped', () => {

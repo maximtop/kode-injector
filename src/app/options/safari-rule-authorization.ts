@@ -3,9 +3,10 @@
  */
 
 import { BrowserTarget } from '../common/browser-target';
-import type { NewInjectionData } from '../common/contracts';
 import { InjectionField } from '../common/constants';
 import { NativeErrorCode } from '../common/native-host-protocol';
+
+import type { NewInjectionData } from '../common/contracts';
 
 /**
  * Minimal native authorization surface used by rule persistence.

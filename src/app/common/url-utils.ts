@@ -60,7 +60,7 @@ class UrlUtils {
         }
 
         return hostname.replace(WWW_PREFIX_REGEX, '');
-    }
+    };
 
     /**
      * Checks whether a value is a plain hostname usable in a rule.

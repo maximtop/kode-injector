@@ -2,16 +2,15 @@
  * @file Validates an Xcode archive intended for Mac App Store upload.
  */
 
-/* eslint-disable no-console */
-
 import path from 'node:path';
+
+import { validateSafariArtifact } from './artifact-validator';
 import {
     SAFARI_APP_NAME,
     SAFARI_ARCHIVE_PATH,
     readPackageVersion,
     validateBuildNumber,
 } from './config';
-import { validateSafariArtifact } from './artifact-validator';
 
 const UNSIGNED_OPTION = '--unsigned';
 const args = process.argv.slice(2);

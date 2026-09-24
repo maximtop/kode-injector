@@ -12,15 +12,16 @@ import {
     type PersistedDemoLaunch,
 } from '../common/demo-contracts';
 import { tabs } from '../common/tabs';
+
 import { app } from './app';
-import { executeScript } from './execute-script';
-import { injections } from './injections';
-import { demoSources } from './demo-sources';
 import {
     DemoLaunchService,
     type DemoLaunchStore,
     type DemoTab,
 } from './demo-launch-service';
+import { demoSources } from './demo-sources';
+import { executeScript } from './execute-script';
+import { injections } from './injections';
 
 /**
  * Session-scoped launch store over `chrome.storage.session` (Safari 16.4+,

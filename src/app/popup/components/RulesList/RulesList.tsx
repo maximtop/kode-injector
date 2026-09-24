@@ -2,17 +2,18 @@
  * @file Files of rules matching the current site, each with its own toggle.
  */
 
-import React, { useContext } from 'react';
-import { observer } from 'mobx-react';
-import classNames from 'classnames';
 import { Switch } from '@mantine/core';
+import classNames from 'classnames';
+import { observer } from 'mobx-react';
+import React, { useContext } from 'react';
 
-import { rootStore } from '../../stores/RootStore';
 import { FILE_KIND_LABELS } from '../../../common/injection-files';
-import { messenger } from '../../../common/messenger';
-import { translator } from '../../../common/translator';
-import { getFileName } from '../../../common/text-utils';
 import { log } from '../../../common/log';
+import { messenger } from '../../../common/messenger';
+import { getFileName } from '../../../common/text-utils';
+import { translator } from '../../../common/translator';
+import { rootStore } from '../../stores/RootStore';
+
 import { getRuleFileEntries } from './rule-file-entries';
 
 /**
@@ -71,7 +72,7 @@ export const RulesList = observer((): React.JSX.Element | null => {
                                 checked={entry.checked}
                                 disabled={switchDisabled}
                                 onChange={() => {
-                                    settingsStore.toggleInjectionFile(entry.ruleId, entry.field);
+                                    void settingsStore.toggleInjectionFile(entry.ruleId, entry.field);
                                 }}
                                 title={switchTitle}
                                 aria-label={switchTitle}

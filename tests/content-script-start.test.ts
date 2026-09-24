@@ -10,8 +10,8 @@ import {
     vi,
 } from 'vitest';
 
-import { contentScript } from '../src/app/content-script';
 import { messenger } from '../src/app/common/messenger';
+import { contentScript } from '../src/app/content-script';
 
 vi.mock('../src/app/common/messenger', () => ({
     messenger: { getInjectionsCode: vi.fn() },
@@ -23,7 +23,7 @@ vi.mock('../src/app/common/log', () => ({
 
 beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(messenger.getInjectionsCode).mockReturnValue(new Promise(() => undefined));
+    vi.mocked(messenger.getInjectionsCode).mockReturnValue(new Promise(() => {}));
     vi.stubGlobal('document', {
         readyState: 'loading',
         documentElement: { setAttribute: vi.fn(), getAttribute: vi.fn() },

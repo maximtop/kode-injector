@@ -5,6 +5,7 @@
 import { expect, test } from 'vitest';
 
 import { BROWSER_TARGETS, CHANNEL_ENVS } from '../constants';
+
 import { updateLocalesMSGName, updateManifest } from './helpers';
 
 test('updateManifest applies the package version', () => {

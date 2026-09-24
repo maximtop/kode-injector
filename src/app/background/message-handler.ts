@@ -4,6 +4,21 @@
 
 import browser from 'webextension-polyfill';
 
+import { browserLanguageChannel } from '../common/browser-language-channel';
+import { InjectionField, MESSAGE_TYPES } from '../common/constants';
+import { LocalSourceAccessMethod } from '../common/contracts';
+import { isDocumentToken } from '../common/document-injection';
+import { toLocalePreference, type LocalePreference } from '../common/locale';
+import { log } from '../common/log';
+import { tabs } from '../common/tabs';
+
+import { app } from './app';
+import { demoLaunch } from './demo-launch';
+import { injections } from './injections';
+import { localSourceAccess } from './local-source-access';
+import { gateMessageHandler } from './message-readiness';
+import { settings } from './settings';
+
 import type {
     InjectionFileIssues,
     InjectionRule,
@@ -13,26 +28,12 @@ import type {
     PopupDataResponse,
     RuntimeMessage,
 } from '../common/contracts';
-import { LocalSourceAccessMethod } from '../common/contracts';
-import { InjectionField, MESSAGE_TYPES } from '../common/constants';
-import { toLocalePreference, type LocalePreference } from '../common/locale';
-import { browserLanguageChannel } from '../common/browser-language-channel';
-import { log } from '../common/log';
-import { injections } from './injections';
-import { settings } from './settings';
-import { tabs } from '../common/tabs';
-import { app } from './app';
-import { gateMessageHandler } from './message-readiness';
-import { localSourceAccess } from './local-source-access';
-import { isDocumentToken } from '../common/document-injection';
-import { demoLaunch } from './demo-launch';
 import type { DemoLaunchState, RunDemoResult } from '../common/demo-contracts';
 
 /**
  * Values returned by background runtime message handlers.
  */
-type MessageResponse =
-    | OptionsDataResponse
+type MessageResponse = | OptionsDataResponse
     | InjectionRule
     | InjectionFileIssues
     | PopupDataResponse
@@ -103,7 +104,7 @@ class MessageHandler {
             case MESSAGE_TYPES.SET_INJECTION_FILE_ENABLED: {
                 const { id, field, enabled } = data;
                 if (field !== InjectionField.JsPath && field !== InjectionField.CssPath) {
-                    throw new Error(`Unknown injection file field ${field}`);
+                    throw new Error(`Unknown injection file field ${String(field)}`);
                 }
                 return injections.setInjectionFileEnabled(id, field, enabled);
             }
@@ -202,7 +203,7 @@ class MessageHandler {
         }
 
         return undefined;
-    }
+    };
 
     /**
      * Registers the runtime message listener.
@@ -210,9 +211,11 @@ class MessageHandler {
      * @param backgroundReady Shared background initialization promise.
      */
     init = (backgroundReady: Promise<void>): void => {
-        browser.runtime.onMessage.addListener(
-            gateMessageHandler(backgroundReady, this.messageHandler),
-        );
+        // Runtime messages come from this extension's own pages and scripts.
+        const handler = gateMessageHandler(backgroundReady, this.messageHandler);
+        browser.runtime.onMessage.addListener((message: unknown, sender: browser.Runtime.MessageSender) => {
+            return handler(message as RuntimeMessage, sender);
+        });
     };
 }
 

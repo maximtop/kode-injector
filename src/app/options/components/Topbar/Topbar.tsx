@@ -2,26 +2,28 @@
  * @file Options page header with brand, status pill, and quick actions.
  */
 
-import React from 'react';
-import classNames from 'classnames';
 import {
     ActionIcon,
     useMantineColorScheme,
     type MantineColorScheme,
 } from '@mantine/core';
+import classNames from 'classnames';
+import React from 'react';
 
 import { COLOR_SCHEMES } from '../../../common/color-scheme';
-import { PROJECT_REPOSITORY_URL } from '../../../common/constants';
-import type { LocalSourceAccessState } from '../../../common/contracts';
-import { StatusTone } from '../../../common/status-tone';
-import { translator } from '../../../common/translator';
 import {
     IconContrast,
     IconGitHub,
     IconMoon,
     IconSun,
 } from '../../../common/components/icons';
+import { PROJECT_REPOSITORY_URL } from '../../../common/constants';
+import { StatusTone } from '../../../common/status-tone';
+import { translator } from '../../../common/translator';
+
 import { getAccessPillState } from './access-pill-state';
+
+import type { LocalSourceAccessState } from '../../../common/contracts';
 
 /**
  * Topbar props.
@@ -60,6 +62,8 @@ const SCHEME_LABEL_KEYS: Record<string, string> = {
  * Renders the options page header.
  *
  * @param props Topbar props.
+ * @param props.localSourceAccess Current local-source access state.
+ * @param props.onOpenSettingsTab Opens the Settings tab.
  *
  * @returns Header element.
  */
@@ -75,7 +79,7 @@ export const Topbar = ({
      */
     const cycleColorScheme = (): void => {
         const index = SCHEME_CYCLE.indexOf(colorScheme);
-        const next = SCHEME_CYCLE[(index + 1) % SCHEME_CYCLE.length];
+        const next = SCHEME_CYCLE[(index + 1) % SCHEME_CYCLE.length] ?? COLOR_SCHEMES.AUTO;
         setColorScheme(next);
     };
 

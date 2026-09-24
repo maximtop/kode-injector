@@ -2,12 +2,11 @@
  * @file Runtime validation for built Safari application artifacts.
  */
 
-/* eslint-disable camelcase */
-
 import { execFileSync, spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+
 import {
     SAFARI_APP_BUNDLE_IDENTIFIER,
     SAFARI_APP_CATEGORY,
@@ -41,7 +40,7 @@ export interface SafariArtifactValidationOptions {
     /**
      * Optional build number expected in both Apple bundles.
      */
-    expectedBuildNumber?: string;
+    expectedBuildNumber?: string | undefined;
 
     /**
      * Whether both Intel and Apple Silicon helper slices are required.
@@ -178,7 +177,7 @@ const readSigningMetadata = (
     const output = `${displayed.stdout}\n${displayed.stderr}`;
     const teamIdentifier = /^TeamIdentifier=(.+)$/mu.exec(output)?.[1];
     const authorities = [...output.matchAll(/^Authority=(.+)$/gmu)]
-        .map((match) => match[1]);
+        .map((match) => match[1]!);
     if (!teamIdentifier || authorities.length === 0) {
         throw new Error(`Incomplete Apple signing metadata for ${target}`);
     }
@@ -305,7 +304,7 @@ const validatePrivacyManifest = (
                 || new Set(reasons).size !== reasons.length) {
                 throw new Error(`Invalid Safari required-reason API entry: ${manifestPath}`);
             }
-            return [type, [...reasons].sort()] as const;
+            return [type, [...(reasons as string[])].sort()] as const;
         })
         .sort(([left], [right]) => left.localeCompare(right));
     if (new Set(actualAccessedAPIs.map(([type]) => type)).size

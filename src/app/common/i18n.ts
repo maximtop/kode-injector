@@ -3,9 +3,7 @@
  */
 
 import browser from 'webextension-polyfill';
-import type { I18nInterface, Locale } from '@adguard/translate';
 
-import { log } from './log';
 import {
     BASE_LOCALE,
     type AvailableLocale,
@@ -14,6 +12,9 @@ import {
     type MessagesJson,
 } from './locale';
 import { TranslationService } from './locale/translation-service';
+import { log } from './log';
+
+import type { I18nInterface, Locale } from '@adguard/translate';
 
 /**
  * Shared internationalization facade for one extension bundle.

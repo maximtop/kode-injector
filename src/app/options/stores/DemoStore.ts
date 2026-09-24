@@ -74,7 +74,9 @@ export const windowSchedule = (
     callback: () => void | Promise<void>,
     delayMs: number,
 ): ScheduleCancel => {
-    const id = window.setTimeout(callback, delayMs);
+    const id = window.setTimeout(() => {
+        void callback();
+    }, delayMs);
     return () => window.clearTimeout(id);
 };
 

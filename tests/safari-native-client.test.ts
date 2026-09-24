@@ -3,6 +3,7 @@
  */
 
 import { createHash } from 'node:crypto';
+
 import {
     afterEach,
     expect,
@@ -10,12 +11,12 @@ import {
     vi,
 } from 'vitest';
 
+import { RAW_CHUNK_BYTES } from '../src/app/common/native-host-protocol';
 import {
     SafariNativeClient,
     SafariNativeOperation,
     type SafariNativeMessenger,
 } from '../src/app/common/safari-native-client';
-import { RAW_CHUNK_BYTES } from '../src/app/common/native-host-protocol';
 
 interface Request {
     protocolVersion: number;
@@ -201,7 +202,7 @@ test('keeps authorization failures closed and times out unanswered reads', async
         .rejects.toThrowError('AUTHORIZATION_TARGET_NOT_FOUND');
 
     vi.useFakeTimers();
-    const unanswered: SafariNativeMessenger = () => new Promise(() => undefined);
+    const unanswered: SafariNativeMessenger = () => new Promise(() => {});
     const pending = new SafariNativeClient(unanswered, 50).readFile('file:///tmp/source.js');
     const assertion = expect(pending).rejects.toThrowError('NATIVE_TIMEOUT');
     await vi.advanceTimersByTimeAsync(50);

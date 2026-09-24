@@ -2,8 +2,11 @@
  * @file
  */
 
-import browser from 'webextension-polyfill';
 import isNil from 'lodash/isNil';
+import browser from 'webextension-polyfill';
+
+import { log } from '../common/log';
+
 import { app } from './app';
 import { injections } from './injections';
 
@@ -144,8 +147,10 @@ class UpdateService {
      * Registers the installation event listener.
      */
     init = (): void => {
-        browser.runtime.onInstalled.addListener(this.onInstalled);
-    }
+        browser.runtime.onInstalled.addListener((details) => {
+            this.onInstalled(details).catch((error) => log.error('Failed to migrate data after an update', error));
+        });
+    };
 }
 
 export const updateService = new UpdateService();

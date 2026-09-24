@@ -4,6 +4,8 @@
 
 import browser from 'webextension-polyfill';
 
+import { MESSAGE_TYPES } from './constants';
+
 import type {
     InjectionFileField,
     InjectionFileIssues,
@@ -18,7 +20,7 @@ import type {
     RuntimeRequest,
 } from './contracts';
 import type { DemoLaunchState, RunDemoResult } from './demo-contracts';
-import { MESSAGE_TYPES } from './constants';
+import type { LocalePreference } from './locale';
 
 /**
  * Supported runtime message discriminator.
@@ -28,8 +30,9 @@ type RuntimeMessageType = RuntimeRequest['type'];
 /**
  * Payload associated with a runtime message discriminator.
  */
-type RuntimeMessageData<TType extends RuntimeMessageType> =
-    Extract<RuntimeRequest, { type: TType }> extends { data: infer TData } ? TData : undefined;
+type RuntimeMessageData<TType extends RuntimeMessageType> = Extract<RuntimeRequest, { type: TType }> extends {
+    data: infer TData;
+} ? TData : undefined;
 
 /**
  * Sends typed runtime messages to background services.
@@ -46,7 +49,7 @@ class Messenger {
         data?: RuntimeMessageData<TType>,
     ): Promise<TResponse> => {
         return browser.runtime.sendMessage({ type, data });
-    }
+    };
 
     /**
      * Requests creation of an injection rule.
@@ -61,7 +64,7 @@ class Messenger {
         enabled?: boolean,
     ): Promise<InjectionRule | null> => {
         return this.sendMessage(MESSAGE_TYPES.ADD_INJECTION, { injectionData, enabled });
-    }
+    };
 
     /**
      * Requests an update of an existing injection rule.
@@ -76,7 +79,7 @@ class Messenger {
         injectionData: NewInjectionData,
     ): Promise<InjectionRule | null> => {
         return this.sendMessage(MESSAGE_TYPES.UPDATE_INJECTION, { id, injectionData });
-    }
+    };
 
     /**
      * Requests a readability probe of every configured source file.
@@ -85,7 +88,7 @@ class Messenger {
      */
     getInjectionFileIssues = (): Promise<InjectionFileIssues> => {
         return this.sendMessage(MESSAGE_TYPES.GET_INJECTION_FILE_ISSUES);
-    }
+    };
 
     /**
      * Requests enabling or disabling one source file of a rule.
@@ -105,7 +108,7 @@ class Messenger {
             MESSAGE_TYPES.SET_INJECTION_FILE_ENABLED,
             { id, field, enabled },
         );
-    }
+    };
 
     /**
      * Requests removal of an injection rule.
@@ -114,7 +117,7 @@ class Messenger {
      */
     removeInjection = (id: string): Promise<void> => {
         return this.sendMessage(MESSAGE_TYPES.REMOVE_INJECTION, { id });
-    }
+    };
 
     /**
      * Requests enabling an injection rule.
@@ -123,7 +126,7 @@ class Messenger {
      */
     enableInjection = (id: string): Promise<void> => {
         return this.sendMessage(MESSAGE_TYPES.ENABLE_INJECTION, { id });
-    }
+    };
 
     /**
      * Requests disabling an injection rule.
@@ -132,21 +135,21 @@ class Messenger {
      */
     disableInjection = (id: string): Promise<void> => {
         return this.sendMessage(MESSAGE_TYPES.DISABLE_INJECTION, { id });
-    }
+    };
 
     /**
      * Requests data required by the options page.
      */
     getOptionsData = (): Promise<OptionsDataResponse> => {
         return this.sendMessage(MESSAGE_TYPES.GET_OPTIONS_DATA);
-    }
+    };
 
     /**
      * Requests the browser-owned local-file permission state.
      */
     getLocalSourceAccessStatus = (): Promise<LocalSourceAccessState> => {
         return this.sendMessage(MESSAGE_TYPES.GET_LOCAL_SOURCE_ACCESS_STATUS);
-    }
+    };
 
     /**
      * Persists the selected local-source method and returns its fresh status.
@@ -157,7 +160,7 @@ class Messenger {
         method: LocalSourceAccessMethod,
     ): Promise<LocalSourceAccessMethod> => {
         return this.sendMessage(MESSAGE_TYPES.SET_LOCAL_SOURCE_ACCESS_METHOD, { method });
-    }
+    };
 
     /**
      * Requests data required by the popup.
@@ -166,28 +169,28 @@ class Messenger {
      */
     getPopupData = (tab: PopupTab): Promise<PopupDataResponse> => {
         return this.sendMessage(MESSAGE_TYPES.GET_POPUP_DATA, { tab });
-    }
+    };
 
     /**
      * Requests disabling the extension globally.
      */
     disableApp = (): Promise<void> => {
         return this.sendMessage(MESSAGE_TYPES.DISABLE_APP);
-    }
+    };
 
     /**
      * Requests enabling the extension globally.
      */
     enableApp = (): Promise<void> => {
         return this.sendMessage(MESSAGE_TYPES.ENABLE_APP);
-    }
+    };
 
     /**
      * Requests opening the extension settings page.
      */
     openSettings = (): Promise<void> => {
         return this.sendMessage(MESSAGE_TYPES.OPEN_SETTINGS);
-    }
+    };
 
     /**
      * Requests opening a browser tab.
@@ -196,7 +199,7 @@ class Messenger {
      */
     openTab = (url: string): Promise<browser.Tabs.Tab> => {
         return this.sendMessage(MESSAGE_TYPES.OPEN_TAB, { url });
-    }
+    };
 
     /**
      * Requests injection code for the current page.
@@ -205,7 +208,7 @@ class Messenger {
      */
     getInjectionsCode = (documentToken: string): Promise<InjectionsCodeResponse> => {
         return this.sendMessage(MESSAGE_TYPES.GET_INJECTIONS_CODE, { documentToken });
-    }
+    };
 
     /**
      * Requests disabling injections for a site.
@@ -232,7 +235,7 @@ class Messenger {
      *
      * @returns Normalized persisted preference.
      */
-    setInterfaceLanguage = (language: import('./locale').LocalePreference): Promise<import('./locale').LocalePreference> => {
+    setInterfaceLanguage = (language: LocalePreference): Promise<LocalePreference> => {
         return this.sendMessage(MESSAGE_TYPES.SET_INTERFACE_LANGUAGE, { language });
     };
 

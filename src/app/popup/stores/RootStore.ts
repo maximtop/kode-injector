@@ -2,12 +2,13 @@
  * @file
  */
 
-import { createContext } from 'react';
 import { configure } from 'mobx';
+import { createContext } from 'react';
+
+import { i18n } from '../../common/i18n';
+import { TranslationStore } from '../../common/locale';
 
 import { SettingsStore } from './SettingsStore';
-import { TranslationStore } from '../../common/locale';
-import { i18n } from '../../common/i18n';
 
 // Do not allow property change outside of store actions
 configure({ enforceActions: 'observed' });

@@ -5,12 +5,13 @@
 import { expect, test, vi } from 'vitest';
 
 import { BrowserTarget } from '../src/app/common/browser-target';
-import type { NewInjectionData } from '../src/app/common/contracts';
 import { InjectionField } from '../src/app/common/constants';
 import {
-    SafariRuleAuthorizationError,
     saveRuleWithSafariAuthorization,
 } from '../src/app/options/safari-rule-authorization';
+
+import type { NewInjectionData } from '../src/app/common/contracts';
+import type { SafariRuleAuthorizationError } from '../src/app/options/safari-rule-authorization';
 
 const RULE: NewInjectionData = {
     site: 'example.com',

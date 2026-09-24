@@ -2,14 +2,15 @@
  * @file
  */
 
-import { createContext } from 'react';
 import { configure } from 'mobx';
+import { createContext } from 'react';
 
-import { InjectionsStore } from './InjectionsStore';
-import { DemoStore, windowSchedule } from './DemoStore';
-import { TranslationStore } from '../../common/locale';
 import { i18n } from '../../common/i18n';
+import { TranslationStore } from '../../common/locale';
 import { messenger } from '../../common/messenger';
+
+import { DemoStore, windowSchedule } from './DemoStore';
+import { InjectionsStore } from './InjectionsStore';
 
 // Do not allow property change outside of store actions
 configure({ enforceActions: 'observed' });

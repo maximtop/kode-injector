@@ -2,8 +2,8 @@
  * @file
  */
 
-/* eslint-disable jsdoc/multiline-blocks */
-
+import { Tabs } from '@mantine/core';
+import { observer } from 'mobx-react';
 import React, {
     useContext,
     useEffect,
@@ -11,60 +11,49 @@ import React, {
     useState,
 } from 'react';
 import browser from 'webextension-polyfill';
-import { observer } from 'mobx-react';
-import { Tabs } from '@mantine/core';
 
-import { AppProviders } from '../../../common/components/AppProviders';
-import { Topbar } from '../Topbar';
-import { Footer } from '../Footer';
-import { InjectionsView } from '../InjectionsView';
-import { SettingsView } from '../SettingsView';
-import { RuleEditorModal } from '../RuleEditorModal';
-import { rootStore } from '../../stores/RootStore';
+import { getBrowserCapabilities } from '../../../common/browser-capabilities';
 import { browserLanguageChannel } from '../../../common/browser-language-channel';
-import { applyDocumentLocale } from '../../../common/document-locale';
-import { i18n } from '../../../common/i18n';
-import { translator } from '../../../common/translator';
-import { log } from '../../../common/log';
-import { tabs } from '../../../common/tabs';
-import { subscribeLocalSourceAccessRefreshOnFocus } from '../../local-source-access-focus';
+import { getCurrentBrowserTarget } from '../../../common/browser-target';
+import { AppProviders } from '../../../common/components/AppProviders';
 import {
     InjectionField,
     NATIVE_HOST_ALL_DOWNLOADS_URL,
     OPTIONS_TABS,
 } from '../../../common/constants';
-import {
-    BrowserTarget,
-    getCurrentBrowserTarget,
-} from '../../../common/browser-target';
-import { getBrowserCapabilities } from '../../../common/browser-capabilities';
-import {
-    LocalSourceAccessMethod,
-    type InjectionRule,
-    type NewInjectionData,
-} from '../../../common/contracts';
-import { nativeMessagingPermission } from '../../../common/native-messaging-permission';
+import { applyDocumentLocale } from '../../../common/document-locale';
+import { i18n } from '../../../common/i18n';
 import { applyLocalSourceAccessMethod } from '../../../common/local-source-access-method';
+import { log } from '../../../common/log';
 import {
-    NativeHostDownload,
     NativeHostDownloadKind,
     resolveCurrentNativeHostDownload,
 } from '../../../common/native-host-download';
+import {
+    NativeErrorCode,
+} from '../../../common/native-host-protocol';
+import { nativeMessagingPermission } from '../../../common/native-messaging-permission';
+import { SafariNativeClient } from '../../../common/safari-native-client';
+import { tabs } from '../../../common/tabs';
+import { translator } from '../../../common/translator';
+import { subscribeLocalSourceAccessRefreshOnFocus } from '../../local-source-access-focus';
 import {
     getPrefillSiteFromSearch,
     getRequestedTabFromSearch,
 } from '../../options-url-params';
 import {
-    NativeErrorCode,
-} from '../../../common/native-host-protocol';
-import {
-    SafariNativeClient,
-    type SafariNativeMessenger,
-} from '../../../common/safari-native-client';
-import {
     SafariRuleAuthorizationError,
     saveRuleWithSafariAuthorization,
 } from '../../safari-rule-authorization';
+import { rootStore } from '../../stores/RootStore';
+import { Footer } from '../Footer';
+import { InjectionsView } from '../InjectionsView';
+import { RuleEditorModal } from '../RuleEditorModal';
+import { SettingsView } from '../SettingsView';
+import { Topbar } from '../Topbar';
+
+import type { InjectionRule, LocalSourceAccessMethod, NewInjectionData } from '../../../common/contracts';
+import type { NativeHostDownload } from '../../../common/native-host-download';
 
 import './options-app.pcss';
 
@@ -108,7 +97,7 @@ const safariFolderAuthorizer = {
     authorizeFolder: (fileUrl: string): Promise<void> => {
         if (!safariNativeClient) {
             safariNativeClient = new SafariNativeClient(
-                browser.runtime.sendNativeMessage.bind(browser.runtime) as SafariNativeMessenger,
+                browser.runtime.sendNativeMessage.bind(browser.runtime),
             );
         }
         return safariNativeClient.authorizeFolder(fileUrl);
@@ -228,11 +217,11 @@ export const OptionsApp = observer(() => {
                 const file = error.field === InjectionField.JsPath
                     ? translator.getMessage('editor_js_label')
                     : translator.getMessage('editor_css_label');
-                if (error.code === NativeErrorCode.AuthorizationCancelled) {
+                if (error.code === NativeErrorCode.AuthorizationCancelled as string) {
                     setEditorSaveError(
                         translator.getMessage('editor_safari_authorization_cancelled'),
                     );
-                } else if (error.code === NativeErrorCode.AuthorizationTargetNotFound) {
+                } else if (error.code === NativeErrorCode.AuthorizationTargetNotFound as string) {
                     setEditorSaveError(translator.getMessage(
                         'editor_safari_folder_not_found',
                         { file },
@@ -250,7 +239,7 @@ export const OptionsApp = observer(() => {
     };
 
     useEffect(() => {
-        getOptionsData();
+        getOptionsData().catch((error) => log.error('Failed to load options data', error));
     }, [getOptionsData]);
 
     useEffect(() => {
@@ -359,7 +348,9 @@ export const OptionsApp = observer(() => {
                                 </span>
                                 <button
                                     type="button"
-                                    onClick={() => injectionsStore.toggleAppEnabled()}
+                                    onClick={() => {
+                                        void injectionsStore.toggleAppEnabled();
+                                    }}
                                 >
                                     {translator.getMessage('pause_resume')}
                                 </button>
@@ -382,10 +373,14 @@ export const OptionsApp = observer(() => {
                             <SettingsView
                                 browserTarget={browserTarget}
                                 download={nativeHostDownload}
-                                onChangeMethod={changeLocalSourceAccessMethod}
+                                onChangeMethod={(method) => {
+                                    void changeLocalSourceAccessMethod(method);
+                                }}
                                 onDownload={openNativeHostInstructions}
                                 onViewAllDownloads={openAllNativeHostDownloads}
-                                onCheckAgain={refreshLocalSourceAccess}
+                                onCheckAgain={() => {
+                                    void refreshLocalSourceAccess();
+                                }}
                                 onOpenExtensionSettings={openBrowserExtensionSettings}
                                 onOpenDemo={() => setActiveTab(OPTIONS_TABS.INJECTIONS)}
                             />

@@ -3,17 +3,17 @@
  */
 
 import {
-    getSupportedLocalSourceAccessMethod,
-    LocalSourceAccessMethod,
-    normalizeAppSettingsWithRepair,
-    type AppSettings,
-} from '../common/contracts';
-import { SETTINGS, STORAGE_KEYS } from '../common/constants';
-import type { LocalePreference } from '../common/locale';
-import {
-    BrowserTarget,
     getCurrentBrowserTarget,
 } from '../common/browser-target';
+import { SETTINGS, STORAGE_KEYS } from '../common/constants';
+import {
+    getSupportedLocalSourceAccessMethod,
+    normalizeAppSettingsWithRepair,
+} from '../common/contracts';
+
+import type { BrowserTarget } from '../common/browser-target';
+import type { AppSettings, LocalSourceAccessMethod } from '../common/contracts';
+import type { LocalePreference } from '../common/locale';
 
 /**
  * Storage contract needed by the settings service.

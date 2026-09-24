@@ -2,7 +2,6 @@
  * @file
  */
 
-/* eslint-disable import/no-unresolved, no-console */
 import {
     rspack,
     type Configuration,
@@ -46,7 +45,7 @@ export const bundleRunner = (
     watch: boolean,
 ): Promise<void> => {
     const options = configurations.length === 1
-        ? configurations[0]
+        ? configurations[0]!
         : configurations;
     const compiler = rspack(options);
 
@@ -60,14 +59,14 @@ export const bundleRunner = (
                         throw error;
                     }
 
-                    reportStats(stats);
+                    reportStats(stats!);
                     if (!initialBuildComplete) {
                         initialBuildComplete = true;
                         resolve();
                     }
                 } catch (buildError) {
                     if (!initialBuildComplete) {
-                        reject(buildError);
+                        reject(buildError instanceof Error ? buildError : new Error(String(buildError)));
                         return;
                     }
 
@@ -87,8 +86,9 @@ export const bundleRunner = (
              */
             const finish = (buildError?: Error): void => {
                 compiler.close((closeError) => {
-                    if (buildError || closeError) {
-                        reject(buildError ?? closeError);
+                    const failure = buildError ?? closeError;
+                    if (failure) {
+                        reject(failure);
                         return;
                     }
 
@@ -102,7 +102,7 @@ export const bundleRunner = (
             }
 
             try {
-                reportStats(stats);
+                reportStats(stats!);
                 finish();
             } catch (buildError) {
                 finish(buildError instanceof Error

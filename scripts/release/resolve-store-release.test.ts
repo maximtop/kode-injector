@@ -2,12 +2,11 @@
  * @file Tests store-release resolution through its command-line boundary.
  */
 
-/* eslint-disable import/no-extraneous-dependencies, jsdoc/require-jsdoc */
-
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+
 import {
     afterEach,
     beforeEach,

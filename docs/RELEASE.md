@@ -1,9 +1,6 @@
 # Releasing
 
-This document has the same structure in every extension repository; only the
-store list, the identifiers, and the repository-specific notes differ.
-
-The cross-repository contract and extraction boundary are documented in [Shared store deployment](STORE_DEPLOYMENT.md).
+The deploy files and the values specific to this repository are described in [Store deployment](STORE_DEPLOYMENT.md).
 
 - [Cut a release](#cut-a-release)
 - [Store deployment](#store-deployment)
@@ -39,7 +36,7 @@ the PR workflow. See [GitHub workflow triggers](https://docs.github.com/en/actio
 
 The release workflow reuses
 the same CI workflow and publishes its verified artifacts without rebuilding.
-For Kode Injector, publication also waits for the signed native helpers.
+Publication also waits for the signed native helpers.
 
 The manual version-and-tag fallback remains available:
 
@@ -107,8 +104,8 @@ the manifest inside the archive: exactly one root `manifest.json`, manifest
 version 3, the release version, and the background format of the target
 browser (Firefox additionally the Gecko ID and the source archive metadata).
 What users can verify is exactly what the store receives. Only then does the
-store-specific part start. The validation code and its tests (`tests/deploy`)
-are identical across the repositories; the repository specifics live in
+store-specific part start. The validation code lives in `scripts/deploy`, its
+tests in `tests/deploy`; the repository specifics live in
 `scripts/deploy/constants.ts`.
 
 ### Chrome Web Store
@@ -255,13 +252,12 @@ every credential in
 | Secret | `FIREFOX_CLIENT_ID` | JWT issuer from the [AMO API credentials](https://addons.mozilla.org/en-US/developers/addon/api/key/) page. |
 | Secret | `FIREFOX_CLIENT_SECRET` | JWT secret from the same page; use the full original secret, AMO later shows only a masked value that cannot authenticate. |
 
-The account-level values are shared by every extension of the account and
-have one source of truth each in 1Password: `chrome-web-store-api`,
-`edge-addons-api` (which also records the key name and expiry date), and
-`firefox-amo-api`. Their notes list every repository that uses them and the
-rotation steps. Regenerating the AMO key or an Edge API key invalidates the
-previous one for every repository at once; update all of them together. Push a
-value to a repository without printing it:
+The account-level values have one source of truth each in 1Password:
+`chrome-web-store-api`, `edge-addons-api` (which also records the key name and
+expiry date), and `firefox-amo-api`. Their notes hold the rotation steps.
+Regenerating the AMO key or an Edge API key invalidates the previous one, so
+update the repository secret right away. Push a value to the repository without
+printing it:
 
 ```sh
 op read op://Private/chrome-web-store-api/CHROME_REFRESH_TOKEN | gh secret set CHROME_REFRESH_TOKEN
@@ -295,13 +291,13 @@ Chrome Web Store:
 - **`invalid_client`:** `CHROME_CLIENT_ID` or `CHROME_CLIENT_SECRET` is wrong;
   the refresh token is fine. Google no longer shows an existing client secret:
   add a new secret to the same OAuth client in the Google Cloud Console,
-  store it in `chrome-web-store-api`, push it to every repository, and re-run.
+  store it in `chrome-web-store-api`, push it to the repository, and re-run.
 - **`invalid_grant`:** the refresh token is dead and nothing was uploaded.
   Mint a new one for the existing OAuth client in the
   [OAuth Playground](https://developers.google.com/oauthplayground) with
   "Use your own OAuth credentials" and the
   `https://www.googleapis.com/auth/chromewebstore` scope, store it in
-  `chrome-web-store-api`, push it to every repository, and re-run. The OAuth
+  `chrome-web-store-api`, push it to the repository, and re-run. The OAuth
   consent screen must be **In production**; refresh tokens issued while it is
   in **Testing** expire after seven days.
 - **`deleted_client`:** the OAuth client itself is gone. Create a new Web
@@ -330,7 +326,7 @@ Edge Add-ons:
 
 - **401 `API Key is Invalid`:** the key is missing, expired or belongs to
   another Client ID. Create a new key on the Publish API page, store it in
-  `edge-addons-api`, push it to every repository, and re-run; nothing was
+  `edge-addons-api`, push it to the repository, and re-run; nothing was
   uploaded.
 - **403 `Client ID is Invalid`:** the Client ID comes from the retired v1
   experience. Take the one shown by the API-key experience of the Publish API

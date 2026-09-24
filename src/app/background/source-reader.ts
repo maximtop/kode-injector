@@ -2,10 +2,8 @@
  * @file Routes configured source URLs to the browser or native host.
  */
 
-/* eslint-disable jsdoc/require-jsdoc, no-useless-constructor, no-empty-function */
-
-import { log } from '../common/log';
 import { LocalSourceAccessMethod } from '../common/contracts';
+import { log } from '../common/log';
 import { NativeErrorCode } from '../common/native-host-protocol';
 import { urlUtils } from '../common/url-utils';
 
@@ -14,6 +12,9 @@ export enum SourceReadErrorCode {
     NativeFailed = 'NATIVE_FAILED',
 }
 
+/**
+ * Outcome of reading one configured source.
+ */
 export type SourceReadResult = {
     ok: true;
     content: string;
@@ -34,15 +35,54 @@ export const isNativeHostWideFailure = (
     errorCode: SourceReadErrorCode | NativeErrorCode,
 ): boolean => errorCode === SourceReadErrorCode.NativeFailed;
 
+/**
+ * Native-host operation needed to read one local source file.
+ */
 interface NativeFileReader {
     readFile(fileUrl: string): Promise<string>;
 }
 
+/**
+ * Fetches one network source.
+ *
+ * @param url Source URL to fetch.
+ *
+ * @returns Response whose text can be read.
+ */
 type FetchSource = (url: string) => Promise<{ text(): Promise<string> }>;
 
+/**
+ * Reads the currently selected local-source access method.
+ *
+ * @returns Currently selected access method.
+ */
 type GetLocalSourceAccessMethod = () => LocalSourceAccessMethod;
 
+/**
+ * Maps a native read failure to a reported error code.
+ *
+ * @param error Error raised by the native read.
+ *
+ * @returns Native error code, or a generic native-failure code when unrecognized.
+ */
+const getNativeErrorCode = (error: unknown): NativeErrorCode | SourceReadErrorCode => {
+    const message = error instanceof Error ? error.message : '';
+    return Object.values(NativeErrorCode).includes(message as NativeErrorCode)
+        ? message as NativeErrorCode
+        : SourceReadErrorCode.NativeFailed;
+};
+
+/**
+ * Reads configured source URLs through the browser or native host.
+ */
 export class SourceReader {
+    /**
+     * Creates a source reader.
+     *
+     * @param native Native-host operation used for file URL reads.
+     * @param fetchSource Fetches one network source.
+     * @param getLocalSourceAccessMethod Reads the currently selected access method.
+     */
     public constructor(
         private readonly native: NativeFileReader,
         private readonly fetchSource: FetchSource,
@@ -77,10 +117,3 @@ export class SourceReader {
         }
     };
 }
-
-const getNativeErrorCode = (error: unknown): NativeErrorCode | SourceReadErrorCode => {
-    const message = error instanceof Error ? error.message : '';
-    return Object.values(NativeErrorCode).includes(message as NativeErrorCode)
-        ? message as NativeErrorCode
-        : SourceReadErrorCode.NativeFailed;
-};

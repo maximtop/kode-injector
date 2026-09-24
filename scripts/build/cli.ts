@@ -27,12 +27,12 @@ export type BuildCommandHandler = (
 /**
  * Global build command options.
  */
-type BuildCommandOptions = {
+interface BuildCommandOptions {
     /**
      * Whether to keep rebuilding changed inputs.
      */
     watch: boolean;
-};
+}
 
 /**
  * Validates whether watch mode is supported for the request.

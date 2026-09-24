@@ -2,7 +2,9 @@
  * @file
  */
 
-import { beforeEach, expect, test, vi } from 'vitest';
+import {
+    beforeEach, expect, test, vi,
+} from 'vitest';
 
 import {
     DemoLaunchService,
@@ -43,7 +45,7 @@ const makeLaunchStore = () => {
 
 const makeHarness = (overrides: Partial<DemoLaunchDependencies> = {}) => {
     const openTabs = new Map<number, DemoTab>();
-    const removedListeners: Array<(tabId: number) => void> = [];
+    const removedListeners: ((tabId: number) => void)[] = [];
     const launchStore = makeLaunchStore();
     let nextTabId = 100;
     let clock = 1_000;
@@ -120,7 +122,11 @@ test.each([
     ['existing custom rules', { getRuleCount: () => 1 }, DemoFailureReason.Unavailable],
     ['paused injections', { isAppEnabled: () => false }, DemoFailureReason.Paused],
     ['a site the user turned off', { isSiteBlocked: () => true }, DemoFailureReason.SiteDisabled],
-    ['unusable sources', { loadSources: async () => { throw new Error('DEMO_SOURCES_INVALID'); } }, DemoFailureReason.SourcesUnavailable],
+    ['unusable sources', {
+        loadSources: async () => {
+            throw new Error('DEMO_SOURCES_INVALID');
+        },
+    }, DemoFailureReason.SourcesUnavailable],
 ])('run refuses for %s without opening a tab', async (_name, overrides, reason) => {
     const { deps, service } = makeHarness(overrides);
 
@@ -132,7 +138,9 @@ test.each([
 
 test('run reports a tab that could not be opened', async () => {
     const { service } = makeHarness({
-        createTab: async () => { throw new Error('blocked'); },
+        createTab: async () => {
+            throw new Error('blocked');
+        },
     });
 
     await expect(service.run()).resolves.toEqual({
@@ -356,7 +364,9 @@ test('closing the demo tab discards the launch', async () => {
 });
 
 test('a launch survives a background restart and stays bound to its tab', async () => {
-    const { deps, service, restart, launchStore } = makeHarness();
+    const {
+        deps, service, restart, launchStore,
+    } = makeHarness();
     await service.run();
 
     const restarted = restart();
@@ -370,7 +380,9 @@ test('a launch survives a background restart and stays bound to its tab', async 
 });
 
 test('a restarted background forgets a launch whose tab closed, and invalidation clears the store', async () => {
-    const { service, restart, removeTab, launchStore } = makeHarness();
+    const {
+        service, restart, removeTab, launchStore,
+    } = makeHarness();
     await service.run();
 
     const restarted = restart();

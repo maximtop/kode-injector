@@ -2,10 +2,10 @@
  * @file Explicitly exports and uploads a signed Safari archive to App Store Connect.
  */
 
-/* eslint-disable no-console */
-
 import fs from 'node:fs';
 import path from 'node:path';
+
+import { validateSafariArtifact } from './artifact-validator';
 import {
     SAFARI_APP_NAME,
     SAFARI_APP_BUNDLE_IDENTIFIER,
@@ -20,7 +20,6 @@ import {
     run,
     validateBuildNumber,
 } from './config';
-import { validateSafariArtifact } from './artifact-validator';
 
 const teamIdentifier = readAppleTeamIdentifier();
 

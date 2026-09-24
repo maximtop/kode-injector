@@ -2,18 +2,20 @@
  * @file Centered modal creating and editing injection rules.
  */
 
-import React, { useEffect, useState } from 'react';
 import { Button, Modal, TextInput } from '@mantine/core';
+import React, { useState } from 'react';
 
 import { InjectionField } from '../../../common/constants';
-import type { InjectionRule, NewInjectionData } from '../../../common/contracts';
 import {
     isValidInjectionInput,
     validateInjectionInput,
     type InjectionInputErrors,
 } from '../../../common/injection-validation';
+import { log } from '../../../common/log';
 import { translator } from '../../../common/translator';
 import { urlUtils } from '../../../common/url-utils';
+
+import type { InjectionRule, NewInjectionData } from '../../../common/contracts';
 
 import './rule-editor.pcss';
 
@@ -89,6 +91,12 @@ const getExamplePath = (fileName: string): string => {
  * Renders the rule editor modal.
  *
  * @param props RuleEditorModal props.
+ * @param props.opened Whether the modal is open.
+ * @param props.rule Rule being edited, or null when creating a new rule.
+ * @param props.prefillSite Site prefilled into a new rule, or null.
+ * @param props.onClose Closes the modal without saving.
+ * @param props.onSave Persists the form values.
+ * @param props.saveError Save-time error that is not part of input syntax validation.
  *
  * @returns Modal element.
  */
@@ -103,20 +111,21 @@ export const RuleEditorModal = ({
     const [form, setForm] = useState<NewInjectionData>(EMPTY_FORM);
     const [errors, setErrors] = useState<InjectionInputErrors>({});
     const [saving, setSaving] = useState(false);
+    const [formSource, setFormSource] = useState({ opened: false, rule, prefillSite });
 
-    useEffect(() => {
-        if (!opened) {
-            return;
+    // Reset the form while rendering, not in an effect, when the modal opens or gets another rule.
+    if (formSource.opened !== opened || formSource.rule !== rule || formSource.prefillSite !== prefillSite) {
+        setFormSource({ opened, rule, prefillSite });
+        if (opened) {
+            setForm({
+                [InjectionField.Site]: rule?.site ?? prefillSite ?? '',
+                [InjectionField.JsPath]: rule?.jsPath ?? '',
+                [InjectionField.CssPath]: rule?.cssPath ?? '',
+            });
+            setErrors({});
+            setSaving(false);
         }
-
-        setForm({
-            [InjectionField.Site]: rule?.site ?? prefillSite ?? '',
-            [InjectionField.JsPath]: rule?.jsPath ?? '',
-            [InjectionField.CssPath]: rule?.cssPath ?? '',
-        });
-        setErrors({});
-        setSaving(false);
-    }, [opened, rule, prefillSite]);
+    }
 
     /**
      * Updates one form field and clears its error.
@@ -126,7 +135,7 @@ export const RuleEditorModal = ({
      */
     const setField = (field: InjectionField, value: string): void => {
         setForm((current) => ({ ...current, [field]: value }));
-        setErrors((current) => ({ ...current, [field]: undefined, missingSource: undefined }));
+        setErrors((current) => ({ ...current, [field]: false, missingSource: false }));
     };
 
     /**
@@ -185,7 +194,12 @@ export const RuleEditorModal = ({
             size={480}
             transitionProps={{ transition: 'pop', duration: 160 }}
         >
-            <form onSubmit={handleSubmit} noValidate>
+            <form
+                onSubmit={(event) => {
+                    handleSubmit(event).catch((error) => log.error('Failed to save the rule', error));
+                }}
+                noValidate
+            >
                 <div className="editor-fields">
                     <TextInput
                         label={translator.getMessage('editor_site_label')}

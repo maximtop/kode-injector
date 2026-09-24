@@ -4,9 +4,9 @@
 
 import { expect, test } from 'vitest';
 
-import { preparePopupState } from '../src/app/popup/stores/popup-initialization';
 import { LocalSourceAccessMethod } from '../src/app/common/contracts';
 import { NativeHostStatus } from '../src/app/common/native-host-protocol';
+import { preparePopupState } from '../src/app/popup/stores/popup-initialization';
 
 test('popup locale initializes before presentation state is returned', async () => {
     const calls: string[] = [];
@@ -34,7 +34,9 @@ test('popup locale initializes before presentation state is returned', async () 
             }],
             siteIsBlacklisted: false,
         },
-        async (language) => { calls.push(`locale:${language}`); },
+        async (language) => {
+            calls.push(`locale:${language}`);
+        },
     );
 
     calls.push('ready');

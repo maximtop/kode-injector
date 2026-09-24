@@ -2,8 +2,8 @@
  * @file First-run onboarding shown when no injection rules exist.
  */
 
-import React from 'react';
 import { Button } from '@mantine/core';
+import React from 'react';
 
 import { translator } from '../../../common/translator';
 
@@ -21,6 +21,7 @@ interface EmptyStateProps {
  * Renders the zero-rules onboarding state.
  *
  * @param props EmptyState props.
+ * @param props.onCreate Opens the rule editor for a new rule.
  *
  * @returns Empty state element.
  */

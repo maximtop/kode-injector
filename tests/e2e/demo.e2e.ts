@@ -5,7 +5,6 @@
  */
 
 import path from 'node:path';
-import type { BrowserContext, Page, Worker } from '@playwright/test';
 
 import { MESSAGE_TYPES } from '../../src/app/common/constants';
 import {
@@ -15,12 +14,15 @@ import {
     DEMO_RUN_TEST_ID,
     DEMO_TARGET_URL,
 } from '../../src/app/common/demo-contracts';
+
 import {
     CHROME_EXTENSION_PATH,
     createRule,
     expect,
     test,
 } from './fixtures';
+
+import type { BrowserContext, Page, Worker } from '@playwright/test';
 
 const SAFARI_EXTENSION_PATH_ENV = 'KODE_INJECTOR_E2E_SAFARI_EXTENSION_PATH';
 const DEFAULT_SAFARI_EXTENSION_PATH = path.join('build', 'dev', 'safari');
@@ -174,9 +176,8 @@ test('runs the demo in exactly one tab, once per document, and nowhere else', as
     await expectDemoApplied(demoPage);
 
     for (let iteration = 0; iteration < RELOAD_ITERATIONS; iteration += 1) {
-        // eslint-disable-next-line no-await-in-loop
         await demoPage.reload({ waitUntil: 'load' });
-        // eslint-disable-next-line no-await-in-loop
+
         await expectDemoApplied(demoPage);
     }
 

@@ -2,25 +2,25 @@
  * @file
  */
 
-import { Command } from 'commander';
 import { expect, test } from 'vitest';
-
-/* eslint-disable jsdoc/require-jsdoc */
 
 import {
     BROWSER_TARGETS,
     CHANNEL_ENVS,
     type BrowserTarget,
 } from '../constants';
+
 import {
     createBuildProgram,
     type BuildCommandHandler,
 } from './cli';
 
-type BuildCall = {
+import type { Command } from 'commander';
+
+interface BuildCall {
     targets: BrowserTarget[];
     watch: boolean;
-};
+}
 
 /**
  * Creates a test program and records accepted build requests.

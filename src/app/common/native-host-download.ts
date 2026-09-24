@@ -10,8 +10,9 @@ import {
 } from './constants';
 import {
     findNativeHostPublishedAsset,
-    NativeHostPackageTarget,
 } from './native-host-artifacts';
+
+import type { NativeHostPackageTarget } from './native-host-artifacts';
 
 export {
     NativeHostPackageTarget,

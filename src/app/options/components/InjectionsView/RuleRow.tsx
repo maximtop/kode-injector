@@ -2,8 +2,6 @@
  * @file One injection rule rendered as a row card.
  */
 
-import React, { useEffect, useRef } from 'react';
-import classNames from 'classnames';
 import {
     ActionIcon,
     Button,
@@ -11,16 +9,19 @@ import {
     Switch,
     Tooltip,
 } from '@mantine/core';
+import classNames from 'classnames';
+import React, { useEffect, useRef } from 'react';
 
-import type { InjectionFileField, InjectionRule } from '../../../common/contracts';
+import { IconDots } from '../../../common/components/icons';
 import {
     FILE_ENABLED_FLAGS,
     FILE_KINDS,
     FILE_KIND_LABELS,
 } from '../../../common/injection-files';
-import { translator } from '../../../common/translator';
 import { getDisplayPath, getFileName, truncateMiddle } from '../../../common/text-utils';
-import { IconDots } from '../../../common/components/icons';
+import { translator } from '../../../common/translator';
+
+import type { InjectionFileField, InjectionRule } from '../../../common/contracts';
 
 /**
  * RuleRow props.
@@ -102,6 +103,17 @@ interface RuleRowProps {
  * Renders one injection rule as a row card.
  *
  * @param props RuleRow props.
+ * @param props.rule Rule displayed by this row.
+ * @param props.fileIssues Path fields of this rule whose files could not be read.
+ * @param props.confirmingDelete Whether the row shows the inline delete confirmation.
+ * @param props.onToggle Toggles the rule's enabled state.
+ * @param props.onFileToggle Toggles one file of the rule.
+ * @param props.onEdit Opens the rule editor for this rule.
+ * @param props.onDuplicate Duplicates this rule.
+ * @param props.onRequestDelete Requests the inline delete confirmation.
+ * @param props.onCancelDelete Cancels the inline delete confirmation.
+ * @param props.onConfirmDelete Deletes this rule permanently.
+ * @param props.onOpenFile Opens a rule file in a browser tab.
  *
  * @returns Rule row element.
  */

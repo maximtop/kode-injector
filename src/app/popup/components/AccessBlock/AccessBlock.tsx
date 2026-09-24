@@ -2,16 +2,17 @@
  * @file Compact file-access notice with a single recovery action.
  */
 
-import React, { useContext } from 'react';
-import { observer } from 'mobx-react';
 import { Button } from '@mantine/core';
+import { observer } from 'mobx-react';
+import React, { useContext } from 'react';
 
-import { rootStore } from '../../stores/RootStore';
 import { getCurrentBrowserTarget } from '../../../common/browser-target';
 import { OPTIONS_TABS } from '../../../common/constants';
+import { log } from '../../../common/log';
 import { messenger } from '../../../common/messenger';
 import { tabs } from '../../../common/tabs';
-import { log } from '../../../common/log';
+import { rootStore } from '../../stores/RootStore';
+
 import { getAccessBlockState } from './access-block-state';
 
 /**
@@ -33,7 +34,7 @@ export const AccessBlock = observer((): React.JSX.Element | null => {
      */
     const handleAction = (): void => {
         if (blockState.action === 'useBrowserAccess') {
-            settingsStore.useBrowserFileAccess();
+            void settingsStore.useBrowserFileAccess();
             return;
         }
 

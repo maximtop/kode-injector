@@ -2,12 +2,10 @@
  * @file Safari built-in demo card shown on the Rules tab while no rules exist.
  */
 
-import React, { useContext } from 'react';
-import { observer } from 'mobx-react';
 import { Button } from '@mantine/core';
+import { observer } from 'mobx-react';
+import React, { useContext } from 'react';
 
-import { rootStore } from '../../stores/RootStore';
-import { DemoUiStatus } from '../../stores/DemoStore';
 import {
     DEMO_RUN_TEST_ID,
     DEMO_TARGET_HOSTNAME,
@@ -16,6 +14,8 @@ import {
 } from '../../../common/demo-contracts';
 import { FILE_KIND_LABELS, FILE_KINDS } from '../../../common/injection-files';
 import { translator } from '../../../common/translator';
+import { DemoUiStatus } from '../../stores/DemoStore';
+import { rootStore } from '../../stores/RootStore';
 
 /**
  * Values of the status line's `data-status` attribute.
@@ -88,7 +88,9 @@ export const DemoCard = observer((): React.JSX.Element => {
             <div className="demo-card-actions">
                 <Button
                     variant="filled"
-                    onClick={() => demoStore.run()}
+                    onClick={() => {
+                        void demoStore.run();
+                    }}
                     loading={demoStore.status === DemoUiStatus.Running}
                     disabled={!appEnabled}
                     data-testid={DEMO_RUN_TEST_ID}
@@ -98,7 +100,9 @@ export const DemoCard = observer((): React.JSX.Element => {
                 {!appEnabled && (
                     <Button
                         variant="default"
-                        onClick={() => injectionsStore.toggleAppEnabled()}
+                        onClick={() => {
+                            void injectionsStore.toggleAppEnabled();
+                        }}
                         data-testid="demo-resume-btn"
                     >
                         {translator.getMessage('pause_resume')}

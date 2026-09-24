@@ -17,12 +17,12 @@ export interface ActiveRuleSources {
     /**
      * Active local JavaScript URL, when configured.
      */
-    javascriptPath?: string;
+    javascriptPath?: string | undefined;
 
     /**
      * Active local CSS URL, when configured.
      */
-    cssPath?: string;
+    cssPath?: string | undefined;
 }
 
 /**
@@ -32,12 +32,12 @@ export interface RuleSourceSnapshot extends ActiveRuleSources {
     /**
      * Decoded JavaScript contents matching `javascriptPath`.
      */
-    javascriptCode?: string;
+    javascriptCode?: string | undefined;
 
     /**
      * Decoded CSS contents matching `cssPath`.
      */
-    cssCode?: string;
+    cssCode?: string | undefined;
 }
 
 /**
@@ -218,7 +218,7 @@ export class InjectionSourceCache {
         this.activeDescriptors.set(sources.ruleId, sources);
         const cached = this.get(sources);
         if (cached) {
-            this.refresh(sources, version);
+            void this.refresh(sources, version);
             return {
                 snapshot: cached,
                 cacheHit: true,
@@ -359,7 +359,7 @@ export class InjectionSourceCache {
         this.entries.set(snapshot.ruleId, { snapshot, byteLength });
         this.totalBytes += byteLength;
         while (this.entries.size > this.maximumEntries || this.totalBytes > this.maximumBytes) {
-            const oldestRuleId = this.entries.keys().next().value as string | undefined;
+            const oldestRuleId = this.entries.keys().next().value;
             if (!oldestRuleId) {
                 break;
             }

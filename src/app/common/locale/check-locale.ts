@@ -50,7 +50,7 @@ export const checkLocale = (
         return { suitable: false, locale: normalized };
     }
 
-    const baseMatch = lookup.get(parts[0]);
+    const baseMatch = lookup.get(parts[0]!);
     if (baseMatch) {
         return { suitable: true, locale: baseMatch };
     }

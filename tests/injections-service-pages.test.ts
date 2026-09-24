@@ -2,7 +2,9 @@
  * @file
  */
 
-import { afterEach, expect, test, vi } from 'vitest';
+import {
+    afterEach, expect, test, vi,
+} from 'vitest';
 
 import { injections } from '../src/app/background/injections';
 import { log } from '../src/app/common/log';

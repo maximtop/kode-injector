@@ -32,21 +32,21 @@ test('skips files with an empty path', () => {
     const entries = getRuleFileEntries([makeRule({ cssPath: '' })]);
 
     expect(entries).toHaveLength(1);
-    expect(entries[0].field).toBe(InjectionField.JsPath);
+    expect(entries[0]?.field).toBe(InjectionField.JsPath);
 });
 
 test('checked combines the rule enabled state and the file flag', () => {
     const [entry] = getRuleFileEntries([makeRule({ cssPath: '', jsEnabled: false })]);
 
-    expect(entry.checked).toBe(false);
-    expect(entry.ruleDisabled).toBe(false);
+    expect(entry?.checked).toBe(false);
+    expect(entry?.ruleDisabled).toBe(false);
 });
 
 test('ruleDisabled is set and checked is false when the rule is off', () => {
     const [entry] = getRuleFileEntries([makeRule({ cssPath: '', enabled: false })]);
 
-    expect(entry.ruleDisabled).toBe(true);
-    expect(entry.checked).toBe(false);
+    expect(entry?.ruleDisabled).toBe(true);
+    expect(entry?.checked).toBe(false);
 });
 
 test('flattens multiple rules in order', () => {

@@ -8,7 +8,9 @@ import { gateMessageHandler } from '../src/app/background/message-readiness';
 
 test('gated handler waits for background initialization', async () => {
     let resolveReady!: () => void;
-    const ready = new Promise<void>((resolve) => { resolveReady = resolve; });
+    const ready = new Promise<void>((resolve) => {
+        resolveReady = resolve;
+    });
     let handled = false;
     const handler = gateMessageHandler(ready, async (value: string) => {
         handled = true;

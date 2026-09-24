@@ -2,7 +2,6 @@
  * @file
  */
 
-/* eslint-disable import/no-extraneous-dependencies */
 import {
     mkdtempSync,
     mkdirSync,
@@ -12,6 +11,7 @@ import {
 } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+
 import AdmZip from 'adm-zip';
 import { expect, test } from 'vitest';
 

@@ -44,7 +44,7 @@ vi.mock('../src/app/background/native-host', () => ({
 }));
 
 vi.mock('../src/app/background/storage', () => ({
-    storage: { get: vi.fn(), set: vi.fn() },
+    storage: { get: vi.fn(), set: vi.fn().mockResolvedValue(undefined) },
 }));
 
 const deferred = <T>() => {
@@ -88,15 +88,9 @@ test('rapid reloads inject one stale version per document and share one refresh'
         .mockResolvedValue({ ok: true, content: 'unused-refresh' });
     const service = makeInjections();
 
-    const first = await service.getPageInjections(
-        'https://example.com', 7, documentToken,
-    );
-    const second = await service.getPageInjections(
-        'https://example.com', 7, documentToken,
-    );
-    const rapidThird = await service.getPageInjections(
-        'https://example.com', 7, documentToken,
-    );
+    const first = await service.getPageInjections('https://example.com', 7, documentToken);
+    const second = await service.getPageInjections('https://example.com', 7, documentToken);
+    const rapidThird = await service.getPageInjections('https://example.com', 7, documentToken);
 
     expect(first).toEqual([{ css: { code: 'css-one' } }]);
     expect(second).toEqual(first);
@@ -110,9 +104,7 @@ test('rapid reloads inject one stale version per document and share one refresh'
     await Promise.all([javascriptRefresh.promise, cssRefresh.promise]);
     await flushAsyncWork();
 
-    const updated = await service.getPageInjections(
-        'https://example.com', 7, documentToken,
-    );
+    const updated = await service.getPageInjections('https://example.com', 7, documentToken);
     expect(updated).toEqual([{ css: { code: 'css-two' } }]);
     const updatedCalls = vi.mocked(executeScript).mock.calls;
     expect(updatedCalls[updatedCalls.length - 1]?.[0]).toBe('js-two');
@@ -136,9 +128,7 @@ test('publishes JavaScript and CSS atomically after a failed refresh', async () 
     });
     await flushAsyncWork();
 
-    const recovered = await service.getPageInjections(
-        'https://example.com', 7, documentToken,
-    );
+    const recovered = await service.getPageInjections('https://example.com', 7, documentToken);
 
     expect(recovered).toEqual([{
         css: { code: 'css-three' },
@@ -161,9 +151,7 @@ test('editing a rule invalidates its last-known-good sources immediately', async
         jsPath: 'file:///source-v2.js',
         cssPath: 'file:///source-v2.css',
     });
-    const afterEdit = await service.getPageInjections(
-        'https://example.com', 7, documentToken,
-    );
+    const afterEdit = await service.getPageInjections('https://example.com', 7, documentToken);
 
     expect(afterEdit).toEqual([{
         css: { code: 'css-two' },

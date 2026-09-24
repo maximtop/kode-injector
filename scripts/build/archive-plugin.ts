@@ -3,8 +3,10 @@
  */
 
 import path from 'node:path';
-import type { Compiler } from '@rspack/core';
+
 import AdmZip from 'adm-zip';
+
+import type { Compiler } from '@rspack/core';
 
 /**
  * Writes a ZIP containing files relative to an extension output directory.

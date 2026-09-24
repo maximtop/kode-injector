@@ -2,9 +2,9 @@
  * @file Status of the selected local-file access method.
  */
 
-import React from 'react';
-import classNames from 'classnames';
 import { Button } from '@mantine/core';
+import classNames from 'classnames';
+import React from 'react';
 
 import { BrowserTarget } from '../../../common/browser-target';
 import {
@@ -75,7 +75,7 @@ interface MethodStatusProps {
 const getStatusPresentation = (state: LocalSourceAccessState): {
     tone: StatusTone;
     text: string;
-    hostVersion?: string;
+    hostVersion?: string | undefined;
 } => {
     if (state.kind === LocalSourceAccessMethod.Browser) {
         return state.allowed
@@ -112,6 +112,13 @@ const getStatusPresentation = (state: LocalSourceAccessState): {
  * Renders the status box of the selected access method.
  *
  * @param props MethodStatus props.
+ * @param props.state Current local-source access state.
+ * @param props.browserTarget Browser hosting the extension.
+ * @param props.disabled Whether a method transition is in progress.
+ * @param props.methodChangeError Inline description of the last failed method change, if any.
+ * @param props.onCheckAgain Rechecks the selected method.
+ * @param props.onOpenExtensionSettings Opens the browser's extension settings, when supported.
+ * @param props.onRequestPermission Requests the optional native-messaging permission.
  *
  * @returns Method status element.
  */

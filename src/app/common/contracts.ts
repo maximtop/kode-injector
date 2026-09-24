@@ -2,8 +2,6 @@
  * @file
  */
 
-/* eslint-disable jsdoc/require-jsdoc, jsdoc/multiline-blocks */
-
 import {
     boolean,
     fallback,
@@ -15,16 +13,18 @@ import {
     type InferOutput,
 } from 'valibot';
 
-import { BrowserTarget } from './browser-target';
 import { getBrowserCapabilities } from './browser-capabilities';
-import { InjectionField, MESSAGE_TYPES, SETTINGS } from './constants';
+import { BrowserTarget } from './browser-target';
+import { InjectionField, SETTINGS } from './constants';
 import {
     localePreferenceSchema,
     localePreferenceValueSchema,
     type LocalePreference,
 } from './locale';
+
+import type { MESSAGE_TYPES } from './constants';
 import type { LanguageChangedMessage } from './language-channel';
-import { NativeHostStatus, type NativeErrorCode } from './native-host-protocol';
+import type { NativeErrorCode, NativeHostStatus } from './native-host-protocol';
 
 /**
  * User-selected method for reading local injection sources.
@@ -34,9 +34,23 @@ export enum LocalSourceAccessMethod {
     NativeHost = 'nativeHost',
 }
 
+/**
+ * Native-host connection and read status.
+ */
 export interface NativeHostState {
+    /**
+     * Current native-host readiness status.
+     */
     status: NativeHostStatus;
-    hostVersion?: string;
+
+    /**
+     * Native host release version, when known.
+     */
+    hostVersion?: string | undefined;
+
+    /**
+     * Failure code from the most recent native-host error, when any.
+     */
     errorCode?: NativeErrorCode;
 }
 
@@ -44,7 +58,14 @@ export interface NativeHostState {
  * Browser-owned file URL permission state.
  */
 export interface BrowserFileAccessState {
+    /**
+     * Discriminant identifying this as the browser access method.
+     */
     kind: LocalSourceAccessMethod.Browser;
+
+    /**
+     * Whether the browser has granted file URL access.
+     */
     allowed: boolean;
 }
 
@@ -52,8 +73,19 @@ export interface BrowserFileAccessState {
  * Native-host readiness state.
  */
 export interface NativeHostAccessState {
+    /**
+     * Discriminant identifying this as the native-host access method.
+     */
     kind: LocalSourceAccessMethod.NativeHost;
+
+    /**
+     * Whether the native messaging permission has been granted.
+     */
     permissionGranted: boolean;
+
+    /**
+     * Native-host connection and read status.
+     */
     host: NativeHostState;
 }
 
@@ -159,16 +191,20 @@ export type InjectionFileField = InjectionField.JsPath | InjectionField.CssPath;
 /**
  * Injection data returned to the options page.
  */
-export type OptionsDataResponse = {
+export interface OptionsDataResponse {
     /**
      * Configured injection rules.
      */
     injections: InjectionRule[];
 
-    /** Native-host state for local source reads. */
+    /**
+     * Native-host state for local source reads.
+     */
     localSourceAccess: LocalSourceAccessState;
 
-    /** Selected method, independent of an asynchronous readiness probe. */
+    /**
+     * Selected method, independent of an asynchronous readiness probe.
+     */
     localSourceAccessMethod: LocalSourceAccessMethod;
 
     /**
@@ -180,7 +216,7 @@ export type OptionsDataResponse = {
      * Whether injections are enabled globally.
      */
     appEnabled: boolean;
-};
+}
 
 /**
  * Strict schema for persisted global application settings.
@@ -271,7 +307,7 @@ const getNormalizedAppSettingsSchema = (browserTarget: BrowserTarget) => {
 /**
  * Normalized settings and whether persistence needs repair.
  */
-export type AppSettingsNormalization = {
+export interface AppSettingsNormalization {
     /**
      * Valid settings with field-level fallbacks applied.
      */
@@ -281,7 +317,7 @@ export type AppSettingsNormalization = {
      * Whether the persisted input failed strict validation.
      */
     shouldRepair: boolean;
-};
+}
 
 /**
  * Browser tab data required by popup actions.
@@ -290,19 +326,21 @@ export interface PopupTab {
     /**
      * Browser tab identifier.
      */
-    id?: number;
+    id?: number | undefined;
 
     /**
      * Browser tab URL.
      */
-    url?: string;
+    url?: string | undefined;
 }
 
 /**
  * Extension state returned to the popup.
  */
-export type PopupDataResponse = {
-    /** Native-host state for local source reads. */
+export interface PopupDataResponse {
+    /**
+     * Native-host state for local source reads.
+     */
     localSourceAccess: LocalSourceAccessState;
 
     /**
@@ -319,7 +357,7 @@ export type PopupDataResponse = {
      * Whether injections are disabled for the current site.
      */
     siteIsBlacklisted: boolean;
-};
+}
 
 /**
  * Source paths that could not be read, keyed by rule identifier.
@@ -332,14 +370,17 @@ export type InjectionFileIssues = Record<
 /**
  * CSS source prepared for content-script injection.
  */
-export type CssInjectionCode = {
+export interface CssInjectionCode {
     /**
      * CSS source content.
      */
     css: {
+        /**
+         * CSS source code.
+         */
         code: string;
     };
-};
+}
 
 /**
  * Injection code returned for the current page.
@@ -349,7 +390,7 @@ export type InjectionsCodeResponse = CssInjectionCode[] | null;
 /**
  * Data required to execute JavaScript in a browser tab.
  */
-export type ExecuteScriptPayload = {
+export interface ExecuteScriptPayload {
     /**
      * JavaScript source to execute.
      */
@@ -364,13 +405,12 @@ export type ExecuteScriptPayload = {
      * Identity of the document that requested the injection.
      */
     documentToken: string;
-};
+}
 
 /**
  * Runtime messages exchanged with the background service worker.
  */
-export type RuntimeMessage =
-    | { type: typeof MESSAGE_TYPES.GET_OPTIONS_DATA; data?: undefined }
+export type RuntimeMessage = | { type: typeof MESSAGE_TYPES.GET_OPTIONS_DATA; data?: undefined }
     | { type: typeof MESSAGE_TYPES.GET_LOCAL_SOURCE_ACCESS_STATUS; data?: undefined }
     | {
         type: typeof MESSAGE_TYPES.SET_LOCAL_SOURCE_ACCESS_METHOD;
@@ -378,7 +418,7 @@ export type RuntimeMessage =
     }
     | {
         type: typeof MESSAGE_TYPES.ADD_INJECTION;
-        data: { injectionData: NewInjectionData; enabled?: boolean };
+        data: { injectionData: NewInjectionData; enabled?: boolean | undefined };
     }
     | {
         type: typeof MESSAGE_TYPES.UPDATE_INJECTION;

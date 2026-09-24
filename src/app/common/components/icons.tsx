@@ -28,6 +28,8 @@ interface IconFrameProps extends IconProps {
  * Shared SVG frame with the prototype's stroke styling.
  *
  * @param props Frame props.
+ * @param props.size Rendered icon size in pixels.
+ * @param props.children SVG path contents.
  *
  * @returns Decorative SVG element.
  */
@@ -54,6 +56,7 @@ const IconFrame = ({ size, children }: IconFrameProps): React.JSX.Element => {
  * Pause icon: two vertical bars.
  *
  * @param props Icon props.
+ * @param props.size Rendered icon size in pixels.
  *
  * @returns Decorative SVG element.
  */
@@ -69,6 +72,7 @@ export const IconPause = ({ size }: IconProps): React.JSX.Element => {
  * Moon icon used by the theme toggle.
  *
  * @param props Icon props.
+ * @param props.size Rendered icon size in pixels.
  *
  * @returns Decorative SVG element.
  */
@@ -84,6 +88,7 @@ export const IconMoon = ({ size }: IconProps): React.JSX.Element => {
  * Sun icon shown while the light scheme is active.
  *
  * @param props Icon props.
+ * @param props.size Rendered icon size in pixels.
  *
  * @returns Decorative SVG element.
  */
@@ -91,7 +96,12 @@ export const IconSun = ({ size }: IconProps): React.JSX.Element => {
     return (
         <IconFrame size={size}>
             <circle cx={12} cy={12} r={4} />
-            <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+            <path
+                d={[
+                    'M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4',
+                    'M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4',
+                ].join('')}
+            />
         </IconFrame>
     );
 };
@@ -100,6 +110,7 @@ export const IconSun = ({ size }: IconProps): React.JSX.Element => {
  * Half-filled circle shown while the scheme follows the system.
  *
  * @param props Icon props.
+ * @param props.size Rendered icon size in pixels.
  *
  * @returns Decorative SVG element.
  */
@@ -116,13 +127,20 @@ export const IconContrast = ({ size }: IconProps): React.JSX.Element => {
  * GitHub mark.
  *
  * @param props Icon props.
+ * @param props.size Rendered icon size in pixels.
  *
  * @returns Decorative SVG element.
  */
 export const IconGitHub = ({ size }: IconProps): React.JSX.Element => {
     return (
         <IconFrame size={size}>
-            <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.1-1.3-.3-2.6-1-3.7.3-1.2.3-2.5 0-3.7 0 0-1 0-3 1.5-2.6-.5-5.4-.5-8 0C6 1.6 5 1.6 5 1.6c-.3 1.2-.3 2.5 0 3.7-.7 1.1-1.1 2.4-1 3.7 0 3.5 3 5.5 6 5.5a4.8 4.8 0 0 0-1 3.5v4" />
+            <path
+                d={[
+                    'M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.1-1.3-.3-2.6-1-3.7.3-1.2.3-2.5 0-3.7',
+                    ' 0 0-1 0-3 1.5-2.6-.5-5.4-.5-8 0C6 1.6 5 1.6 5 1.6c-.3 1.2-.3 2.5 0 3.7-.7 1.1-1.1 2.4-1 3.7',
+                    ' 0 3.5 3 5.5 6 5.5a4.8 4.8 0 0 0-1 3.5v4',
+                ].join('')}
+            />
             <path d="M9 18c-4.5 2-5-2-7-2" />
         </IconFrame>
     );
@@ -132,6 +150,7 @@ export const IconGitHub = ({ size }: IconProps): React.JSX.Element => {
  * Search icon: magnifier.
  *
  * @param props Icon props.
+ * @param props.size Rendered icon size in pixels.
  *
  * @returns Decorative SVG element.
  */
@@ -148,6 +167,7 @@ export const IconSearch = ({ size }: IconProps): React.JSX.Element => {
  * Plus icon used by primary creation actions.
  *
  * @param props Icon props.
+ * @param props.size Rendered icon size in pixels.
  *
  * @returns Decorative SVG element.
  */
@@ -163,6 +183,7 @@ export const IconPlus = ({ size }: IconProps): React.JSX.Element => {
  * Vertical dots icon used by overflow menus.
  *
  * @param props Icon props.
+ * @param props.size Rendered icon size in pixels.
  *
  * @returns Decorative SVG element.
  */
@@ -180,6 +201,7 @@ export const IconDots = ({ size }: IconProps): React.JSX.Element => {
  * Close icon: diagonal cross.
  *
  * @param props Icon props.
+ * @param props.size Rendered icon size in pixels.
  *
  * @returns Decorative SVG element.
  */
@@ -195,6 +217,7 @@ export const IconClose = ({ size }: IconProps): React.JSX.Element => {
  * Gear icon used by options links.
  *
  * @param props Icon props.
+ * @param props.size Rendered icon size in pixels.
  *
  * @returns Decorative SVG element.
  */
@@ -202,7 +225,13 @@ export const IconGear = ({ size }: IconProps): React.JSX.Element => {
     return (
         <IconFrame size={size}>
             <circle cx={12} cy={12} r={3} />
-            <path d="M19 12a7 7 0 0 0-.1-1.2l2-1.6-2-3.4-2.4 1a7 7 0 0 0-2-1.2L14 3h-4l-.4 2.6a7 7 0 0 0-2 1.2l-2.5-1-2 3.4 2.1 1.6a7 7 0 0 0 0 2.4L3 14.8l2 3.4 2.4-1a7 7 0 0 0 2 1.2L10 21h4l.4-2.6a7 7 0 0 0 2-1.2l2.5 1 2-3.4-2.1-1.6c.1-.4.1-.8.1-1.2Z" />
+            <path
+                d={[
+                    'M19 12a7 7 0 0 0-.1-1.2l2-1.6-2-3.4-2.4 1a7 7 0 0 0-2-1.2L14 3h-4l-.4 2.6a7 7 0 0 0-2 1.2l-2.5-1',
+                    '-2 3.4 2.1 1.6a7 7 0 0 0 0 2.4L3 14.8l2 3.4 2.4-1a7 7 0 0 0 2 1.2L10 21h4l.4-2.6a7 7 0 0 0 2-1.2',
+                    'l2.5 1 2-3.4-2.1-1.6c.1-.4.1-.8.1-1.2Z',
+                ].join('')}
+            />
         </IconFrame>
     );
 };

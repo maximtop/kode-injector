@@ -2,13 +2,15 @@
  * @file Popup local-source access transitions.
  */
 
-import { beforeEach, expect, test, vi } from 'vitest';
+import {
+    beforeEach, expect, test, vi,
+} from 'vitest';
 
-import { LocalSourceAccessMethod } from '../src/app/common/contracts';
 import { InjectionField } from '../src/app/common/constants';
+import { LocalSourceAccessMethod } from '../src/app/common/contracts';
 import { messenger } from '../src/app/common/messenger';
-import { nativeMessagingPermission } from '../src/app/common/native-messaging-permission';
 import { NativeHostStatus } from '../src/app/common/native-host-protocol';
+import { nativeMessagingPermission } from '../src/app/common/native-messaging-permission';
 import { SettingsStore } from '../src/app/popup/stores/SettingsStore';
 
 vi.mock('../src/app/common/messenger', () => ({
@@ -141,8 +143,8 @@ test('toggling a file flips only that flag and reloads the tab', async () => {
 
     expect(messenger.setInjectionFileEnabled)
         .toHaveBeenCalledWith('a', InjectionField.JsPath, false);
-    expect(store.matchingInjections[0].jsEnabled).toBe(false);
-    expect(store.matchingInjections[0].cssEnabled).toBe(true);
+    expect(store.matchingInjections[0]?.jsEnabled).toBe(false);
+    expect(store.matchingInjections[0]?.cssEnabled).toBe(true);
     expect(tabs.reloadTab).toHaveBeenCalledWith(5);
 });
 
@@ -166,7 +168,7 @@ test('a null file-toggle response leaves state untouched and skips reload', asyn
 
     await store.toggleInjectionFile('a', InjectionField.JsPath);
 
-    expect(store.matchingInjections[0].jsEnabled).toBe(true);
+    expect(store.matchingInjections[0]?.jsEnabled).toBe(true);
     expect(tabs.reloadTab).not.toHaveBeenCalled();
 });
 

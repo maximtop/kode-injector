@@ -2,22 +2,23 @@
  * @file
  */
 
-import React, { useContext, useEffect, useLayoutEffect } from 'react';
 import { observer } from 'mobx-react';
+import React, { useContext, useEffect, useLayoutEffect } from 'react';
 
-import { AppProviders } from '../../../common/components/AppProviders';
-import { Header } from '../Header';
-import { PausedStrip } from '../PausedStrip';
-import { AccessBlock } from '../AccessBlock';
-import { SiteBlock } from '../SiteBlock';
-import { RulesList } from '../RulesList';
-import { EmptyCta } from '../EmptyCta';
-import { Footer } from '../Footer';
-import { rootStore } from '../../stores/RootStore';
 import { browserLanguageChannel } from '../../../common/browser-language-channel';
+import { AppProviders } from '../../../common/components/AppProviders';
 import { applyDocumentLocale } from '../../../common/document-locale';
 import { i18n } from '../../../common/i18n';
+import { log } from '../../../common/log';
 import { translator } from '../../../common/translator';
+import { rootStore } from '../../stores/RootStore';
+import { AccessBlock } from '../AccessBlock';
+import { EmptyCta } from '../EmptyCta';
+import { Footer } from '../Footer';
+import { Header } from '../Header';
+import { PausedStrip } from '../PausedStrip';
+import { RulesList } from '../RulesList';
+import { SiteBlock } from '../SiteBlock';
 
 import './popup-app.pcss';
 
@@ -25,8 +26,8 @@ export const PopupApp = observer(() => {
     const { settingsStore, translationStore } = useContext(rootStore);
 
     useEffect(() => {
-        settingsStore.getPopupData();
-    }, []);
+        settingsStore.getPopupData().catch((error) => log.error(error));
+    }, [settingsStore]);
 
     useEffect(() => {
         return browserLanguageChannel.subscribe((language) => {

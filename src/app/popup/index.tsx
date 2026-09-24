@@ -10,6 +10,7 @@ import '../common/styles/tokens.pcss';
 import '../common/styles/mantine-overrides.pcss';
 
 import { applyInitialColorScheme } from '../common/color-scheme';
+
 import { PopupApp } from './components/PopupApp';
 
 /**

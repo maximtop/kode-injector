@@ -2,8 +2,6 @@
  * @file One-request/one-response native client used by Safari Web Extensions.
  */
 
-/* eslint-disable no-restricted-syntax, max-len */
-
 import {
     MAX_FILE_BYTES,
     MAX_RESPONSE_BYTES,
@@ -90,8 +88,6 @@ interface SafariMetadataResponse {
  * Throws a closed client-side protocol failure.
  *
  * @param code Error code exposed to the caller.
- *
- * @returns Never returns.
  *
  * @throws Always, using the supplied closed client error code.
  */
@@ -319,7 +315,7 @@ export class SafariNativeClient {
         try {
             content = await this.readOnce(fileUrl);
         } catch (error) {
-            if (!(error instanceof Error) || error.message !== NativeErrorCode.FileChanged) {
+            if (!(error instanceof Error) || error.message !== NativeErrorCode.FileChanged as string) {
                 throw error;
             }
             content = await this.readOnce(fileUrl);
@@ -423,9 +419,9 @@ export class SafariNativeClient {
                     globalThis.clearTimeout(timeout);
                     resolve(response);
                 },
-                (error) => {
+                (error: unknown) => {
                     globalThis.clearTimeout(timeout);
-                    reject(error);
+                    reject(error instanceof Error ? error : new Error(String(error)));
                 },
             );
         });
@@ -457,7 +453,7 @@ export class SafariNativeClient {
             || (response.totalBytes as number) > MAX_FILE_BYTES
             || !Number.isInteger(response.chunkCount)
             || response.chunkCount !== Math.ceil((response.totalBytes as number) / RAW_CHUNK_BYTES)
-            || (response.chunkCount as number) > MAX_CHUNK_COUNT
+            || (response.chunkCount) > MAX_CHUNK_COUNT
             || typeof response.digest !== 'string'
             || !DIGEST_PATTERN.test(response.digest)
             || typeof response.firstChunk !== 'string') {
@@ -473,7 +469,7 @@ export class SafariNativeClient {
         }
         return {
             totalBytes: response.totalBytes as number,
-            chunkCount: response.chunkCount as number,
+            chunkCount: response.chunkCount,
             digest: response.digest,
             firstChunk,
         };

@@ -2,12 +2,12 @@
  * @file
  */
 
+import find from 'lodash/find';
 import {
     makeObservable,
     observable,
     runInAction,
 } from 'mobx';
-import find from 'lodash/find';
 
 import {
     type InjectionFileField,
@@ -17,11 +17,36 @@ import {
     type LocalSourceAccessState,
     type NewInjectionData,
 } from '../../common/contracts';
-import { messenger } from '../../common/messenger';
-import { log } from '../../common/log';
 import { i18n } from '../../common/i18n';
+import { log } from '../../common/log';
+import { messenger } from '../../common/messenger';
 import { NativeHostStatus } from '../../common/native-host-protocol';
+
 import type { RootStoreType } from './RootStore';
+
+/**
+ * Creates the immediate status shown while the selected method is probed.
+ *
+ * @param method Selected local-source method.
+ *
+ * @returns Method-specific checking state.
+ */
+const getCheckingAccessState = (
+    method: LocalSourceAccessMethod,
+): LocalSourceAccessState => {
+    if (method === LocalSourceAccessMethod.Browser) {
+        return {
+            kind: LocalSourceAccessMethod.Browser,
+            allowed: true,
+        };
+    }
+
+    return {
+        kind: LocalSourceAccessMethod.NativeHost,
+        permissionGranted: true,
+        host: { status: NativeHostStatus.Checking },
+    };
+};
 
 /**
  * Manages options-page injection state and actions.
@@ -142,8 +167,8 @@ export class InjectionsStore {
             this.appEnabled = appEnabled;
             this.optionsDataReady = true;
         });
-        this.refreshFileIssues();
-    }
+        void this.refreshFileIssues();
+    };
 
     /**
      * Re-probes source-file readability for every rule.
@@ -157,7 +182,7 @@ export class InjectionsStore {
         } catch (e) {
             log.error(e instanceof Error ? e.message : e);
         }
-    }
+    };
 
     /**
      * Refreshes browser-owned local-file permission state.
@@ -222,13 +247,13 @@ export class InjectionsStore {
             });
             // The first rule replaces the demo card; forget its last result.
             this.rootStore.demoStore.reset();
-            this.refreshFileIssues();
+            void this.refreshFileIssues();
             return injection;
         } catch (e) {
             log.error(e);
             return null;
         }
-    }
+    };
 
     /**
      * Updates an injection rule in place.
@@ -251,13 +276,13 @@ export class InjectionsStore {
                 this.injections = this.injections
                     .map((inj) => (inj.id === id ? updated : inj));
             });
-            this.refreshFileIssues();
+            void this.refreshFileIssues();
             return updated;
         } catch (e) {
             log.error(e instanceof Error ? e.message : e);
             return null;
         }
-    }
+    };
 
     /**
      * Enables or disables one file of a rule.
@@ -283,7 +308,7 @@ export class InjectionsStore {
         } catch (e) {
             log.error(e instanceof Error ? e.message : e);
         }
-    }
+    };
 
     /**
      * Duplicates an injection rule as a disabled copy.
@@ -312,7 +337,7 @@ export class InjectionsStore {
         } catch (e) {
             log.error(e instanceof Error ? e.message : e);
         }
-    }
+    };
 
     /**
      * Toggles the global injections switch.
@@ -331,7 +356,7 @@ export class InjectionsStore {
         } catch (e) {
             log.error(e instanceof Error ? e.message : e);
         }
-    }
+    };
 
     /**
      * Records a failed access-method change for inline display.
@@ -342,7 +367,7 @@ export class InjectionsStore {
         runInAction(() => {
             this.methodChangeError = message;
         });
-    }
+    };
 
     /**
      * Removes an injection rule and refreshes options data.
@@ -358,7 +383,7 @@ export class InjectionsStore {
         } catch (e) {
             log.error(e instanceof Error ? e.message : e);
         }
-    }
+    };
 
     /**
      * Toggles an injection rule and refreshes options data.
@@ -385,29 +410,5 @@ export class InjectionsStore {
         } catch (e) {
             log.error(e instanceof Error ? e.message : e);
         }
-    }
-}
-
-/**
- * Creates the immediate status shown while the selected method is probed.
- *
- * @param method Selected local-source method.
- *
- * @returns Method-specific checking state.
- */
-const getCheckingAccessState = (
-    method: LocalSourceAccessMethod,
-): LocalSourceAccessState => {
-    if (method === LocalSourceAccessMethod.Browser) {
-        return {
-            kind: LocalSourceAccessMethod.Browser,
-            allowed: true,
-        };
-    }
-
-    return {
-        kind: LocalSourceAccessMethod.NativeHost,
-        permissionGranted: true,
-        host: { status: NativeHostStatus.Checking },
     };
-};
+}

@@ -3,15 +3,14 @@
  */
 
 import lodash from 'lodash';
+
+import { BrowserPermission } from '../../src/app/common/constants';
 import {
     BROWSER_TARGETS,
     CHANNEL_ENVS,
     type BrowserTarget,
     type BuildEnv,
 } from '../constants';
-import { BrowserPermission } from '../../src/app/common/constants';
-
-const { capitalize } = lodash;
 
 /**
  * Returns unique string permissions from an unknown manifest value.
@@ -99,9 +98,9 @@ export const updateManifest = (
     manifest.background = background;
     manifest.version = options.version;
     const permissions = normalizePermissions(manifest.permissions)
-        .filter((permission) => permission !== BrowserPermission.NativeMessaging);
+        .filter((permission) => permission !== BrowserPermission.NativeMessaging as string);
     const optionalPermissions = normalizePermissions(manifest.optional_permissions)
-        .filter((permission) => permission !== BrowserPermission.NativeMessaging);
+        .filter((permission) => permission !== BrowserPermission.NativeMessaging as string);
 
     if (options.browser === BROWSER_TARGETS.FIREFOX
         || options.browser === BROWSER_TARGETS.SAFARI) {
@@ -143,7 +142,7 @@ export const updateLocalesMSGName = (
     const isRelease = buildEnv === CHANNEL_ENVS.RELEASE;
 
     if (!isRelease) {
-        messages.name.message += ` (${capitalize(buildEnv)})`;
+        messages.name.message += ` (${lodash.capitalize(buildEnv)})`;
     }
 
     return JSON.stringify(messages, null, 4);

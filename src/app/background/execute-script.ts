@@ -2,9 +2,10 @@
  * @file
  */
 
-import { log } from '../common/log';
-import type { ExecuteScriptPayload } from '../common/contracts';
 import { DOCUMENT_TOKEN_ATTRIBUTE } from '../common/document-injection';
+import { log } from '../common/log';
+
+import type { ExecuteScriptPayload } from '../common/contracts';
 
 /**
  * Function executed in the target page's main world.
@@ -51,7 +52,7 @@ const functionToInject: InjectedFunction = (
 /**
  * Chrome scripting options for a main-world injection.
  */
-type MainWorldScriptInjection = {
+interface MainWorldScriptInjection {
     /**
      * Target tab for the injection.
      */
@@ -85,7 +86,7 @@ type MainWorldScriptInjection = {
         documentToken: string,
         documentTokenAttribute: string,
     ];
-};
+}
 
 /**
  * Injects JavaScript into the main world of a browser tab.
