@@ -8,6 +8,7 @@ import { observer } from 'mobx-react';
 import React, { useContext } from 'react';
 
 import { getCurrentBrowserTarget } from '../../../common/browser-target';
+import { log } from '../../../common/log';
 import { StatusTone } from '../../../common/status-tone';
 import { translator } from '../../../common/translator';
 import { rootStore } from '../../stores/RootStore';
@@ -65,7 +66,9 @@ export const SiteBlock = observer((): React.JSX.Element => {
                 <Switch
                     checked={siteEnabled}
                     disabled={!settingsStore.appEnabled}
-                    onChange={handleSiteToggle}
+                    onChange={() => {
+                        handleSiteToggle().catch((error) => log.error(error));
+                    }}
                     title={switchTitle}
                     aria-label={switchTitle}
                     size="sm"

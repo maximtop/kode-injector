@@ -196,7 +196,7 @@ export class DemoLaunchService {
             if (this.restored) {
                 this.forgetTab(tabId);
             } else {
-                this.ensureRestored().then(() => this.forgetTab(tabId));
+                void this.ensureRestored().then(() => this.forgetTab(tabId));
             }
         });
     };

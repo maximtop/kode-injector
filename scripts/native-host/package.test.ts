@@ -2,8 +2,6 @@
  * @file
  */
 
-/* eslint-disable import/no-extraneous-dependencies */
-
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';

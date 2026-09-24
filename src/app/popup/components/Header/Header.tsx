@@ -39,7 +39,9 @@ export const Header = observer(() => {
                 leftSection={<IconPause size={13} />}
                 aria-pressed={paused}
                 title={title}
-                onClick={handlePauseClick}
+                onClick={() => {
+                    void handlePauseClick();
+                }}
                 data-testid="popup-pause"
             >
                 {paused

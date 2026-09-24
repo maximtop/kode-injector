@@ -88,7 +88,9 @@ export const DemoCard = observer((): React.JSX.Element => {
             <div className="demo-card-actions">
                 <Button
                     variant="filled"
-                    onClick={() => demoStore.run()}
+                    onClick={() => {
+                        void demoStore.run();
+                    }}
                     loading={demoStore.status === DemoUiStatus.Running}
                     disabled={!appEnabled}
                     data-testid={DEMO_RUN_TEST_ID}
@@ -98,7 +100,9 @@ export const DemoCard = observer((): React.JSX.Element => {
                 {!appEnabled && (
                     <Button
                         variant="default"
-                        onClick={() => injectionsStore.toggleAppEnabled()}
+                        onClick={() => {
+                            void injectionsStore.toggleAppEnabled();
+                        }}
                         data-testid="demo-resume-btn"
                     >
                         {translator.getMessage('pause_resume')}

@@ -23,7 +23,9 @@ export const PausedStrip = observer((): React.JSX.Element | null => {
     return (
         <div className="paused-strip" role="status" data-testid="popup-paused-strip">
             <strong>{translator.getMessage('popup_paused_strip')}</strong>
-            <button type="button" onClick={() => settingsStore.enableApp()}>
+            <button type="button" onClick={() => {
+                void settingsStore.enableApp();
+            }}>
                 {translator.getMessage('pause_resume')}
             </button>
         </div>

@@ -23,11 +23,10 @@ import {
     localePreferenceValueSchema,
     type LocalePreference,
 } from './locale';
-import type { NativeHostStatus  } from './native-host-protocol';
-import { type NativeErrorCode  } from './native-host-protocol';
 
 import type { MESSAGE_TYPES } from './constants';
 import type { LanguageChangedMessage } from './language-channel';
+import type { NativeErrorCode, NativeHostStatus } from './native-host-protocol';
 
 /**
  * User-selected method for reading local injection sources.
@@ -39,7 +38,7 @@ export enum LocalSourceAccessMethod {
 
 export interface NativeHostState {
     status: NativeHostStatus;
-    hostVersion?: string;
+    hostVersion?: string | undefined;
     errorCode?: NativeErrorCode;
 }
 

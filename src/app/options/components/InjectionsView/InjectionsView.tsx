@@ -144,7 +144,9 @@ export const InjectionsView = observer(({
                 <Button
                     variant="default"
                     leftSection={<IconPause size={14} />}
-                    onClick={() => injectionsStore.toggleAppEnabled()}
+                    onClick={() => {
+                        void injectionsStore.toggleAppEnabled();
+                    }}
                     aria-pressed={!appEnabled}
                     title={appEnabled
                         ? translator.getMessage('popup_pause_all')
@@ -197,17 +199,21 @@ export const InjectionsView = observer(({
                             rule={rule}
                             fileIssues={injectionsStore.fileIssues[rule.id] ?? []}
                             confirmingDelete={pendingDeleteId === rule.id}
-                            onToggle={(id) => injectionsStore.toggleInjection(id)}
+                            onToggle={(id) => {
+                                void injectionsStore.toggleInjection(id);
+                            }}
                             onFileToggle={(id, field, enabled) => {
-                                injectionsStore.setInjectionFileEnabled(id, field, enabled);
+                                void injectionsStore.setInjectionFileEnabled(id, field, enabled);
                             }}
                             onEdit={onEdit}
-                            onDuplicate={(id) => injectionsStore.duplicateInjection(id)}
+                            onDuplicate={(id) => {
+                                void injectionsStore.duplicateInjection(id);
+                            }}
                             onRequestDelete={setPendingDeleteId}
                             onCancelDelete={() => setPendingDeleteId(null)}
                             onConfirmDelete={(id) => {
                                 setPendingDeleteId(null);
-                                injectionsStore.removeInjection(id);
+                                void injectionsStore.removeInjection(id);
                             }}
                             onOpenFile={openFile}
                         />

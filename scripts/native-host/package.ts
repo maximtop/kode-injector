@@ -3,8 +3,6 @@
  */
 
 /* eslint-disable jsdoc/require-jsdoc */
-/* eslint-disable import/no-extraneous-dependencies */
-
 import { execFileSync } from 'node:child_process';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
@@ -300,7 +298,7 @@ const expectedMachArchitecture = (arch: NativeArch): string => {
         case NativeArch.Arm64:
             return 'arm64';
         default:
-            throw new Error(`Unsupported native architecture: ${arch}`);
+            throw new Error(`Unsupported native architecture: ${String(arch)}`);
     }
 };
 
@@ -546,7 +544,7 @@ export const packageNativeHost = (
                     break;
                 }
                 default:
-                    throw new Error(`Unsupported native target OS: ${target.os}`);
+                    throw new Error(`Unsupported native target OS: ${String(target.os)}`);
             }
         }
         createChecksums(outputPath, getNativeArtifactNames());

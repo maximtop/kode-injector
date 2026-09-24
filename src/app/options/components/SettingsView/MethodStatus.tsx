@@ -75,7 +75,7 @@ interface MethodStatusProps {
 const getStatusPresentation = (state: LocalSourceAccessState): {
     tone: StatusTone;
     text: string;
-    hostVersion?: string;
+    hostVersion?: string | undefined;
 } => {
     if (state.kind === LocalSourceAccessMethod.Browser) {
         return state.allowed

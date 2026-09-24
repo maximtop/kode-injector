@@ -72,7 +72,7 @@ export const RulesList = observer((): React.JSX.Element | null => {
                                 checked={entry.checked}
                                 disabled={switchDisabled}
                                 onChange={() => {
-                                    settingsStore.toggleInjectionFile(entry.ruleId, entry.field);
+                                    void settingsStore.toggleInjectionFile(entry.ruleId, entry.field);
                                 }}
                                 title={switchTitle}
                                 aria-label={switchTitle}

@@ -3,10 +3,7 @@
  */
 
 import { createRspackConfig } from '../../rspack.config';
-import {
-    CHANNEL_ENVS,
-    type BuildEnv,
-} from '../constants';
+import { CHANNEL_ENVS } from '../constants';
 
 import { bundleRunner } from './bundle-runner';
 import { createBuildProgram, type BuildCommandHandler } from './cli';

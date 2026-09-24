@@ -104,7 +104,7 @@ class MessageHandler {
             case MESSAGE_TYPES.SET_INJECTION_FILE_ENABLED: {
                 const { id, field, enabled } = data;
                 if (field !== InjectionField.JsPath && field !== InjectionField.CssPath) {
-                    throw new Error(`Unknown injection file field ${field}`);
+                    throw new Error(`Unknown injection file field ${String(field)}`);
                 }
                 return injections.setInjectionFileEnabled(id, field, enabled);
             }

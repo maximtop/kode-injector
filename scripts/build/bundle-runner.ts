@@ -2,7 +2,6 @@
  * @file
  */
 
-/* eslint-disable import/no-unresolved */
 import {
     rspack,
     type Configuration,
@@ -67,7 +66,7 @@ export const bundleRunner = (
                     }
                 } catch (buildError) {
                     if (!initialBuildComplete) {
-                        reject(buildError);
+                        reject(buildError instanceof Error ? buildError : new Error(String(buildError)));
                         return;
                     }
 
@@ -87,8 +86,9 @@ export const bundleRunner = (
              */
             const finish = (buildError?: Error): void => {
                 compiler.close((closeError) => {
-                    if (buildError || closeError) {
-                        reject(buildError ?? closeError);
+                    const failure = buildError ?? closeError;
+                    if (failure) {
+                        reject(failure);
                         return;
                     }
 

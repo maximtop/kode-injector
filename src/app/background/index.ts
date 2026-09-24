@@ -15,10 +15,7 @@ import { demoLaunch } from './demo-launch';
 import { injections } from './injections';
 import { localSourceAccess } from './local-source-access';
 import { messageHandler } from './message-handler';
-import {
-    subscribeSafariAppMessages,
-    type SafariAppMessagePort,
-} from './safari-app-messages';
+import { subscribeSafariAppMessages } from './safari-app-messages';
 import { settings } from './settings';
 import { updateService } from './update-service';
 

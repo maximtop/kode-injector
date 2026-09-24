@@ -42,6 +42,13 @@ type FetchSource = (url: string) => Promise<{ text(): Promise<string> }>;
 
 type GetLocalSourceAccessMethod = () => LocalSourceAccessMethod;
 
+const getNativeErrorCode = (error: unknown): NativeErrorCode | SourceReadErrorCode => {
+    const message = error instanceof Error ? error.message : '';
+    return Object.values(NativeErrorCode).includes(message as NativeErrorCode)
+        ? message as NativeErrorCode
+        : SourceReadErrorCode.NativeFailed;
+};
+
 export class SourceReader {
     public constructor(
         private readonly native: NativeFileReader,
@@ -77,10 +84,3 @@ export class SourceReader {
         }
     };
 }
-
-const getNativeErrorCode = (error: unknown): NativeErrorCode | SourceReadErrorCode => {
-    const message = error instanceof Error ? error.message : '';
-    return Object.values(NativeErrorCode).includes(message as NativeErrorCode)
-        ? message as NativeErrorCode
-        : SourceReadErrorCode.NativeFailed;
-};

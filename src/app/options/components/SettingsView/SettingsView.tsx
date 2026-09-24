@@ -207,7 +207,9 @@ export const SettingsView = observer(({
                     <Select
                         value={translationStore.userLocalePreference}
                         data={languageOptions}
-                        onChange={handleLanguageChange}
+                        onChange={(language) => {
+                            void handleLanguageChange(language);
+                        }}
                         aria-label={translator.getMessage('language_label')}
                         allowDeselect={false}
                         comboboxProps={{ withinPortal: true }}

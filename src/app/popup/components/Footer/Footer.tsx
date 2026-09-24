@@ -6,6 +6,7 @@ import React from 'react';
 import browser from 'webextension-polyfill';
 
 import { IconGear } from '../../../common/components/icons';
+import { log } from '../../../common/log';
 import { messenger } from '../../../common/messenger';
 import { translator } from '../../../common/translator';
 
@@ -28,7 +29,9 @@ export const Footer = (): React.JSX.Element => {
         <footer className="p-foot">
             <button
                 type="button"
-                onClick={handleOpenSettingsClick}
+                onClick={() => {
+                    handleOpenSettingsClick().catch((error) => log.error(error));
+                }}
                 title={translator.getMessage('popup_open_settings')}
             >
                 <IconGear size={13} />

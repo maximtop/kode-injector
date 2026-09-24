@@ -49,6 +49,26 @@ export interface LocalSourceAccessMethodActions {
     logPermissionError(error: unknown): void;
 }
 
+const PERMISSION_NOT_REMOVED_ERROR = 'NATIVE_MESSAGING_PERMISSION_NOT_REMOVED';
+
+/**
+ * Removes an unused optional permission and verifies ambiguous false results.
+ *
+ * @param actions Permission operations and failure logger.
+ */
+const removeUnusedNativeMessagingPermission = async (
+    actions: LocalSourceAccessMethodActions,
+): Promise<void> => {
+    try {
+        const removed = await actions.permission.remove();
+        if (!removed && await actions.permission.contains()) {
+            actions.logPermissionError(new Error(PERMISSION_NOT_REMOVED_ERROR));
+        }
+    } catch (error) {
+        actions.logPermissionError(error);
+    }
+};
+
 /**
  * Applies a Chromium local-source method selection.
  *
@@ -88,24 +108,4 @@ export const applyLocalSourceAccessMethod = async (
     await actions.setMethod(method);
     await removeUnusedNativeMessagingPermission(actions);
     return true;
-};
-
-const PERMISSION_NOT_REMOVED_ERROR = 'NATIVE_MESSAGING_PERMISSION_NOT_REMOVED';
-
-/**
- * Removes an unused optional permission and verifies ambiguous false results.
- *
- * @param actions Permission operations and failure logger.
- */
-const removeUnusedNativeMessagingPermission = async (
-    actions: LocalSourceAccessMethodActions,
-): Promise<void> => {
-    try {
-        const removed = await actions.permission.remove();
-        if (!removed && await actions.permission.contains()) {
-            actions.logPermissionError(new Error(PERMISSION_NOT_REMOVED_ERROR));
-        }
-    } catch (error) {
-        actions.logPermissionError(error);
-    }
 };

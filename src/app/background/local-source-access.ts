@@ -40,6 +40,16 @@ interface NativeMessagingPermissionProbe {
 
 type GetLocalSourceAccessMethod = () => LocalSourceAccessMethod;
 
+const getFailureStatus = (errorMessage: string): NativeHostStatus => {
+    if (errorMessage === 'UNSUPPORTED_PROTOCOL') {
+        return NativeHostStatus.UpdateRequired;
+    }
+    if (errorMessage === 'NATIVE_DISCONNECTED') {
+        return NativeHostStatus.Disconnected;
+    }
+    return NativeHostStatus.NotInstalled;
+};
+
 export class LocalSourceAccess {
     private state: NativeHostAccessState = {
         kind: LocalSourceAccessMethod.NativeHost,
@@ -166,21 +176,11 @@ export class LocalSourceAccess {
     };
 }
 
-const getFailureStatus = (errorMessage: string): NativeHostStatus => {
-    if (errorMessage === 'UNSUPPORTED_PROTOCOL') {
-        return NativeHostStatus.UpdateRequired;
-    }
-    if (errorMessage === 'NATIVE_DISCONNECTED') {
-        return NativeHostStatus.Disconnected;
-    }
-    return NativeHostStatus.NotInstalled;
-};
-
 export const localSourceAccess = new LocalSourceAccess(
     nativeHostClient,
     fileAccess,
     getBrowserCapabilities(getCurrentBrowserTarget()).usesEmbeddedNativeHost
-        ? { contains: async () => true }
+        ? { contains: () => Promise.resolve(true) }
         : nativeMessagingPermission,
     settings.getLocalSourceAccessMethod,
 );

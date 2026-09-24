@@ -75,8 +75,8 @@ export const findNativeHostPublishedAsset = (
     runtimeArchitecture: string,
 ): NativeHostPublishedAsset | undefined => {
     return NATIVE_HOST_PUBLISHED_ASSETS.find((asset) => {
-        return asset.runtimeOS === runtimeOS
-            && asset.runtimeArchitecture === runtimeArchitecture;
+        return asset.runtimeOS as string === runtimeOS
+            && asset.runtimeArchitecture as string === runtimeArchitecture;
     });
 };
 

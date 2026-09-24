@@ -140,7 +140,9 @@ export const parseNativeResponse = (value: unknown): NativeResponse => {
     if (!isRecord(value) || typeof value.type !== 'string') {
         return fail('NATIVE_INVALID_MESSAGE');
     }
-    if (value.type === NativeResponseType.Error) {
+    // Unknown types fall through to the default branch below.
+    const type = value.type as NativeResponseType;
+    if (type === NativeResponseType.Error) {
         if (!hasExactKeys(value, ['protocolVersion', 'requestId', 'type', 'ok', 'error'])
             || !Number.isInteger(value.protocolVersion)
             || value.ok !== false
@@ -155,7 +157,7 @@ export const parseNativeResponse = (value: unknown): NativeResponse => {
     if (value.protocolVersion !== PROTOCOL_VERSION || !isRequestId(value.requestId) || value.ok !== true) {
         return fail('NATIVE_INVALID_MESSAGE');
     }
-    switch (value.type) {
+    switch (type) {
         case NativeResponseType.Status:
             if (!hasExactKeys(value, ['protocolVersion', 'requestId', 'type', 'ok', 'hostVersion'])
                 || typeof value.hostVersion !== 'string'

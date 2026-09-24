@@ -16,7 +16,7 @@ export const subscribeLocalSourceAccessRefreshOnFocus = (
     refresh: () => void | Promise<void>,
 ): FocusUnsubscribe => {
     const handleFocus = (): void => {
-        refresh();
+        void refresh();
     };
 
     target.addEventListener('focus', handleFocus);

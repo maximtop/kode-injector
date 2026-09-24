@@ -25,6 +25,30 @@ import { NativeHostStatus } from '../../common/native-host-protocol';
 import type { RootStoreType } from './RootStore';
 
 /**
+ * Creates the immediate status shown while the selected method is probed.
+ *
+ * @param method Selected local-source method.
+ *
+ * @returns Method-specific checking state.
+ */
+const getCheckingAccessState = (
+    method: LocalSourceAccessMethod,
+): LocalSourceAccessState => {
+    if (method === LocalSourceAccessMethod.Browser) {
+        return {
+            kind: LocalSourceAccessMethod.Browser,
+            allowed: true,
+        };
+    }
+
+    return {
+        kind: LocalSourceAccessMethod.NativeHost,
+        permissionGranted: true,
+        host: { status: NativeHostStatus.Checking },
+    };
+};
+
+/**
  * Manages options-page injection state and actions.
  */
 export class InjectionsStore {
@@ -143,7 +167,7 @@ export class InjectionsStore {
             this.appEnabled = appEnabled;
             this.optionsDataReady = true;
         });
-        this.refreshFileIssues();
+        void this.refreshFileIssues();
     };
 
     /**
@@ -223,7 +247,7 @@ export class InjectionsStore {
             });
             // The first rule replaces the demo card; forget its last result.
             this.rootStore.demoStore.reset();
-            this.refreshFileIssues();
+            void this.refreshFileIssues();
             return injection;
         } catch (e) {
             log.error(e);
@@ -252,7 +276,7 @@ export class InjectionsStore {
                 this.injections = this.injections
                     .map((inj) => (inj.id === id ? updated : inj));
             });
-            this.refreshFileIssues();
+            void this.refreshFileIssues();
             return updated;
         } catch (e) {
             log.error(e instanceof Error ? e.message : e);
@@ -388,27 +412,3 @@ export class InjectionsStore {
         }
     };
 }
-
-/**
- * Creates the immediate status shown while the selected method is probed.
- *
- * @param method Selected local-source method.
- *
- * @returns Method-specific checking state.
- */
-const getCheckingAccessState = (
-    method: LocalSourceAccessMethod,
-): LocalSourceAccessState => {
-    if (method === LocalSourceAccessMethod.Browser) {
-        return {
-            kind: LocalSourceAccessMethod.Browser,
-            allowed: true,
-        };
-    }
-
-    return {
-        kind: LocalSourceAccessMethod.NativeHost,
-        permissionGranted: true,
-        host: { status: NativeHostStatus.Checking },
-    };
-};

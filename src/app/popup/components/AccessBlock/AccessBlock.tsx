@@ -34,7 +34,7 @@ export const AccessBlock = observer((): React.JSX.Element | null => {
      */
     const handleAction = (): void => {
         if (blockState.action === 'useBrowserAccess') {
-            settingsStore.useBrowserFileAccess();
+            void settingsStore.useBrowserFileAccess();
             return;
         }
 

@@ -6,6 +6,7 @@ import { Button } from '@mantine/core';
 import { observer } from 'mobx-react';
 import React, { useContext } from 'react';
 
+import { log } from '../../../common/log';
 import { translator } from '../../../common/translator';
 import { rootStore } from '../../stores/RootStore';
 
@@ -25,7 +26,9 @@ export const EmptyCta = observer((): React.JSX.Element | null => {
         <div className="cta-block" data-testid="popup-empty-cta">
             <Button
                 variant="filled"
-                onClick={() => settingsStore.openOptionsForCurrentSite()}
+                onClick={() => {
+                    settingsStore.openOptionsForCurrentSite().catch((error) => log.error(error));
+                }}
                 data-testid="popup-add-rule"
             >
                 {translator.getMessage('popup_add_rule')}

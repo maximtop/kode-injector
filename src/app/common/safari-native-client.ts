@@ -317,7 +317,7 @@ export class SafariNativeClient {
         try {
             content = await this.readOnce(fileUrl);
         } catch (error) {
-            if (!(error instanceof Error) || error.message !== NativeErrorCode.FileChanged) {
+            if (!(error instanceof Error) || error.message !== NativeErrorCode.FileChanged as string) {
                 throw error;
             }
             content = await this.readOnce(fileUrl);
@@ -421,9 +421,9 @@ export class SafariNativeClient {
                     globalThis.clearTimeout(timeout);
                     resolve(response);
                 },
-                (error) => {
+                (error: unknown) => {
                     globalThis.clearTimeout(timeout);
-                    reject(error);
+                    reject(error instanceof Error ? error : new Error(String(error)));
                 },
             );
         });

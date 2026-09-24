@@ -218,7 +218,7 @@ export class InjectionSourceCache {
         this.activeDescriptors.set(sources.ruleId, sources);
         const cached = this.get(sources);
         if (cached) {
-            this.refresh(sources, version);
+            void this.refresh(sources, version);
             return {
                 snapshot: cached,
                 cacheHit: true,

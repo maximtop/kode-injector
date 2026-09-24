@@ -93,12 +93,12 @@ export class Injections {
     /**
      * Persists the current injection and blocklist state.
      */
-    updateStorage = throttle(async (): Promise<void> => {
-        await storage.set<StoredInjectionsState>(this.STORAGE_KEY, {
+    updateStorage = throttle((): void => {
+        storage.set<StoredInjectionsState>(this.STORAGE_KEY, {
             [SCHEMA_VERSION_KEY]: CURRENT_INJECTIONS_SCHEMA_VERSION,
             injections: this.injections,
             blocklist: this.blocklist,
-        } as StoredInjectionsState);
+        } as StoredInjectionsState).catch((error) => log.error('Failed to persist injections', error));
     }, this.UPDATE_STORAGE_TIMEOUT_MS);
 
     /**

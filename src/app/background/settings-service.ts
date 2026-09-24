@@ -6,16 +6,13 @@ import {
     getCurrentBrowserTarget,
 } from '../common/browser-target';
 import { SETTINGS, STORAGE_KEYS } from '../common/constants';
-import type {
-    LocalSourceAccessMethod
-} from '../common/contracts';
 import {
     getSupportedLocalSourceAccessMethod,
     normalizeAppSettingsWithRepair,
-    type AppSettings
 } from '../common/contracts';
 
 import type { BrowserTarget } from '../common/browser-target';
+import type { AppSettings, LocalSourceAccessMethod } from '../common/contracts';
 import type { LocalePreference } from '../common/locale';
 
 /**

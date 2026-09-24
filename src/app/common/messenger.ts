@@ -20,6 +20,7 @@ import type {
     RuntimeRequest,
 } from './contracts';
 import type { DemoLaunchState, RunDemoResult } from './demo-contracts';
+import type { LocalePreference } from './locale';
 
 /**
  * Supported runtime message discriminator.
@@ -29,7 +30,9 @@ type RuntimeMessageType = RuntimeRequest['type'];
 /**
  * Payload associated with a runtime message discriminator.
  */
-type RuntimeMessageData<TType extends RuntimeMessageType> = Extract<RuntimeRequest, { type: TType }> extends { data: infer TData } ? TData : undefined;
+type RuntimeMessageData<TType extends RuntimeMessageType> = Extract<RuntimeRequest, { type: TType }> extends {
+    data: infer TData;
+} ? TData : undefined;
 
 /**
  * Sends typed runtime messages to background services.
@@ -232,7 +235,7 @@ class Messenger {
      *
      * @returns Normalized persisted preference.
      */
-    setInterfaceLanguage = (language: import('./locale').LocalePreference): Promise<import('./locale').LocalePreference> => {
+    setInterfaceLanguage = (language: LocalePreference): Promise<LocalePreference> => {
         return this.sendMessage(MESSAGE_TYPES.SET_INTERFACE_LANGUAGE, { language });
     };
 

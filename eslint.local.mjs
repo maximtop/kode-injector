@@ -1,8 +1,6 @@
 /**
- * @file Lint settings specific to Kode Injector: local ignores and the globals of the demo scripts.
+ * @file Lint settings specific to Kode Injector: paths outside the sources that ESLint must skip.
  */
-
-import globals from 'globals';
 
 export default [
     {
@@ -16,13 +14,5 @@ export default [
             // Store deployment downloads.
             'store-upload/',
         ],
-    },
-    {
-        // Demo scripts are injected into example.com pages as plain browser scripts.
-        files: ['src/demo/**/*.js'],
-        languageOptions: {
-            sourceType: 'script',
-            globals: globals.browser,
-        },
     },
 ];

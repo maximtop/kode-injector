@@ -5,12 +5,9 @@
 import browser from 'webextension-polyfill';
 
 import { BrowserTarget, getCurrentBrowserTarget } from '../common/browser-target';
-import {
-    SafariNativeClient,
-    type SafariNativeMessenger,
-} from '../common/safari-native-client';
+import { SafariNativeClient } from '../common/safari-native-client';
 
-import { NativeHostClient, type NativePort } from './native-host-client';
+import { NativeHostClient } from './native-host-client';
 import { settings } from './settings';
 import { SourceReader } from './source-reader';
 

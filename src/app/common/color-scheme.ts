@@ -39,7 +39,7 @@ export const colorSchemeManager = localStorageColorSchemeManager({
  * entry prevents a light-scheme flash instead.
  */
 export const applyInitialColorScheme = (): void => {
-    let stored: string | null = null;
+    let stored: string | null;
     try {
         stored = window.localStorage.getItem(COLOR_SCHEME_STORAGE_KEY);
     } catch {

@@ -22,7 +22,7 @@ export const CURRENT_INJECTIONS_SCHEMA_VERSION = 2;
  * @returns State with per-file flags populated.
  */
 const migrateV1ToV2: StorageMigration = (state) => {
-    const injections = Array.isArray(state.injections) ? state.injections : [];
+    const injections: unknown[] = Array.isArray(state.injections) ? state.injections : [];
     return {
         ...state,
         injections: injections.map((injection) => {

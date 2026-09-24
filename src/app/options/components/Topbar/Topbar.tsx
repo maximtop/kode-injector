@@ -79,7 +79,7 @@ export const Topbar = ({
      */
     const cycleColorScheme = (): void => {
         const index = SCHEME_CYCLE.indexOf(colorScheme);
-        const next = SCHEME_CYCLE[(index + 1) % SCHEME_CYCLE.length];
+        const next = SCHEME_CYCLE[(index + 1) % SCHEME_CYCLE.length] ?? COLOR_SCHEMES.AUTO;
         setColorScheme(next);
     };
 
