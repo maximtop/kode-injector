@@ -195,10 +195,16 @@ The helper (`scripts/deploy/firefox.ts`) reads AMO JSON directly because
 attachment; it does not wait for signing.
 
 A new submission requires `docs/AMO_REVIEW.md` inside that same release's
-source archive; it is uploaded as the AMO approval notes and explains why the
-`nativeMessaging` permission and the Kode Injector Helper are needed. Update
-these [reviewer instructions](AMO_REVIEW.md) whenever build requirements or
-the test steps change.
+source archive; it explains why the `nativeMessaging` permission and the Kode
+Injector Helper are needed. Update these [reviewer instructions](AMO_REVIEW.md)
+whenever build requirements or the test steps change; they have no length limit.
+The approval notes sent to AMO are not that file: `prepare.ts` builds a short
+fixed text from the summary in `scripts/deploy/constants.ts` and a link to
+`docs/AMO_REVIEW.md` pinned to the release tag, and says the same file is in the
+source archive. AMO rejects notes longer than 3000 characters, so the generated
+notes are checked against our own limit of 2500 (surrounding whitespace trimmed,
+Unicode code points counted). `validate` and `submit` enforce it and the tests
+check it; `status` does not.
 
 Releases up to v0.9.2 carried `chrome.zip`-style asset names and cannot be
 deployed with these workflows; ship a new version instead.
