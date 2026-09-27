@@ -87,5 +87,9 @@ test('missing native permission renders a notice even when the host is ready', (
     expect(getAccessBlockState(
         nativeState(NativeHostStatus.Ready, false),
         BrowserTarget.Chrome,
-    )).not.toBeNull();
+    )).toEqual({
+        message: 'popup_native_host_optional_unavailable',
+        actionLabel: 'local_source_method_use_browser',
+        action: 'useBrowserAccess',
+    });
 });

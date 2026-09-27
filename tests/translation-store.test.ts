@@ -37,6 +37,15 @@ test('store resolves preference and direction atomically', async () => {
     expect(store.isLoading).toBe(false);
 });
 
+test('htmlLanguage converts an underscore locale to a BCP-47 tag', async () => {
+    const service = createService('pt_BR');
+    const store = new TranslationStore(service);
+    await store.init('pt_BR');
+
+    expect(store.currentLocale).toBe('pt_BR');
+    expect(store.htmlLanguage).toBe('pt-BR');
+});
+
 test('first-time auto initialization is not skipped', async () => {
     const service = createService('de');
     const store = new TranslationStore(service);

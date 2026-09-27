@@ -135,6 +135,43 @@ use schemas or linters for externally defined formats. When meaningful execution
 is not practical, document a manual verification instead of testing that source
 text or duplicated literal values are present or ordered.
 
+### Don't let a function's own catch swallow its own specific failure
+
+Never call `fail(SPECIFIC_CODE)` from inside a `try` block whose own `catch`
+also calls `fail(GENERIC_CODE)`: the specific throw is caught by the same
+function's catch and silently rewritten to the generic one, so the specific
+code can never surface. This bug exists today in `decodeBase64`
+(`native-host-protocol.ts` and its copy in `safari-native-client.ts`, hiding
+`NATIVE_CHUNK_TOO_LARGE` behind `NATIVE_INVALID_BASE64`) and in
+`parseCommon`'s size guard (`safari-native-client.ts`, hiding
+`MESSAGE_TOO_LARGE` behind `NATIVE_INVALID_MESSAGE`). Regression reproducers
+are committed as `test.fails` in `native-host-protocol.test.ts` and
+`safari-native-client.test.ts`; convert them to plain `test`s once the size
+check is moved outside its own try/catch (or the catch is narrowed to only
+the decode/stringify failure it is meant to cover).
+
+### Stale-while-revalidate cache tests must assert `cacheHit`, not call counts
+
+`InjectionSourceCache.resolve()` fires a background refresh even on a cache
+hit, so counting the mocked loader's calls cannot distinguish a real cache
+hit from a miss, and cannot tell LRU eviction from plain FIFO eviction
+either. Assert the returned `cacheHit` field on the resolution instead.
+
+### Assert on the system under test, not an untouched decoy local
+
+A local variable that no code under the test ever reads or writes makes
+`expect(decoy).toEqual(...)` pass unconditionally, regardless of what the
+test is meant to verify. Assert real, reachable state on the
+store/service/object actually being exercised.
+
+### Heavy subprocess tests need a longer timeout, not a weaker test
+
+A test that shells out to a real script driving several mocked binaries in
+sequence (see `notarize.test.ts`) can exceed Vitest's 5s default under
+parallel-suite CPU contention even though the run is correct. Give that test
+file its own longer per-test timeout rather than replacing the real
+subprocess execution with thinner fakes.
+
 ### Extension smoke testing
 
 Browser smoke and regression checks MUST run headlessly in CI and unattended

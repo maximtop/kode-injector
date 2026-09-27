@@ -73,6 +73,38 @@ test('reports catalog, usage, and hardcoded UI defects', () => {
     })).toBe(true);
 });
 
+test('reports a malformed locale catalog as invalid JSON instead of throwing', () => {
+    const rootPath = makeFixture({
+        locales: {
+            en: catalog({ name: 'Kode Injector', options_title: 'Settings' }),
+            ru: catalog({ name: 'Kode Injector', options_title: 'Настройки' }),
+        },
+        manifest: '{"name":"__MSG_name__"}',
+    });
+    fs.writeFileSync(path.join(rootPath, 'src/_locales/ru/messages.json'), '{not valid json');
+
+    const errors = validateLocales({ rootPath, expectedLocales: ['en', 'ru'] });
+
+    expect(errors.some((error) => (
+        error.includes('messages.json') && error.includes('invalid JSON')
+    ))).toBe(true);
+});
+
+test('reports a translation whose tag placeholders do not match the base message', () => {
+    const rootPath = makeFixture({
+        locales: {
+            en: catalog({ name: 'Kode Injector', options_title: 'Read <a>more</a>' }),
+            ru: catalog({ name: 'Kode Injector', options_title: 'Подробнее' }),
+        },
+        manifest: '{"name":"__MSG_name__"}',
+        source: "import { translator } from '../../../common/translator';\ntranslator.getMessage('options_title');",
+    });
+
+    const errors = validateLocales({ rootPath, expectedLocales: ['en', 'ru'] });
+
+    expect(errors).toContain('ru: invalid formatter structure for options_title');
+});
+
 test('accepts a complete fixture with matching usage', () => {
     const rootPath = makeFixture({
         locales: {

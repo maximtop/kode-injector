@@ -34,7 +34,6 @@ test('open UI contexts converge on a language event without resetting applicatio
         ),
     };
     const popupStore = new TranslationStore(service);
-    const applicationState = { injectionCount: 3, currentSite: 'example.com' };
 
     await popupStore.init('de');
     popupChannel.subscribe((language) => popupStore.setLocalePreference(language));
@@ -42,5 +41,8 @@ test('open UI contexts converge on a language event without resetting applicatio
     await optionsChannel.publish('ar');
 
     expect(popupStore.currentLocale).toBe('ar');
-    expect(applicationState).toEqual({ injectionCount: 3, currentSite: 'example.com' });
+    // The broadcast must fully settle the store, not leave it mid-load or
+    // out of sync with the preference that triggered the switch.
+    expect(popupStore.userLocalePreference).toBe('ar');
+    expect(popupStore.isLoading).toBe(false);
 });
