@@ -17,9 +17,11 @@ import {
     DemoUiStatus,
 } from '../src/app/options/stores/DemoStore';
 
-const flush = (): Promise<void> => new Promise((resolve) => {
-    setTimeout(resolve, 0);
-});
+const flush = (): Promise<void> => {
+    return new Promise((resolve) => {
+        setTimeout(resolve, 0);
+    });
+};
 
 const makeStore = () => {
     const scheduled: { callback: () => void | Promise<void>; delayMs: number }[] = [];

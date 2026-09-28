@@ -12,9 +12,11 @@ vi.mock('webextension-polyfill', () => ({
     default: { runtime: { connectNative: vi.fn() } },
 }));
 
-const grantedPermission = () => ({
-    contains: vi.fn().mockResolvedValue(true),
-});
+const grantedPermission = () => {
+    return {
+        contains: vi.fn().mockResolvedValue(true),
+    };
+};
 
 test('maps compatible hosts to ready', async () => {
     const access = new LocalSourceAccess({

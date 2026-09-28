@@ -111,15 +111,17 @@ const makeRule = (
     id: string,
     enabled: boolean,
     flags: { jsEnabled?: boolean; cssEnabled?: boolean } = {},
-) => ({
-    id,
-    site: 'example.com',
-    jsPath: 'file:///patch.js',
-    cssPath: 'file:///theme.css',
-    enabled,
-    jsEnabled: flags.jsEnabled ?? true,
-    cssEnabled: flags.cssEnabled ?? true,
-});
+) => {
+    return {
+        id,
+        site: 'example.com',
+        jsPath: 'file:///patch.js',
+        cssPath: 'file:///theme.css',
+        enabled,
+        jsEnabled: flags.jsEnabled ?? true,
+        cssEnabled: flags.cssEnabled ?? true,
+    };
+};
 
 test('matching-rule computeds derive from active files', () => {
     const store = new SettingsStore({} as never);

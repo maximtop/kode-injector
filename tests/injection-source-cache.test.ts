@@ -21,11 +21,13 @@ const sources: ActiveRuleSources = {
     cssPath: 'file:///source.css',
 };
 
-const snapshot = (version: string): RuleSourceSnapshot => ({
-    ...sources,
-    javascriptCode: `js-${version}`,
-    cssCode: `css-${version}`,
-});
+const snapshot = (version: string): RuleSourceSnapshot => {
+    return {
+        ...sources,
+        javascriptCode: `js-${version}`,
+        cssCode: `css-${version}`,
+    };
+};
 
 const deferred = <T>() => {
     let resolve!: (value: T) => void;
@@ -35,9 +37,11 @@ const deferred = <T>() => {
     return { promise, resolve };
 };
 
-const flushAsyncWork = (): Promise<void> => new Promise((resolve) => {
-    setTimeout(resolve, 0);
-});
+const flushAsyncWork = (): Promise<void> => {
+    return new Promise((resolve) => {
+        setTimeout(resolve, 0);
+    });
+};
 
 beforeEach(() => {
     vi.restoreAllMocks();

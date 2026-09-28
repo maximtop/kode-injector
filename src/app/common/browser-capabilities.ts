@@ -86,4 +86,6 @@ export const BROWSER_CAPABILITIES: Record<BrowserTarget, BrowserCapabilities> = 
  */
 export const getBrowserCapabilities = (
     target: BrowserTarget,
-): BrowserCapabilities => BROWSER_CAPABILITIES[target];
+): BrowserCapabilities => {
+    return BROWSER_CAPABILITIES[target];
+};

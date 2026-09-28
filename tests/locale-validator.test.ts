@@ -28,9 +28,11 @@ const makeFixture = (options: {
     return rootPath;
 };
 
-const catalog = (entries: Record<string, string>): Record<string, unknown> => Object.fromEntries(
-    Object.entries(entries).map(([key, message]) => [key, { message, description: `Description for ${key}` }]),
-);
+const catalog = (entries: Record<string, string>): Record<string, unknown> => {
+    return Object.fromEntries(
+        Object.entries(entries).map(([key, message]) => [key, { message, description: `Description for ${key}` }]),
+    );
+};
 
 test('reports catalog, usage, and hardcoded UI defects', () => {
     const rootPath = makeFixture({

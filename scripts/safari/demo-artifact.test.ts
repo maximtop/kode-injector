@@ -22,12 +22,14 @@ const createdRoots: string[] = [];
 
 type ResourceFiles = Record<string, string>;
 
-const completeResources = (): ResourceFiles => ({
-    [DEMO_RESOURCE_PATHS.javascript]: VALID_JS,
-    [DEMO_RESOURCE_PATHS.css]: VALID_CSS,
-    'background.js': VALID_BACKGROUND,
-    'options.js': VALID_OPTIONS,
-});
+const completeResources = (): ResourceFiles => {
+    return {
+        [DEMO_RESOURCE_PATHS.javascript]: VALID_JS,
+        [DEMO_RESOURCE_PATHS.css]: VALID_CSS,
+        'background.js': VALID_BACKGROUND,
+        'options.js': VALID_OPTIONS,
+    };
+};
 
 const writeResources = (files: ResourceFiles): string => {
     const root = fs.mkdtempSync(path.join(os.tmpdir(), 'kode-injector-demo-artifact-'));

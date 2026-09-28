@@ -70,10 +70,12 @@ export interface RuntimePlatform {
  *
  * @returns Complete releases-page destination.
  */
-const allDownloads = (): NativeHostDownload => ({
-    kind: NativeHostDownloadKind.AllDownloads,
-    url: NATIVE_HOST_ALL_DOWNLOADS_URL,
-});
+const allDownloads = (): NativeHostDownload => {
+    return {
+        kind: NativeHostDownloadKind.AllDownloads,
+        url: NATIVE_HOST_ALL_DOWNLOADS_URL,
+    };
+};
 
 /**
  * Resolves a version-matched package for a supported runtime platform.

@@ -7,16 +7,18 @@ import { expect, test, vi } from 'vitest';
 import { LocalSourceAccessMethod } from '../src/app/common/contracts';
 import { applyLocalSourceAccessMethod } from '../src/app/common/local-source-access-method';
 
-const createActions = () => ({
-    permission: {
-        contains: vi.fn().mockResolvedValue(false),
-        request: vi.fn().mockResolvedValue(true),
-        remove: vi.fn().mockResolvedValue(true),
-    },
-    setMethod: vi.fn().mockResolvedValue(undefined),
-    showPermissionDenied: vi.fn(),
-    logPermissionError: vi.fn(),
-});
+const createActions = () => {
+    return {
+        permission: {
+            contains: vi.fn().mockResolvedValue(false),
+            request: vi.fn().mockResolvedValue(true),
+            remove: vi.fn().mockResolvedValue(true),
+        },
+        setMethod: vi.fn().mockResolvedValue(undefined),
+        showPermissionDenied: vi.fn(),
+        logPermissionError: vi.fn(),
+    };
+};
 
 test('requests optional permission before activating native-host mode', async () => {
     const actions = createActions();

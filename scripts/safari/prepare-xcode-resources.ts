@@ -28,19 +28,21 @@ const OUTPUT_FILE_LIST_PATH = path.join(
  *
  * @returns Sorted POSIX-style relative file paths.
  */
-const listFiles = (directory: string, root: string): string[] => fs
-    .readdirSync(directory, { withFileTypes: true })
-    .flatMap((entry) => {
-        const entryPath = path.join(directory, entry.name);
-        if (entry.isDirectory()) {
-            return listFiles(entryPath, root);
-        }
-        if (!entry.isFile()) {
-            throw new Error(`Unexpected Safari resource type: ${entryPath}`);
-        }
-        return [path.relative(root, entryPath).split(path.sep).join('/')];
-    })
-    .sort();
+const listFiles = (directory: string, root: string): string[] => {
+    return fs
+        .readdirSync(directory, { withFileTypes: true })
+        .flatMap((entry) => {
+            const entryPath = path.join(directory, entry.name);
+            if (entry.isDirectory()) {
+                return listFiles(entryPath, root);
+            }
+            if (!entry.isFile()) {
+                throw new Error(`Unexpected Safari resource type: ${entryPath}`);
+            }
+            return [path.relative(root, entryPath).split(path.sep).join('/')];
+        })
+        .sort();
+};
 
 /**
  * Creates sandbox-aware Xcode input and output file lists for a WebExtension build.

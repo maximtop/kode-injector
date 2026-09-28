@@ -195,7 +195,9 @@ export const toPersistedDemoLaunch = (value: unknown): PersistedDemoLaunch | nul
 export const isBuiltInDemoOffered = (
     ruleCount: number,
     shipped: boolean = BUILT_IN_DEMO_SHIPPED,
-): boolean => shipped && ruleCount === 0;
+): boolean => {
+    return shipped && ruleCount === 0;
+};
 
 /**
  * Checks whether a document URL belongs to the fixed HTTPS demo target.
@@ -218,9 +220,11 @@ export const isDemoTargetUrl = (url: string): boolean => {
  *
  * @returns Whether the source is usable as the demo JavaScript.
  */
-export const isDemoJavaScript = (source: string): boolean => (
-    source.trim().length > 0 && source.includes(DEMO_ELEMENT_ID)
-);
+export const isDemoJavaScript = (source: string): boolean => {
+    return (
+        source.trim().length > 0 && source.includes(DEMO_ELEMENT_ID)
+    );
+};
 
 /**
  * Checks that bundled demo CSS is present and carries its marker.
@@ -229,6 +233,8 @@ export const isDemoJavaScript = (source: string): boolean => (
  *
  * @returns Whether the source is usable as the demo CSS.
  */
-export const isDemoCss = (source: string): boolean => (
-    source.trim().length > 0 && source.includes(DEMO_CSS_MARKER_PROPERTY)
-);
+export const isDemoCss = (source: string): boolean => {
+    return (
+        source.trim().length > 0 && source.includes(DEMO_CSS_MARKER_PROPERTY)
+    );
+};

@@ -69,9 +69,11 @@ interface ProfilesResponse {
  *
  * @returns Base64url-encoded component.
  */
-const encodeJwtComponent = (value: string | Record<string, unknown>): string => Buffer
-    .from(typeof value === 'string' ? value : JSON.stringify(value))
-    .toString('base64url');
+const encodeJwtComponent = (value: string | Record<string, unknown>): string => {
+    return Buffer
+        .from(typeof value === 'string' ? value : JSON.stringify(value))
+        .toString('base64url');
+};
 
 /**
  * Reads one required environment variable.

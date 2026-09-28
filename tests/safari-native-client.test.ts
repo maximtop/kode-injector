@@ -27,18 +27,24 @@ interface Request {
     chunkIndex?: number;
 }
 
-const digest = (bytes: Uint8Array): string => createHash('sha256').update(bytes).digest('hex');
-const encode = (bytes: Uint8Array): string => Buffer.from(bytes).toString('base64');
+const digest = (bytes: Uint8Array): string => {
+    return createHash('sha256').update(bytes).digest('hex');
+};
+const encode = (bytes: Uint8Array): string => {
+    return Buffer.from(bytes).toString('base64');
+};
 
 const success = (
     request: Request,
     fields: Record<string, unknown>,
-): Record<string, unknown> => ({
-    protocolVersion: 1,
-    requestId: request.requestId,
-    ok: true,
-    ...fields,
-});
+): Record<string, unknown> => {
+    return {
+        protocolVersion: 1,
+        requestId: request.requestId,
+        ok: true,
+        ...fields,
+    };
+};
 
 afterEach(() => {
     vi.useRealTimers();
@@ -271,7 +277,9 @@ test('keeps authorization failures closed and times out unanswered reads', async
         .rejects.toThrowError('AUTHORIZATION_TARGET_NOT_FOUND');
 
     vi.useFakeTimers();
-    const unanswered: SafariNativeMessenger = () => new Promise(() => {});
+    const unanswered: SafariNativeMessenger = () => {
+        return new Promise(() => {});
+    };
     const pending = new SafariNativeClient(unanswered, 50).readFile('file:///tmp/source.js');
     const assertion = expect(pending).rejects.toThrowError('NATIVE_TIMEOUT');
     await vi.advanceTimersByTimeAsync(50);

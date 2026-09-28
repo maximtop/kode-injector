@@ -488,9 +488,11 @@ export const isInjectionRule = (value: unknown): value is StoredInjectionRule =>
         return false;
     }
 
-    const isOptionalBoolean = (flag: unknown): boolean => (
-        flag === undefined || typeof flag === 'boolean'
-    );
+    const isOptionalBoolean = (flag: unknown): boolean => {
+        return (
+            flag === undefined || typeof flag === 'boolean'
+        );
+    };
 
     return typeof value.id === 'string'
         && typeof value.site === 'string'

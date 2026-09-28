@@ -22,15 +22,17 @@ const renderCards = (
     browserTarget: BrowserTarget,
     method: LocalSourceAccessMethod,
     disabled = false,
-): string => renderToStaticMarkup(React.createElement(
-    AccessMethodCards,
-    {
-        browserTarget,
-        method,
-        disabled,
-        onChange: () => undefined,
-    },
-));
+): string => {
+    return renderToStaticMarkup(React.createElement(
+        AccessMethodCards,
+        {
+            browserTarget,
+            method,
+            disabled,
+            onChange: () => undefined,
+        },
+    ));
+};
 
 test('chromium renders both selectable method cards', () => {
     const html = renderCards(BrowserTarget.Chrome, LocalSourceAccessMethod.Browser);

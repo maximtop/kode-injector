@@ -80,11 +80,13 @@ const hasStringInjectionFields = (
     cssPath: string;
     jsPath: string;
     siteUrl: string;
-} => (
-    typeof injectionData.cssPath === 'string'
+} => {
+    return (
+        typeof injectionData.cssPath === 'string'
     && typeof injectionData.jsPath === 'string'
     && typeof injectionData.siteUrl === 'string'
-);
+    );
+};
 
 /**
  * Migrates persisted data when the extension is updated.

@@ -25,7 +25,9 @@ import {
 const SOURCES: DemoSources = { javascript: 'demo-js', css: 'demo-css' };
 const DEMO_DOCUMENT_URL = 'https://example.com/';
 const DEMO_CSS_RESPONSE = [{ css: { code: SOURCES.css } }];
-const tokenFor = (index: number): string => index.toString(16).padStart(32, '0');
+const tokenFor = (index: number): string => {
+    return index.toString(16).padStart(32, '0');
+};
 
 const deferred = <T>() => {
     let resolve!: (value: T) => void;

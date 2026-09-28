@@ -102,9 +102,11 @@ const fail = (code: string): never => {
  *
  * @returns Whether the value is a non-array object.
  */
-const isRecord = (value: unknown): value is Record<string, unknown> => (
-    typeof value === 'object' && value !== null && !Array.isArray(value)
-);
+const isRecord = (value: unknown): value is Record<string, unknown> => {
+    return (
+        typeof value === 'object' && value !== null && !Array.isArray(value)
+    );
+};
 
 /**
  * Checks that a protocol object contains exactly the expected keys.
@@ -129,9 +131,11 @@ const hasExactKeys = (value: Record<string, unknown>, keys: string[]): boolean =
  *
  * @returns Whether the identifier is valid and matches.
  */
-const isRequestId = (value: unknown, expected: string): value is string => (
-    typeof value === 'string' && value === expected && REQUEST_ID_PATTERN.test(value)
-);
+const isRequestId = (value: unknown, expected: string): value is string => {
+    return (
+        typeof value === 'string' && value === expected && REQUEST_ID_PATTERN.test(value)
+    );
+};
 
 /**
  * Validates fields shared by every successful or error response.
@@ -254,7 +258,9 @@ export class SafariNativeClient {
     /**
      * Matches the shared native-client lifecycle without retaining a connection.
      */
-    public disconnect = (): void => undefined;
+    public disconnect = (): void => {
+        return undefined;
+    };
 
     /**
      * Checks the native bridge and returns embedded-helper metadata.

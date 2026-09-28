@@ -62,9 +62,11 @@ const UI_STRING_EXEMPTIONS = new Map([
  *
  * @returns Whether the value is an object record.
  */
-const isRecord = (value: unknown): value is Record<string, unknown> => (
-    typeof value === 'object' && value !== null && !Array.isArray(value)
-);
+const isRecord = (value: unknown): value is Record<string, unknown> => {
+    return (
+        typeof value === 'object' && value !== null && !Array.isArray(value)
+    );
+};
 
 /**
  * Reads and parses a JSON file.
@@ -105,9 +107,11 @@ const getMessageText = (entry: unknown): string | undefined => {
  *
  * @returns Normalized relative path.
  */
-const relativePath = (rootPath: string, filePath: string): string => (
-    path.relative(rootPath, filePath).split(path.sep).join('/')
-);
+const relativePath = (rootPath: string, filePath: string): string => {
+    return (
+        path.relative(rootPath, filePath).split(path.sep).join('/')
+    );
+};
 
 /**
  * Recursively collects files below a directory.
@@ -163,7 +167,9 @@ const collectUsedKeys = (sourcePath: string, manifestPath: string): Set<string> 
  *
  * @returns Whether the string contains a letter.
  */
-const hasLetters = (value: string): boolean => /\p{L}/u.test(value);
+const hasLetters = (value: string): boolean => {
+    return /\p{L}/u.test(value);
+};
 
 /**
  * Finds hardcoded user-facing strings in TSX source files.

@@ -7,16 +7,18 @@ import { expect, test } from 'vitest';
 import { InjectionField } from '../src/app/common/constants';
 import { getRuleFileEntries } from '../src/app/popup/components/RulesList/rule-file-entries';
 
-const makeRule = (overrides = {}) => ({
-    id: 'rule-1',
-    site: 'example.com',
-    jsPath: 'file:///a.js',
-    cssPath: 'file:///a.css',
-    enabled: true,
-    jsEnabled: true,
-    cssEnabled: true,
-    ...overrides,
-});
+const makeRule = (overrides = {}) => {
+    return {
+        id: 'rule-1',
+        site: 'example.com',
+        jsPath: 'file:///a.js',
+        cssPath: 'file:///a.css',
+        enabled: true,
+        jsEnabled: true,
+        cssEnabled: true,
+        ...overrides,
+    };
+};
 
 test('produces one entry per configured file, JS before CSS', () => {
     const entries = getRuleFileEntries([makeRule()]);
