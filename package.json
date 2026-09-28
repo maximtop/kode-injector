@@ -87,7 +87,7 @@
         "postcss-preset-env": "^6.7.0",
         "postcss-svg": "^3.0.0",
         "tsx": "4.23.0",
-        "typescript": "^6.0.3",
+        "typescript": "6.0.3",
         "typescript-eslint": "8.70.1",
         "vitest": "4.1.10"
     }
