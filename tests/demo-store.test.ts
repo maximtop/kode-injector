@@ -17,9 +17,11 @@ import {
     DemoUiStatus,
 } from '../src/app/options/stores/DemoStore';
 
-const flush = (): Promise<void> => new Promise((resolve) => {
-    setTimeout(resolve, 0);
-});
+const flush = (): Promise<void> => {
+    return new Promise((resolve) => {
+        setTimeout(resolve, 0);
+    });
+};
 
 const makeStore = () => {
     const scheduled: { callback: () => void | Promise<void>; delayMs: number }[] = [];
@@ -49,7 +51,11 @@ const makeStore = () => {
         await flush();
     };
     return {
-        store, runDemo, getDemoLaunchState, scheduled, tick,
+        store,
+        runDemo,
+        getDemoLaunchState,
+        scheduled,
+        tick,
     };
 };
 
@@ -93,7 +99,11 @@ test('an accepted run polls until the background reports applied or failed', asy
 
 test('a vanished launch is reported as interrupted and reset returns to idle', async () => {
     const {
-        store, runDemo, getDemoLaunchState, scheduled, tick,
+        store,
+        runDemo,
+        getDemoLaunchState,
+        scheduled,
+        tick,
     } = makeStore();
     runDemo.mockResolvedValue({ ok: true });
     getDemoLaunchState
@@ -115,7 +125,11 @@ test('a vanished launch is reported as interrupted and reset returns to idle', a
 
 test('polling stops with not confirmed after the UI wait limit', async () => {
     const {
-        store, runDemo, getDemoLaunchState, tick, scheduled,
+        store,
+        runDemo,
+        getDemoLaunchState,
+        tick,
+        scheduled,
     } = makeStore();
     runDemo.mockResolvedValue({ ok: true });
     getDemoLaunchState.mockResolvedValue({ status: DemoLaunchStatus.Waiting });

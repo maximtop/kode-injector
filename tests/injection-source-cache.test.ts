@@ -21,11 +21,13 @@ const sources: ActiveRuleSources = {
     cssPath: 'file:///source.css',
 };
 
-const snapshot = (version: string): RuleSourceSnapshot => ({
-    ...sources,
-    javascriptCode: `js-${version}`,
-    cssCode: `css-${version}`,
-});
+const snapshot = (version: string): RuleSourceSnapshot => {
+    return {
+        ...sources,
+        javascriptCode: `js-${version}`,
+        cssCode: `css-${version}`,
+    };
+};
 
 const deferred = <T>() => {
     let resolve!: (value: T) => void;
@@ -35,9 +37,11 @@ const deferred = <T>() => {
     return { promise, resolve };
 };
 
-const flushAsyncWork = (): Promise<void> => new Promise((resolve) => {
-    setTimeout(resolve, 0);
-});
+const flushAsyncWork = (): Promise<void> => {
+    return new Promise((resolve) => {
+        setTimeout(resolve, 0);
+    });
+};
 
 beforeEach(() => {
     vi.restoreAllMocks();
@@ -123,7 +127,7 @@ test('clearing starts a new read instead of reusing obsolete in-flight work', as
     expect(load).toHaveBeenCalledTimes(2);
 });
 
-test('evicts least-recently-used entries while respecting the memory limit', async () => {
+test('evicts the least-recently-used entry, not the oldest-inserted one', async () => {
     const load = vi.fn(async (descriptor: ActiveRuleSources): Promise<RuleSourceSnapshot> => ({
         ...descriptor,
         javascriptCode: descriptor.ruleId,
@@ -135,8 +139,12 @@ test('evicts least-recently-used entries while respecting the memory limit', asy
 
     await cache.resolve(first);
     await cache.resolve(second);
-    await cache.resolve(third);
+    // Touching `first` again before a third entry arrives must count as a
+    // recent use under LRU, unlike plain insertion-order (FIFO) eviction:
+    // that would keep evicting the oldest slot regardless of later access.
     await cache.resolve(first);
+    await cache.resolve(third);
 
-    expect(load).toHaveBeenCalledTimes(4);
+    await expect(cache.resolve(first)).resolves.toMatchObject({ cacheHit: true });
+    await expect(cache.resolve(second)).resolves.toMatchObject({ cacheHit: false });
 });

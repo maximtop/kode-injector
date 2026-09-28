@@ -431,11 +431,13 @@ export class DemoLaunchService {
      *
      * @param launch Launch captured before an await.
      */
-    private isCurrent = (launch: Launch): boolean => (
-        this.launch !== null
+    private isCurrent = (launch: Launch): boolean => {
+        return (
+            this.launch !== null
         && this.launch.tabId === launch.tabId
         && this.launch.startedAt === launch.startedAt
-    );
+        );
+    };
 
     /**
      * Replaces the launch and writes it through to the session store.

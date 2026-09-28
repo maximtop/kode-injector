@@ -23,11 +23,13 @@ const browserBlocked = {
     allowed: false,
 } as const;
 
-const nativeState = (status: NativeHostStatus, permissionGranted = true) => ({
-    kind: LocalSourceAccessMethod.NativeHost,
-    permissionGranted,
-    host: { status },
-} as const);
+const nativeState = (status: NativeHostStatus, permissionGranted = true) => {
+    return {
+        kind: LocalSourceAccessMethod.NativeHost,
+        permissionGranted,
+        host: { status },
+    } as const;
+};
 
 test('healthy browser access renders no notice', () => {
     expect(getAccessBlockState(browserAllowed, BrowserTarget.Chrome)).toBeNull();
@@ -87,5 +89,9 @@ test('missing native permission renders a notice even when the host is ready', (
     expect(getAccessBlockState(
         nativeState(NativeHostStatus.Ready, false),
         BrowserTarget.Chrome,
-    )).not.toBeNull();
+    )).toEqual({
+        message: 'popup_native_host_optional_unavailable',
+        actionLabel: 'local_source_method_use_browser',
+        action: 'useBrowserAccess',
+    });
 });

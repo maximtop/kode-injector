@@ -27,18 +27,24 @@ interface Request {
     chunkIndex?: number;
 }
 
-const digest = (bytes: Uint8Array): string => createHash('sha256').update(bytes).digest('hex');
-const encode = (bytes: Uint8Array): string => Buffer.from(bytes).toString('base64');
+const digest = (bytes: Uint8Array): string => {
+    return createHash('sha256').update(bytes).digest('hex');
+};
+const encode = (bytes: Uint8Array): string => {
+    return Buffer.from(bytes).toString('base64');
+};
 
 const success = (
     request: Request,
     fields: Record<string, unknown>,
-): Record<string, unknown> => ({
-    protocolVersion: 1,
-    requestId: request.requestId,
-    ok: true,
-    ...fields,
-});
+): Record<string, unknown> => {
+    return {
+        protocolVersion: 1,
+        requestId: request.requestId,
+        ok: true,
+        ...fields,
+    };
+};
 
 afterEach(() => {
     vi.useRealTimers();
@@ -187,6 +193,75 @@ test('rejects invalid UTF-8 and strict response-shape violations', async () => {
         .rejects.toThrowError('NATIVE_INVALID_MESSAGE');
 });
 
+// BUG: parseCommon's `fail('MESSAGE_TOO_LARGE')` call sits inside its own
+// try block, so its `catch {}` immediately intercepts that throw and
+// rewrites it to NATIVE_INVALID_MESSAGE. MESSAGE_TOO_LARGE can never
+// actually surface. Flip this back to a plain `test` once the size check is
+// fixed (e.g. moved after the try/catch).
+test.fails('reports the documented sub-1MiB envelope limit when a response is oversized', async () => {
+    const send: SafariNativeMessenger = async (_application, value) => {
+        const request = value as Request;
+        return success(request, {
+            type: 'status',
+            hostVersion: '0.9.1',
+            padding: 'x'.repeat(2 * 1024 * 1024),
+        });
+    };
+    await expect(new SafariNativeClient(send).ping()).rejects.toThrowError('MESSAGE_TOO_LARGE');
+});
+
+// BUG: decodeBase64's `fail('NATIVE_CHUNK_TOO_LARGE')` call sits inside its
+// own try block (same defect as native-host-protocol.ts's decodeBase64), so
+// its `catch {}` rewrites that throw to NATIVE_INVALID_BASE64.
+// NATIVE_CHUNK_TOO_LARGE can never actually surface. Reached here through a
+// metadata response's `firstChunk`, which has no length pre-check before
+// decoding (unlike parseChunk's `data`, which is bounded by
+// MAX_BASE64_CHUNK_LENGTH first). Flip this back to a plain `test` once the
+// size check is fixed.
+test.fails('rejects a first chunk decoding past the documented 512 KiB bound', async () => {
+    const oversized = new Uint8Array(RAW_CHUNK_BYTES + 1).fill('a'.charCodeAt(0));
+    const send: SafariNativeMessenger = async (_application, value) => {
+        const request = value as Request;
+        return success(request, {
+            type: 'readMetadata',
+            totalBytes: oversized.byteLength,
+            chunkCount: 2,
+            digest: digest(oversized),
+            firstChunk: encode(oversized),
+        });
+    };
+    await expect(new SafariNativeClient(send).readFile('file:///tmp/source.js'))
+        .rejects.toThrowError('NATIVE_CHUNK_TOO_LARGE');
+});
+
+test('rejects a chunk whose encoded length exceeds the documented bound before decoding it', async () => {
+    // A full-size first chunk forces a second chunk request, so the encoded
+    // length guard in parseChunk gets a chance to run on it.
+    const firstChunkBytes = new Uint8Array(RAW_CHUNK_BYTES).fill('a'.charCodeAt(0));
+    const totalBytes = RAW_CHUNK_BYTES + 1;
+    const oversizedData = 'A'.repeat(Math.ceil(RAW_CHUNK_BYTES / 3) * 4 + 4);
+    const send: SafariNativeMessenger = async (_application, value) => {
+        const request = value as Request;
+        if (request.operation === SafariNativeOperation.ReadMetadata) {
+            return success(request, {
+                type: 'readMetadata',
+                totalBytes,
+                chunkCount: 2,
+                digest: digest(firstChunkBytes),
+                firstChunk: encode(firstChunkBytes),
+            });
+        }
+        return success(request, {
+            type: 'readChunk',
+            chunkIndex: 1,
+            data: oversizedData,
+        });
+    };
+
+    await expect(new SafariNativeClient(send).readFile('file:///tmp/source.js'))
+        .rejects.toThrowError('NATIVE_INVALID_MESSAGE');
+});
+
 test('keeps authorization failures closed and times out unanswered reads', async () => {
     const denied: SafariNativeMessenger = async (_application, value) => {
         const request = value as Request;
@@ -202,7 +277,9 @@ test('keeps authorization failures closed and times out unanswered reads', async
         .rejects.toThrowError('AUTHORIZATION_TARGET_NOT_FOUND');
 
     vi.useFakeTimers();
-    const unanswered: SafariNativeMessenger = () => new Promise(() => {});
+    const unanswered: SafariNativeMessenger = () => {
+        return new Promise(() => {});
+    };
     const pending = new SafariNativeClient(unanswered, 50).readFile('file:///tmp/source.js');
     const assertion = expect(pending).rejects.toThrowError('NATIVE_TIMEOUT');
     await vi.advanceTimersByTimeAsync(50);

@@ -24,8 +24,10 @@ export const createDocumentToken = (): string => {
  *
  * @param value Candidate token to validate.
  */
-export const isDocumentToken = (value: unknown): value is string => (
-    typeof value === 'string'
+export const isDocumentToken = (value: unknown): value is string => {
+    return (
+        typeof value === 'string'
     && value.length === DOCUMENT_TOKEN_HEX_LENGTH
     && HEX_PATTERN.test(value)
-);
+    );
+};

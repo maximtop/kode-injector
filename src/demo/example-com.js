@@ -39,9 +39,11 @@
     /**
      * Describes the CSS effect honestly, based on what this document observes.
      */
-    const describeCss = () => (isCssApplied()
-        ? 'CSS: the green page background and the banner at the top come from the injected stylesheet.'
-        : 'CSS: the injected stylesheet was not detected on this page.');
+    const describeCss = () => {
+        return (isCssApplied()
+            ? 'CSS: the green page background and the banner at the top come from the injected stylesheet.'
+            : 'CSS: the injected stylesheet was not detected on this page.');
+    };
 
     /**
      * Creates one text line of the demo panel.

@@ -7,7 +7,7 @@
 import { expect, test, vi } from 'vitest';
 
 import { NativeHostClient, type NativePort } from '../src/app/background/native-host-client';
-import { NativeResponseType } from '../src/app/common/native-host-protocol';
+import { NativeErrorCode, NativeResponseType } from '../src/app/common/native-host-protocol';
 
 class FakeEvent<T extends (...args: never[]) => void> {
     listeners = new Set<T>();
@@ -156,6 +156,58 @@ test('explicit disconnect closes the persistent port and reconnects on demand', 
     expect(connect).toHaveBeenCalledTimes(2);
     connect.mock.results[1]!.value.remoteDisconnect();
     await expect(second).rejects.toThrowError('NATIVE_DISCONNECTED');
+});
+
+test('propagates a wire-level error response as the request rejection', async () => {
+    const port = new FakePort();
+    const client = new NativeHostClient(() => port);
+
+    const read = client.readFile('file:///tmp/missing.js');
+    const request = port.posted[0] as { requestId: string };
+    port.onMessage.emit({
+        protocolVersion: 1,
+        requestId: request.requestId,
+        type: NativeResponseType.Error,
+        ok: false,
+        error: { code: NativeErrorCode.FileNotFound },
+    });
+
+    await expect(read).rejects.toThrowError(NativeErrorCode.FileNotFound);
+});
+
+test('silently drops a malformed message instead of crashing or corrupting a pending request', async () => {
+    const port = new FakePort();
+    const client = new NativeHostClient(() => port);
+
+    const ping = client.ping();
+    const request = port.posted[0] as { requestId: string };
+
+    expect(() => port.onMessage.emit({
+        protocolVersion: 1,
+        requestId: request.requestId,
+        type: NativeResponseType.Status,
+        ok: true,
+        hostVersion: '0.8.3',
+        unexpectedField: true,
+    })).not.toThrow();
+    expect(() => port.onMessage.emit({
+        protocolVersion: 1,
+        requestId: 'not-a-tracked-request',
+        type: NativeResponseType.Status,
+        ok: true,
+        hostVersion: '0.8.3',
+    })).not.toThrow();
+
+    // The pending request must still be answerable normally afterward: the
+    // malformed messages above must not have consumed or corrupted it.
+    port.onMessage.emit({
+        protocolVersion: 1,
+        requestId: request.requestId,
+        type: NativeResponseType.Status,
+        ok: true,
+        hostVersion: '0.8.3',
+    });
+    await expect(ping).resolves.toEqual({ protocolVersion: 1, hostVersion: '0.8.3' });
 });
 
 test('a stale disconnect event cannot clear a replacement port', async () => {

@@ -15,6 +15,11 @@ import {
     test,
 } from 'vitest';
 
+// Each test spawns a real shell script that shells out to several mocked
+// binaries in sequence; under parallel-suite CPU contention this comfortably
+// exceeds Vitest's 5s default and times out even though the run is correct.
+const SUBPROCESS_TEST_TIMEOUT_MS = 20_000;
+
 const SCRIPT_PATH = path.resolve('scripts/native-host/notarize.sh');
 const APPLE_ENVIRONMENT_KEYS = [
     'APPLE_DEVELOPER_ID',
@@ -260,7 +265,7 @@ test('signs nested code inside-out and notarizes the app before the disk image',
     expect(finalCommands.filter((command) => {
         return command.startsWith('lipo -archs');
     })).toHaveLength(3);
-});
+}, SUBPROCESS_TEST_TIMEOUT_MS);
 
 test('uses a keychain profile for both notarization submissions', () => {
     const result = runNotarize({ APPLE_NOTARY_PROFILE: 'kode-injector' });
@@ -274,7 +279,7 @@ test('uses a keychain profile for both notarization submissions', () => {
         expect(submission).toContain('--keychain-profile kode-injector');
         expect(submission).toContain('--wait --output-format json');
     });
-});
+}, SUBPROCESS_TEST_TIMEOUT_MS);
 
 test('uses direct API credentials for both notarization submissions', () => {
     const keyPath = path.join(temporaryPath, 'AuthKey.p8');
@@ -297,7 +302,7 @@ test('uses direct API credentials for both notarization submissions', () => {
         );
         expect(submission).toContain('--wait --output-format json');
     });
-});
+}, SUBPROCESS_TEST_TIMEOUT_MS);
 
 test('rejects a notarization log whose status disagrees with the result', () => {
     const result = runNotarize({
@@ -309,7 +314,7 @@ test('rejects a notarization log whose status disagrees with the result', () => 
     expect(result.stderr).toContain(
         'app notarization result and log statuses do not match',
     );
-});
+}, SUBPROCESS_TEST_TIMEOUT_MS);
 
 test('stops before rebuilding the disk image when app notarization is rejected', () => {
     const result = runNotarize({
@@ -328,7 +333,7 @@ test('stops before rebuilding the disk image when app notarization is rejected',
     expect(commands.filter((command) => command.startsWith(
         'xcrun notarytool submit',
     ))).toHaveLength(1);
-});
+}, SUBPROCESS_TEST_TIMEOUT_MS);
 
 test('requires an accepted disk-image notarization before stapling', () => {
     const result = runNotarize({
@@ -349,7 +354,7 @@ test('requires an accepted disk-image notarization before stapling', () => {
         .toBe(false);
     expect(commands.filter((command) => command.startsWith('hdiutil attach')))
         .toHaveLength(1);
-});
+}, SUBPROCESS_TEST_TIMEOUT_MS);
 
 test('rejects inconsistent nested architectures before signing', () => {
     const result = runNotarize({
@@ -361,7 +366,7 @@ test('rejects inconsistent nested architectures before signing', () => {
     expect(result.stderr).toContain('must contain only x86_64');
     expect(readCommands().some((command) => command.startsWith('codesign')))
         .toBe(false);
-});
+}, SUBPROCESS_TEST_TIMEOUT_MS);
 
 test('rejects a multiple-architecture executable before signing', () => {
     const result = runNotarize({
@@ -373,7 +378,7 @@ test('rejects a multiple-architecture executable before signing', () => {
     expect(result.stderr).toContain('must contain exactly one architecture');
     expect(readCommands().some((command) => command.startsWith('codesign')))
         .toBe(false);
-});
+}, SUBPROCESS_TEST_TIMEOUT_MS);
 
 test('rechecks architecture from the final mounted disk image', () => {
     const result = runNotarize({
@@ -387,7 +392,7 @@ test('rechecks architecture from the final mounted disk image', () => {
         return command.includes('lipo -archs')
             && command.includes('final-mount');
     })).toBe(true);
-});
+}, SUBPROCESS_TEST_TIMEOUT_MS);
 
 test('rejects mixed profile and direct authentication before signing', () => {
     const result = runNotarize({
@@ -398,7 +403,7 @@ test('rejects mixed profile and direct authentication before signing', () => {
     expect(result.status).not.toBe(0);
     expect(result.stderr).toContain('configure exactly one notarization auth mode');
     expect(readCommands()).toEqual([]);
-});
+}, SUBPROCESS_TEST_TIMEOUT_MS);
 
 test('rejects partial direct authentication before signing', () => {
     const result = runNotarize({
@@ -411,7 +416,7 @@ test('rejects partial direct authentication before signing', () => {
         'direct notarization auth requires APPLE_NOTARY_KEY_PATH, APPLE_NOTARY_KEY_ID, and APPLE_NOTARY_ISSUER_ID',
     );
     expect(readCommands()).toEqual([]);
-});
+}, SUBPROCESS_TEST_TIMEOUT_MS);
 
 test('rejects a missing notarization auth mode before signing', () => {
     const result = runNotarize({});
@@ -419,4 +424,4 @@ test('rejects a missing notarization auth mode before signing', () => {
     expect(result.status).not.toBe(0);
     expect(result.stderr).toContain('configure exactly one notarization auth mode');
     expect(readCommands()).toEqual([]);
-});
+}, SUBPROCESS_TEST_TIMEOUT_MS);

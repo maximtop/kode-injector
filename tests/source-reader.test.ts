@@ -95,6 +95,17 @@ test('keeps empty successful content distinct from failures', async () => {
     });
 });
 
+test('maps an unrecognized native failure to a generic native-failure code', async () => {
+    const reader = new SourceReader({
+        readFile: vi.fn().mockRejectedValue(new Error('unexpected native host crash')),
+    }, vi.fn(), () => LocalSourceAccessMethod.NativeHost);
+
+    await expect(reader.read('file:///tmp/source.js')).resolves.toEqual({
+        ok: false,
+        errorCode: SourceReadErrorCode.NativeFailed,
+    });
+});
+
 test('maps fetch failures without returning content', async () => {
     const reader = new SourceReader(
         { readFile: vi.fn() },

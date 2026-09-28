@@ -3,7 +3,10 @@
  */
 
 import {
-    beforeEach, expect, test, vi,
+    beforeEach,
+    expect,
+    test,
+    vi,
 } from 'vitest';
 
 import { localSourceAccess } from '../src/app/background/local-source-access';
@@ -113,7 +116,11 @@ test('update-injection message forwards the rule id and data', async () => {
     const { injections } = await import('../src/app/background/injections');
     const injectionData = { site: 'example.com', jsPath: 'file:///patch.js', cssPath: '' };
     const updated = {
-        id: 'rule-1', ...injectionData, enabled: true, jsEnabled: true, cssEnabled: true,
+        id: 'rule-1',
+        ...injectionData,
+        enabled: true,
+        jsEnabled: true,
+        cssEnabled: true,
     };
     vi.mocked(injections.updateInjection).mockReturnValue(updated);
 

@@ -397,6 +397,15 @@ test('failed local-source method persistence preserves the current runtime metho
     ).rejects.toThrow('WRITE_FAILED');
 
     expect(service.getLocalSourceAccessMethod()).toBe(LocalSourceAccessMethod.Browser);
+
+    // The write queue must survive a rejected write: a later write should
+    // still go through instead of the queue staying permanently jammed.
+    await service.setLocalSourceAccessMethod(LocalSourceAccessMethod.NativeHost);
+
+    expect(service.getLocalSourceAccessMethod()).toBe(LocalSourceAccessMethod.NativeHost);
+    expect(
+        storage.writes[storage.writes.length - 1]?.[SETTINGS.LOCAL_SOURCE_ACCESS_METHOD],
+    ).toBe(LocalSourceAccessMethod.NativeHost);
 });
 
 test('setLocalSourceAccessMethod cannot select browser access on Firefox', async () => {

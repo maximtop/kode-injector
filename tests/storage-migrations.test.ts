@@ -24,7 +24,10 @@ test('runs each migration once in version order', () => {
     expect(calls).toEqual(['v1', 'v2']);
     expect(migrated).toBe(true);
     expect(state).toMatchObject({
-        value: 0, one: true, two: true, [SCHEMA_VERSION_KEY]: 3,
+        value: 0,
+        one: true,
+        two: true,
+        [SCHEMA_VERSION_KEY]: 3,
     });
 });
 

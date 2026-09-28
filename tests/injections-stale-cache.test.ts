@@ -55,9 +55,11 @@ const deferred = <T>() => {
     return { promise, resolve };
 };
 
-const flushAsyncWork = (): Promise<void> => new Promise((resolve) => {
-    setTimeout(resolve, 0);
-});
+const flushAsyncWork = (): Promise<void> => {
+    return new Promise((resolve) => {
+        setTimeout(resolve, 0);
+    });
+};
 
 const makeInjections = (): Injections => {
     const service = new Injections(true);

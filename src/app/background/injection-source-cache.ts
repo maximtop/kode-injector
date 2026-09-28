@@ -97,11 +97,13 @@ interface CacheEntry {
 const descriptorMatches = (
     snapshot: ActiveRuleSources,
     sources: ActiveRuleSources,
-): boolean => (
-    snapshot.ruleId === sources.ruleId
+): boolean => {
+    return (
+        snapshot.ruleId === sources.ruleId
     && snapshot.javascriptPath === sources.javascriptPath
     && snapshot.cssPath === sources.cssPath
-);
+    );
+};
 
 /**
  * Creates a unique in-flight refresh key for one descriptor generation.
@@ -111,12 +113,14 @@ const descriptorMatches = (
  *
  * @returns Stable refresh key.
  */
-const descriptorKey = (sources: ActiveRuleSources, version: number): string => JSON.stringify([
-    sources.ruleId,
-    version,
-    sources.javascriptPath ?? null,
-    sources.cssPath ?? null,
-]);
+const descriptorKey = (sources: ActiveRuleSources, version: number): string => {
+    return JSON.stringify([
+        sources.ruleId,
+        version,
+        sources.javascriptPath ?? null,
+        sources.cssPath ?? null,
+    ]);
+};
 
 /**
  * Calculates the source memory retained by one snapshot.

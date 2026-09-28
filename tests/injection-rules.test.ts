@@ -15,6 +15,7 @@ import { injections } from '../src/app/background/injections';
 import { sourceReader } from '../src/app/background/native-host';
 import { InjectionField } from '../src/app/common/constants';
 import { log } from '../src/app/common/log';
+import { NativeErrorCode } from '../src/app/common/native-host-protocol';
 
 const documentToken = '00112233445566778899aabbccddeeff';
 
@@ -329,6 +330,139 @@ test('updateInjection preserves a disabled file flag across an edit', () => {
     });
 
     expect(updated).toMatchObject({ jsEnabled: false, cssEnabled: true });
+});
+
+test('blocklisted sites receive no injections even with matching enabled rules', async () => {
+    injections.addInjection({
+        site: 'example.com',
+        jsPath: '',
+        cssPath: 'file:///a.css',
+    });
+    injections.blocklist = ['example.com'];
+    vi.mocked(sourceReader.read).mockResolvedValue({ ok: true, content: 'body{}' });
+
+    await expect(injections.getPageInjections(
+        'https://example.com',
+        1,
+        documentToken,
+    )).resolves.toBeNull();
+    expect(sourceReader.read).not.toHaveBeenCalled();
+});
+
+test('disableInjectionsForSite blocklists the site and enableInjectionsForSite clears it', async () => {
+    injections.addInjection({
+        site: 'example.com',
+        jsPath: '',
+        cssPath: 'file:///a.css',
+    });
+    vi.mocked(sourceReader.read).mockResolvedValue({ ok: true, content: 'body{}' });
+
+    injections.disableInjectionsForSite('https://example.com');
+    expect(injections.isSiteBlacklisted('https://example.com')).toBe(true);
+    await expect(injections.getPageInjections(
+        'https://example.com',
+        1,
+        documentToken,
+    )).resolves.toBeNull();
+
+    injections.enableInjectionsForSite('https://example.com');
+    expect(injections.isSiteBlacklisted('https://example.com')).toBe(false);
+    await expect(injections.getPageInjections(
+        'https://example.com',
+        1,
+        documentToken,
+    )).resolves.toEqual([{ css: { code: 'body{}' } }]);
+});
+
+test('removeInjection clears the blocklist entry once no rule remains for that site', () => {
+    const created = injections.addInjection({
+        site: 'example.com',
+        jsPath: '',
+        cssPath: 'file:///a.css',
+    });
+    injections.disableInjectionsForSite('https://example.com');
+
+    injections.removeInjection(created!.id);
+
+    expect(injections.injections).toHaveLength(0);
+    expect(injections.isSiteBlacklisted('https://example.com')).toBe(false);
+});
+
+test('removeInjection keeps the blocklist entry while a sibling rule for the site remains', () => {
+    const first = injections.addInjection({
+        site: 'example.com',
+        jsPath: '',
+        cssPath: 'file:///a.css',
+    });
+    injections.addInjection({
+        site: 'example.com',
+        jsPath: 'file:///b.js',
+        cssPath: '',
+    });
+    injections.disableInjectionsForSite('https://example.com');
+
+    injections.removeInjection(first!.id);
+
+    expect(injections.injections).toHaveLength(1);
+    expect(injections.isSiteBlacklisted('https://example.com')).toBe(true);
+});
+
+test('removeInjection logs an error and does nothing for an unknown id', () => {
+    const error = vi.spyOn(log, 'error').mockImplementation(() => undefined);
+    injections.addInjection({ site: 'example.com', jsPath: '', cssPath: 'file:///a.css' });
+
+    injections.removeInjection('missing-id');
+
+    expect(injections.injections).toHaveLength(1);
+    expect(error).toHaveBeenCalled();
+});
+
+test('disableInjection and enableInjection toggle the rule without touching the blocklist', async () => {
+    const created = injections.addInjection({
+        site: 'example.com',
+        jsPath: '',
+        cssPath: 'file:///a.css',
+    });
+    vi.mocked(sourceReader.read).mockResolvedValue({ ok: true, content: 'body{}' });
+
+    injections.disableInjection(created!.id);
+    expect(injections.injections[0]?.enabled).toBe(false);
+    await expect(injections.getPageInjections(
+        'https://example.com',
+        1,
+        documentToken,
+    )).resolves.toEqual([]);
+
+    injections.enableInjection(created!.id);
+    expect(injections.injections[0]?.enabled).toBe(true);
+    await expect(injections.getPageInjections(
+        'https://example.com',
+        1,
+        documentToken,
+    )).resolves.toEqual([{ css: { code: 'body{}' } }]);
+});
+
+test('getFileIssues reports only the unreadable file fields of each rule', async () => {
+    const good = injections.addInjection({
+        site: 'good.com',
+        jsPath: 'file:///good.js',
+        cssPath: 'file:///good.css',
+    });
+    const bad = injections.addInjection({
+        site: 'bad.com',
+        jsPath: 'file:///missing.js',
+        cssPath: 'file:///good.css',
+    });
+    vi.mocked(sourceReader.read).mockImplementation(async (path: string) => (
+        path === 'file:///missing.js'
+            ? { ok: false, errorCode: NativeErrorCode.FileNotFound }
+            : { ok: true, content: '' }
+    ));
+
+    const issues = await injections.getFileIssues();
+
+    expect(issues).toEqual({ [bad!.id]: [InjectionField.JsPath] });
+    expect(issues[good!.id]).toBeUndefined();
 });
 
 test('updateInjection resets a file flag when its path is cleared', () => {

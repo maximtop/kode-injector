@@ -99,11 +99,13 @@ const requirePath = (target: string): void => {
  *
  * @returns Raw value printed by plutil.
  */
-const readPlistValue = (plistPath: string, key: string): string => execFileSync(
-    'plutil',
-    ['-extract', key, 'raw', plistPath],
-    { encoding: 'utf8' },
-).trim();
+const readPlistValue = (plistPath: string, key: string): string => {
+    return execFileSync(
+        'plutil',
+        ['-extract', key, 'raw', plistPath],
+        { encoding: 'utf8' },
+    ).trim();
+};
 
 /**
  * Reads one raw value from a built bundle's Info.plist.
@@ -113,10 +115,12 @@ const readPlistValue = (plistPath: string, key: string): string => execFileSync(
  *
  * @returns Raw bundle metadata value.
  */
-const readBundleValue = (bundlePath: string, key: string): string => readPlistValue(
-    path.join(bundlePath, 'Contents/Info.plist'),
-    key,
-);
+const readBundleValue = (bundlePath: string, key: string): string => {
+    return readPlistValue(
+        path.join(bundlePath, 'Contents/Info.plist'),
+        key,
+    );
+};
 
 /**
  * Reads and parses the effective code-signing entitlements of an artifact.
@@ -328,11 +332,13 @@ const validatePrivacyManifest = (
  *
  * @returns Sorted architecture names.
  */
-const readArchitectures = (executablePath: string): string[] => execFileSync(
-    'lipo',
-    ['-archs', executablePath],
-    { encoding: 'utf8' },
-).trim().split(/\s+/u).sort();
+const readArchitectures = (executablePath: string): string[] => {
+    return execFileSync(
+        'lipo',
+        ['-archs', executablePath],
+        { encoding: 'utf8' },
+    ).trim().split(/\s+/u).sort();
+};
 
 /**
  * Verifies that an artifact has no quarantine extended attribute.

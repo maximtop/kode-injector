@@ -22,15 +22,17 @@ const renderCards = (
     browserTarget: BrowserTarget,
     method: LocalSourceAccessMethod,
     disabled = false,
-): string => renderToStaticMarkup(React.createElement(
-    AccessMethodCards,
-    {
-        browserTarget,
-        method,
-        disabled,
-        onChange: () => undefined,
-    },
-));
+): string => {
+    return renderToStaticMarkup(React.createElement(
+        AccessMethodCards,
+        {
+            browserTarget,
+            method,
+            disabled,
+            onChange: () => undefined,
+        },
+    ));
+};
 
 test('chromium renders both selectable method cards', () => {
     const html = renderCards(BrowserTarget.Chrome, LocalSourceAccessMethod.Browser);
@@ -66,6 +68,10 @@ test('safari shows the fixed embedded read-only helper without radio inputs', ()
 
 test('disabled selector disables both radio inputs', () => {
     const html = renderCards(BrowserTarget.Chrome, LocalSourceAccessMethod.Browser, true);
+    const radioInputs = html.match(/<input[^>]*type="radio"[^>]*>/g) ?? [];
 
-    expect(html.match(/disabled/g)?.length).toBeGreaterThanOrEqual(2);
+    expect(radioInputs).toHaveLength(2);
+    radioInputs.forEach((input) => {
+        expect(input).toContain('disabled');
+    });
 });

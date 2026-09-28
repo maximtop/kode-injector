@@ -33,7 +33,9 @@ export type SourceReadResult = {
  */
 export const isNativeHostWideFailure = (
     errorCode: SourceReadErrorCode | NativeErrorCode,
-): boolean => errorCode === SourceReadErrorCode.NativeFailed;
+): boolean => {
+    return errorCode === SourceReadErrorCode.NativeFailed;
+};
 
 /**
  * Native-host operation needed to read one local source file.
