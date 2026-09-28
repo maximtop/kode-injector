@@ -141,7 +141,10 @@ export class NativeHostClient {
                 this.rejectPending(requestId, new Error('NATIVE_TIMEOUT'));
             }, this.timeoutMs);
             this.pending.set(requestId, {
-                operation, resolve, reject, timeout,
+                operation,
+                resolve,
+                reject,
+                timeout,
             });
             port.postMessage({
                 protocolVersion: PROTOCOL_VERSION,

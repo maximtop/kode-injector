@@ -3,7 +3,10 @@
  */
 
 import {
-    afterEach, expect, test, vi,
+    afterEach,
+    expect,
+    test,
+    vi,
 } from 'vitest';
 
 import { NATIVE_HOST_ALL_DOWNLOADS_URL } from '../src/app/common/constants';

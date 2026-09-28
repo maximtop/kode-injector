@@ -3,7 +3,10 @@
  */
 
 import {
-    beforeEach, expect, test, vi,
+    beforeEach,
+    expect,
+    test,
+    vi,
 } from 'vitest';
 
 import {
@@ -365,7 +368,10 @@ test('closing the demo tab discards the launch', async () => {
 
 test('a launch survives a background restart and stays bound to its tab', async () => {
     const {
-        deps, service, restart, launchStore,
+        deps,
+        service,
+        restart,
+        launchStore,
     } = makeHarness();
     await service.run();
 
@@ -381,7 +387,10 @@ test('a launch survives a background restart and stays bound to its tab', async 
 
 test('a restarted background forgets a launch whose tab closed, and invalidation clears the store', async () => {
     const {
-        service, restart, removeTab, launchStore,
+        service,
+        restart,
+        removeTab,
+        launchStore,
     } = makeHarness();
     await service.run();
 

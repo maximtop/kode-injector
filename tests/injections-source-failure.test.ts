@@ -3,7 +3,10 @@
  */
 
 import {
-    beforeEach, expect, test, vi,
+    beforeEach,
+    expect,
+    test,
+    vi,
 } from 'vitest';
 
 import { executeScript } from '../src/app/background/execute-script';

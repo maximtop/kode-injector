@@ -3,7 +3,10 @@
  */
 
 import {
-    beforeEach, expect, test, vi,
+    beforeEach,
+    expect,
+    test,
+    vi,
 } from 'vitest';
 
 import { InjectionField } from '../src/app/common/constants';

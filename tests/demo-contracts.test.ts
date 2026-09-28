@@ -46,7 +46,9 @@ test('persisted launches are validated before use', () => {
     };
     expect(toPersistedDemoLaunch(launch)).toEqual(launch);
     expect(toPersistedDemoLaunch({
-        tabId: 100, startedAt: 1_000, status: DemoLaunchStatus.Waiting,
+        tabId: 100,
+        startedAt: 1_000,
+        status: DemoLaunchStatus.Waiting,
     })).toEqual({ tabId: 100, startedAt: 1_000, status: DemoLaunchStatus.Waiting });
     expect(toPersistedDemoLaunch({ ...launch, status: DemoLaunchStatus.None })).toBeNull();
     expect(toPersistedDemoLaunch({ ...launch, failure: 'unknown' })).toBeNull();

@@ -36,7 +36,10 @@ test('reports catalog, usage, and hardcoded UI defects', () => {
     const rootPath = makeFixture({
         locales: {
             en: catalog({
-                name: 'Kode Injector', options_title: 'Settings', popup_title: 'Popup', unused_key: 'Unused',
+                name: 'Kode Injector',
+                options_title: 'Settings',
+                popup_title: 'Popup',
+                unused_key: 'Unused',
             }),
             ru: {
                 name: { message: 'Kode Injector' },
