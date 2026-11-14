@@ -83,3 +83,18 @@ export const RELEASE_TAG_PATTERN = /^v[0-9]+\.[0-9]+\.[0-9]+$/;
  * Directory the deploy workflows download the release assets into.
  */
 export const STORE_UPLOAD_DIRECTORY = 'store-upload';
+
+/**
+ * Published version whose immutable assets predate the versioned naming contract.
+ */
+export const LEGACY_RELEASE_VERSION = '0.9.2';
+
+/**
+ * Original checksum filename published with the legacy release.
+ */
+export const LEGACY_CHECKSUMS_FILE = 'SHA256SUMS';
+
+/**
+ * Original source archive filename published with the legacy release.
+ */
+export const LEGACY_SOURCE_FILE = 'source.zip';

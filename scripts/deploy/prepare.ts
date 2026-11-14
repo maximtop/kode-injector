@@ -16,6 +16,9 @@ import {
     AMO_APPROVAL_NOTES_FILENAME,
     AMO_APPROVAL_NOTES_SUMMARY,
     AMO_REVIEW_NOTES_PATH,
+    LEGACY_RELEASE_VERSION,
+    LEGACY_CHECKSUMS_FILE,
+    LEGACY_SOURCE_FILE,
     RELEASE_ASSET_PREFIX,
     RELEASE_TAG_PATTERN,
     Store,
@@ -145,15 +148,17 @@ export const prepare = (env: NodeJS.ProcessEnv = process.env): void => {
         throw new Error('Tagged package.json version does not match release tag');
     }
     mkdirSync(STORE_UPLOAD_DIRECTORY, { recursive: true });
-    const archive = `${RELEASE_ASSET_PREFIX}-${version}-${browser}.zip`;
-    const source = `${RELEASE_ASSET_PREFIX}-${version}-source.zip`;
+    const legacy = version === LEGACY_RELEASE_VERSION;
+    const archive = legacy ? `${browser}.zip` : `${RELEASE_ASSET_PREFIX}-${version}-${browser}.zip`;
+    const source = legacy ? LEGACY_SOURCE_FILE : `${RELEASE_ASSET_PREFIX}-${version}-source.zip`;
+    const checksumsFile = legacy ? LEGACY_CHECKSUMS_FILE : CHECKSUMS_FILE;
     const assets = [archive, ...(store === Store.Firefox ? [source] : [])];
-    const patterns = [...assets, CHECKSUMS_FILE].flatMap((name) => ['--pattern', name]);
+    const patterns = [...assets, checksumsFile].flatMap((name) => ['--pattern', name]);
     execFileSync('gh', [
         'release', 'download', release.tagName,
         '--repo', repository, '--dir', STORE_UPLOAD_DIRECTORY, ...patterns,
     ]);
-    const checksums = readFileSync(path.join(STORE_UPLOAD_DIRECTORY, CHECKSUMS_FILE), 'utf8');
+    const checksums = readFileSync(path.join(STORE_UPLOAD_DIRECTORY, checksumsFile), 'utf8');
     assets.forEach((asset) => {
         verifyChecksum(asset, readFileSync(path.join(STORE_UPLOAD_DIRECTORY, asset)), checksums);
     });

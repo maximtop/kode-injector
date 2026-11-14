@@ -153,7 +153,7 @@ beforeEach(() => {
     });
     vi.mocked(readFileSync).mockImplementation((file) => {
         const name = path.basename(String(file));
-        if (name === 'SHA256SUMS.txt') {
+        if (name === 'SHA256SUMS.txt' || name === 'SHA256SUMS') {
             return Object.entries(assets)
                 .map(([asset, bytes]) => {
                     return `${createHash('sha256').update(bytes).digest('hex')}  ${asset}`;
@@ -288,5 +288,42 @@ describe('Firefox approval notes', () => {
         notesLimit.override = 10;
         prepare(envFor(Store.Firefox, DeployMode.Status));
         expect(appendFileSync).toHaveBeenCalledTimes(1);
+    });
+});
+
+describe('published v0.9.2 compatibility', () => {
+    beforeEach(() => {
+        release.tagName = 'v0.9.2';
+        assets = {
+            'edge.zip': pack({
+                'manifest.json': JSON.stringify({
+                    manifest_version: 3,
+                    version: '0.9.2',
+                    background: { service_worker: 'background.js' },
+                }),
+            }),
+        };
+        vi.mocked(execFileSync).mockImplementation((file, args) => {
+            if (file === 'gh' && args?.[1] === 'view') {
+                return JSON.stringify(release);
+            }
+            return args?.[0] === 'show' ? '{"version":"0.9.2"}' : 'fixture-commit';
+        });
+    });
+
+    it('validates the original Edge archive and exposes its unchanged name for upload', () => {
+        prepare(envFor(Store.Edge, DeployMode.Validate));
+        expect(downloadArguments()).toContain('edge.zip');
+        expect(downloadArguments()).toContain('SHA256SUMS');
+        expect(appendFileSync).toHaveBeenCalledWith(
+            'fixture-output',
+            'tag=v0.9.2\nversion=0.9.2\nasset=edge.zip\nsource=source.zip\n',
+        );
+    });
+
+    it('still rejects a legacy archive without a matching checksum', () => {
+        vi.mocked(readFileSync).mockReturnValue('invalid checksum');
+        expect(() => prepare(envFor(Store.Edge, DeployMode.Validate))).toThrow('SHA-256');
+        expect(appendFileSync).not.toHaveBeenCalled();
     });
 });
