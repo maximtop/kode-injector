@@ -16,6 +16,11 @@ Every store workflow is manually dispatched and reads an existing immutable
 GitHub Release. It downloads the exact browser archive, verifies the checksum
 and packaged manifest, and never rebuilds the release during deployment.
 
+The existing `v0.9.2` release uses `chrome.zip`, `edge.zip`, `firefox.zip`,
+`source.zip`, and `SHA256SUMS`. Deployment recognizes those original names
+only for that version and applies the same checksum, ancestry, version, and
+browser validation. Do not rename, replace, or rebuild its published assets.
+
 ```sh
 gh workflow run deploy-chrome-store.yml -f tag=vX.Y.Z -f mode=validate
 gh workflow run deploy-edge-addons.yml -f tag=vX.Y.Z -f mode=validate

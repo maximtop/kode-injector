@@ -99,7 +99,8 @@ Every deploy workflow runs `scripts/deploy/cli.ts` first, which refuses tags
 that do not match `vX.Y.Z`, draft and pre-release releases, release commits
 that are not reachable from `master`, and a tagged `package.json` version that
 differs from the tag. It then downloads the release assets, never a fresh
-rebuild, verifies their SHA-256 checksums against `SHA256SUMS.txt`, and checks
+rebuild, verifies their SHA-256 checksums against `SHA256SUMS.txt`
+(`SHA256SUMS` with the original unversioned ZIP names for `v0.9.2`), and checks
 the manifest inside the archive: exactly one root `manifest.json`, manifest
 version 3, the release version, and the background format of the target
 browser (Firefox additionally the Gecko ID and the source archive metadata).
