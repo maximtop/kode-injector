@@ -150,11 +150,13 @@ The workflow uploads the archive with `go-webext` through the Edge Add-ons API
 v1.1 (API key). `go-webext` v0.4.4 waits one minute for package processing
 to reach `Succeeded` and fails the upload step if that does not happen.
 In `submit` mode it then requests certification and polls the publish
-operation. An operation still `InProgress` after one minute counts as
-accepted and continues in Partner Center. An explicit refusal fails the
-workflow. The certification verdict arrives in Partner Center and by email,
-usually within seven business days. Microsoft publishes a certified update
-according to the listing's availability settings.
+operation. If the operation is still `InProgress` after one minute, the
+workflow reports that Partner Center accepted the publish request. Check
+Partner Center for the outcome. A refusal reported during polling fails the
+workflow. After Partner Center creates the submission, Microsoft reviews it.
+The certification verdict arrives in Partner Center and by email, usually
+within seven business days. Microsoft publishes a certified update according
+to the listing's availability settings.
 
 There is no deferred publishing on Edge. The manual gates are running the
 workflow itself, the `upload` mode for releases that need listing or privacy
