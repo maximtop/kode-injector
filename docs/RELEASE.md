@@ -147,23 +147,24 @@ Modes:
   there.
 
 The workflow uploads the archive with `go-webext` through the Edge Add-ons API
-v1.1 (API key). The step fails unless package processing reaches `Succeeded`;
-`go-webext` v0.4.2 waits for that for one minute. In `submit` mode it then
-requests certification. `go-webext` reads the publish operation once, so
-`InProgress` in a green run means the request was accepted. The verdict
-arrives in Partner Center and by email, usually within seven business days,
-and Microsoft publishes a certified update itself according to the listing's
-availability settings.
+v1.1 (API key). `go-webext` v0.4.4 waits one minute for package processing
+to reach `Succeeded` and fails the upload step if that does not happen.
+In `submit` mode it then requests certification and polls the publish
+operation. An operation still `InProgress` after one minute counts as
+accepted and continues in Partner Center. An explicit refusal fails the
+workflow. The certification verdict arrives in Partner Center and by email,
+usually within seven business days. Microsoft publishes a certified update
+according to the listing's availability settings.
 
 There is no deferred publishing on Edge. The manual gates are running the
 workflow itself, the `upload` mode for releases that need listing or privacy
 changes, and the account owner's confirmations inside Partner Center.
-Certification notes cannot be sent by `go-webext` v0.4.2: keep the reviewer
-notes in Partner Center and, when a release changes the test steps, deploy it
-in `upload` mode and finish the submission there. Microsoft accepts one
-submission at a time, and each update needs a higher package version than the
-one in the store. `KODE_INJECTOR_EDGE_ID` (the public 32-letter extension ID)
-is a build input for the native host origin, not a deployment setting.
+Add the reviewer notes in Partner Center. If a release changes the test
+steps, deploy it in `upload` mode and finish the submission there.
+Microsoft accepts one submission at a time, and each update needs a higher
+package version than the one in the store. `KODE_INJECTOR_EDGE_ID` (the public
+32-letter extension ID) is a build input for the native host origin, not a
+deployment setting.
 
 ### Firefox Add-ons
 
