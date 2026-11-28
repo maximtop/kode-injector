@@ -114,16 +114,16 @@ tests in `tests/deploy`; the repository specifics live in
 `deploy-chrome-store.yml` uploads the archive through Chrome Web Store API v2
 with the `go-webext` version pinned by `GO_WEBEXT_VERSION` in the workflow,
 refuses to continue unless the store confirms the upload of that exact version
-(`Upload State: SUCCEEDED`), submits the draft for review with deferred
-(staged) publishing, and writes the store status to the job summary. The status
-covers the published and submitted state only; draft processing is visible in
-the Developer Dashboard.
+(`Upload State: SUCCEEDED`), submits the draft for review, and writes store
+status to the job summary. With the default `publish_policy=auto`, Google
+publishes the approved version to 100%. A green run confirms acceptance for
+review. Verify public availability separately.
 
-When the review verdict arrives by e-mail, publish the approved version by hand
-in the Chrome Web Store Developer Dashboard. A staged submission left
-unpublished expires back to a draft after about 30 days; re-run the workflow
-with the same tag to submit it again. A green run proves a successful
-submission, not approval.
+Choose `publish_policy=staged` to publish the approved version yourself in the
+Chrome Web Store Developer Dashboard. An unpublished staged submission expires
+back to a draft after about 30 days. Re-run the workflow with the same tag to
+submit it again. The store status covers published and submitted state. View
+draft processing in the Developer Dashboard.
 
 Descriptions, screenshots and promo images are not part of the API: the store
 only accepts them through the Developer Dashboard.
@@ -384,4 +384,5 @@ gh workflow run deploy-stores.yml -f target=all -f tag=vX.Y.Z -f mode=submit
 ```
 
 The individual store workflows remain available, including Edge upload-only
-and Firefox status. Chrome still requires final publication after approval.
+and Firefox status. To defer Chrome publishing for either the `chrome` or
+`all` target, set `chrome_publish_policy=staged`.
