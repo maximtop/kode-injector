@@ -116,13 +116,14 @@ with the `go-webext` version pinned by `GO_WEBEXT_VERSION` in the workflow,
 refuses to continue unless the store confirms the upload of that exact version
 (`Upload State: SUCCEEDED`), submits the draft for review, and writes store
 status to the job summary. With the default `publish_policy=auto`, Google
-publishes the approved version to 100%. A green run confirms acceptance for
-review. Verify public availability separately.
+publishes the approved version to 100%. A successful `submit` reports
+whether Google returned pending review, staged, or published. A `validate`
+run only verifies the release archive. Verify public availability separately.
 
 Choose `publish_policy=staged` to publish the approved version yourself in the
-Chrome Web Store Developer Dashboard. An unpublished staged submission expires
-back to a draft after about 30 days. Re-run the workflow with the same tag to
-submit it again. The store status covers published and submitted state. View
+Chrome Web Store Developer Dashboard within 30 days of approval. If the
+staged version expires back to draft, re-run the workflow with the same tag
+to submit it for review again. The store status covers published and submitted state. View
 draft processing in the Developer Dashboard.
 
 Descriptions, screenshots and promo images are not part of the API: the store
